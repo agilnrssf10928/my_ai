@@ -67,6 +67,14 @@
     .login-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(139, 92, 246, 0.5); }
     .login-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     .login-note { margin-top: 16px; font-size: 0.75rem; color: var(--text-muted); }
+    .visitor-count {
+      margin-top: 14px; padding: 8px 14px; border-radius: 10px;
+      background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.25);
+      font-size: 0.82rem; color: #c4b5fd; font-weight: 500;
+    }
+    .visitor-count-side {
+      font-size: 0.7rem; color: var(--text-muted); margin-top: 2px;
+    }
 
     /* APP */
     .app { display: none; height: 100%; width: 100%; }
@@ -287,6 +295,7 @@
         Login dengan Email / Google
       </button>
       <p class="login-note">Aman · Gratis · Riwayat tersimpan di akunmu</p>
+      <div class="visitor-count" id="visitorCountLogin">👥 Total pengunjung: ...</div>
     </div>
   </div>
 
@@ -308,6 +317,7 @@
         <div class="user-info">
           <div class="name" id="userName">User</div>
           <div class="email" id="userEmail"></div>
+          <div class="visitor-count-side" id="visitorCountSide">👥 ... pengunjung</div>
         </div>
         <button class="logout-btn" id="logoutBtn" title="Keluar">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
@@ -350,7 +360,7 @@
             </div>
             <button type="button" id="removeFileBtn" class="remove-file-btn" title="Hapus">×</button>
           </div>
-          <div class="preview-hint">Tulis perintah apa yang ingin dilakukan dengan foto/file ini</div>
+          <div class="preview-hint">Opsional: tulis perintah (contoh: fix error, tambah fitur, jelaskan). Bisa langsung kirim tanpa teks.</div>
         </div>
         <div class="input-wrapper">
           <button type="button" class="attach-btn" id="attachBtn" title="Upload foto / file">
@@ -651,10 +661,20 @@
     sendBtn.addEventListener('click', sendMessage);
 
     async function sendMessage() {
-      const text = userInput.value.trim();
+      let text = userInput.value.trim();
       const hasFile = !!selectedFile;
       if ((!text && !hasFile) || isGenerating) return;
-      if (hasFile && !text) { showToast('Tulis dulu perintah untuk foto/file ini', true); userInput.focus(); return; }
+
+      // Kalau cuma kirim file/foto tanpa caption → auto isi perintah default
+      if (hasFile && !text) {
+        if (selectedDataUrl) {
+          text = 'Analisis dan jelaskan gambar ini secara detail.';
+        } else if (selectedFileText) {
+          text = 'Analisis file ini. Jika ada error, perbaiki dan tampilkan kode lengkap yang sudah diperbaiki.';
+        } else {
+          text = 'Analisis file ini.';
+        }
+      }
 
       isGenerating = true; sendBtn.disabled = true;
       const currentText = text, currentDataUrl = selectedDataUrl, currentFileText = selectedFileText;
@@ -679,15 +699,44 @@
 
       try {
         let response;
+        const lowerText = currentText.toLowerCase();
+
+        // Deteksi apakah user minta HD / enhance gambar
+        const isHdRequest = isImage && /hd|upscale|enhance|perjelas|tingkatkan|rapikan foto|jadiin hd|jadi hd/i.test(currentText);
+
         if (isImage && currentDataUrl) {
-          response = await puter.ai.chat(currentText, currentDataUrl, { model, stream: true });
+          if (isHdRequest) {
+            // Model gratis belum bisa return gambar HD yang sudah di-upscale.
+            // Beri jawaban jujur + tetap analisis gambar.
+            response = await puter.ai.chat(
+              currentText + '\n\n(Catatan sistem: Kamu tidak bisa mengembalikan file gambar yang sudah di-HD. Jelaskan dengan sopan bahwa fitur upscale/HD image belum tersedia di versi ini, lalu analisis gambar yang dikirim user dan berikan saran cara enhance yang bagus.)',
+              currentDataUrl,
+              { model, stream: true }
+            );
+          } else {
+            response = await puter.ai.chat(currentText, currentDataUrl, { model, stream: true });
+          }
         } else if (currentFileText) {
-          const fullPrompt = 'Berikut isi file "' + currentFileName + '":\n\n```\n' + currentFileText.slice(0, 12000) + '\n```\n\nPerintah user: ' + currentText;
+          // Instruksi kuat supaya AI selalu return kode LENGKAP yang sudah diperbaiki
+          const fullPrompt =
+            'Berikut isi file "' + currentFileName + '":\n\n```\n' +
+            currentFileText.slice(0, 14000) +
+            '\n```\n\nPerintah user: ' + currentText +
+            '\n\nPENTING: Jika user meminta memperbaiki error, menambah fitur, atau mengubah kode, ' +
+            'WAJIB tampilkan SELURUH kode yang sudah diperbaiki/diubah di dalam satu blok kode (```). ' +
+            'Jangan potong. Jangan hanya jelaskan perubahan. Berikan file lengkap yang siap dipakai.';
           response = await puter.ai.chat(fullPrompt, { model, stream: true });
         } else if (hasFile && !isImage && !currentFileText) {
-          response = await puter.ai.chat('User mengirim file "' + currentFileName + '" dan meminta: "' + currentText + '". Jelaskan bahwa saat ini hanya gambar & file teks yang bisa diproses penuh.', { model, stream: true });
+          response = await puter.ai.chat(
+            'User mengirim file "' + currentFileName + '" dan meminta: "' + currentText +
+            '". Jelaskan bahwa saat ini hanya gambar & file teks (.txt, .js, .html, .css, .py, .json, dll) yang bisa diproses penuh. PDF/Word kompleks masih terbatas.',
+            { model, stream: true }
+          );
         } else {
-          const msgs = (conv ? conv.messages.slice(-12) : []).map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content }));
+          const msgs = (conv ? conv.messages.slice(-12) : []).map(m => ({
+            role: m.role === 'user' ? 'user' : 'assistant',
+            content: m.content
+          }));
           response = await puter.ai.chat(msgs, { model, stream: true });
         }
 
@@ -695,10 +744,25 @@
         const bubble = addMessageToDOM('', 'ai');
         let fullText = '';
         for await (const part of response) {
-          if (part && part.text) { fullText += part.text; bubble.innerHTML = formatText(fullText); scrollToBottom(); }
+          if (part && part.text) {
+            fullText += part.text;
+            bubble.innerHTML = formatText(fullText);
+            scrollToBottom();
+          }
         }
-        if (!fullText.trim()) { fullText = 'Maaf, aku tidak mendapat jawaban. Coba lagi ya!'; bubble.innerHTML = formatText(fullText); }
-        if (conv) { conv.messages.push({ role: 'assistant', content: fullText }); conv.updatedAt = Date.now(); saveConversations(); }
+        if (!fullText.trim()) {
+          fullText = 'Maaf, aku tidak mendapat jawaban. Coba lagi ya!';
+          bubble.innerHTML = formatText(fullText);
+        }
+
+        // Tambahkan tombol Download untuk setiap blok kode yang cukup panjang
+        addDownloadButtons(bubble, fullText, currentFileName);
+
+        if (conv) {
+          conv.messages.push({ role: 'assistant', content: fullText });
+          conv.updatedAt = Date.now();
+          saveConversations();
+        }
       } catch (err) {
         removeTyping(); console.error(err);
         let msg = 'Terjadi kesalahan. ';
@@ -710,6 +774,68 @@
       } finally {
         isGenerating = false; sendBtn.disabled = false; userInput.focus();
       }
+    }
+
+    // Tambah tombol Copy + Download di bawah blok kode panjang
+    function addDownloadButtons(bubble, fullText, originalFileName) {
+      const codeBlocks = fullText.match(/```[\s\S]*?```/g);
+      if (!codeBlocks || codeBlocks.length === 0) return;
+
+      const btnWrap = document.createElement('div');
+      btnWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;';
+
+      codeBlocks.forEach((block, idx) => {
+        let code = block.replace(/^```[\w]*\n?/, '').replace(/```$/, '').trim();
+        if (code.length < 30) return;
+
+        let filename = originalFileName || ('hasil-' + (idx + 1) + '.txt');
+        const langMatch = block.match(/^```(\w+)/);
+        if (langMatch) {
+          const extMap = { javascript:'js', js:'js', html:'html', css:'css', python:'py', py:'py', json:'json', ts:'ts', typescript:'ts', java:'java', cpp:'cpp', c:'c', md:'md', markdown:'md', xml:'xml', sql:'sql' };
+          const ext = extMap[langMatch[1].toLowerCase()];
+          if (ext && !originalFileName) filename = 'hasil-' + (idx + 1) + '.' + ext;
+          else if (ext && originalFileName) filename = originalFileName.replace(/\.[^.]+$/, '') + '-fixed.' + ext;
+        } else if (originalFileName) {
+          filename = originalFileName.replace(/(\.[^.]+)?$/, (m) => '-fixed' + (m || '.txt'));
+        }
+
+        // Tombol Copy
+        const copyBtn = document.createElement('button');
+        copyBtn.innerHTML = '📋 Copy';
+        copyBtn.style.cssText = 'padding:8px 14px;border:1px solid rgba(139,92,246,0.4);border-radius:8px;background:rgba(139,92,246,0.15);color:#c4b5fd;font-size:0.82rem;font-weight:600;cursor:pointer;';
+        copyBtn.onclick = async () => {
+          try {
+            await navigator.clipboard.writeText(code);
+            copyBtn.innerHTML = '✅ Copied!';
+            showToast('Kode berhasil disalin');
+            setTimeout(() => { copyBtn.innerHTML = '📋 Copy'; }, 2000);
+          } catch (e) {
+            showToast('Gagal copy', true);
+          }
+        };
+
+        // Tombol Download (AI "kirim" file)
+        const dlBtn = document.createElement('button');
+        dlBtn.innerHTML = '⬇️ Download ' + filename;
+        dlBtn.style.cssText = 'padding:8px 14px;border:none;border-radius:8px;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:white;font-size:0.82rem;font-weight:600;cursor:pointer;';
+        dlBtn.onclick = () => {
+          const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast('File dikirim: ' + filename);
+        };
+
+        btnWrap.appendChild(copyBtn);
+        btnWrap.appendChild(dlBtn);
+      });
+
+      if (btnWrap.children.length > 0) bubble.appendChild(btnWrap);
     }
 
     function showToast(msg, isError = false) {
@@ -724,6 +850,36 @@
     sidebarOverlay.addEventListener('click', closeSidebar);
     function closeSidebar() { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open'); }
 
+    // ========== VISITOR COUNTER ==========
+    async function updateVisitorCount() {
+      const loginEl = document.getElementById('visitorCountLogin');
+      const sideEl = document.getElementById('visitorCountSide');
+      const KEY = 'gilxz-ai-visits';
+
+      try {
+        // Hanya hit +1 sekali per sesi browser (supaya refresh tidak nambah terus)
+        const alreadyHit = sessionStorage.getItem('gilxz_visit_hit');
+        let url;
+        if (!alreadyHit) {
+          url = 'https://countapi.mileshilliard.com/api/v1/hit/' + KEY;
+          sessionStorage.setItem('gilxz_visit_hit', '1');
+        } else {
+          url = 'https://countapi.mileshilliard.com/api/v1/get/' + KEY;
+        }
+
+        const res = await fetch(url);
+        const data = await res.json();
+        const num = data.value || data.count || '?';
+
+        if (loginEl) loginEl.textContent = '👥 Total pengunjung: ' + Number(num).toLocaleString('id-ID');
+        if (sideEl) sideEl.textContent = '👥 ' + Number(num).toLocaleString('id-ID') + ' pengunjung';
+      } catch (e) {
+        if (loginEl) loginEl.textContent = '👥 Total pengunjung: -';
+        if (sideEl) sideEl.textContent = '👥 - pengunjung';
+      }
+    }
+
+    updateVisitorCount();
     checkAuth();
   </script>
 </body>
