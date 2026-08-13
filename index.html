@@ -159,6 +159,16 @@
       background-repeat: no-repeat; background-position: right 8px center;
     }
     .model-select:hover, .model-select:focus { border-color: var(--primary); }
+    .icon-btn {
+      width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--border);
+      background: #1a2234; color: var(--text-muted); display: flex; align-items: center;
+      justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+    }
+    .icon-btn:hover {
+      background: rgba(139, 92, 246, 0.15); color: var(--primary-hover);
+      border-color: rgba(139, 92, 246, 0.4);
+    }
+    .icon-btn:active { transform: rotate(180deg); }
 
     .chat-container {
       flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px 16px 130px;
@@ -345,6 +355,12 @@
             <option value="deepseek-chat">DeepSeek Chat</option>
             <option value="claude-3-5-haiku-latest">Claude Haiku</option>
           </select>
+          <button class="icon-btn" id="refreshBtn" title="Refresh web">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M23 4v6h-6M1 20v-6h6"/>
+              <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+            </svg>
+          </button>
         </div>
       </header>
 
@@ -849,6 +865,11 @@
     menuBtn.addEventListener('click', () => { sidebar.classList.add('open'); sidebarOverlay.classList.add('open'); });
     sidebarOverlay.addEventListener('click', closeSidebar);
     function closeSidebar() { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open'); }
+
+    // Tombol Refresh web
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+      location.reload();
+    });
 
     // ========== VISITOR COUNTER ==========
     async function updateVisitorCount() {
