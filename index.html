@@ -4,304 +4,172 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>GIL_XZ AI — Chat Unlimited</title>
-  <meta name="description" content="Chat AI unlimited dengan tampilan modern. Powered by GIL_XZ AI" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://js.puter.com/v2/"></script>
   <style>
-    :root {
-      --bg: #0b0f19;
-      --bg-secondary: #111827;
-      --surface: rgba(17, 24, 39, 0.85);
-      --surface-solid: #1a2234;
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
-      --primary: #8b5cf6;
-      --primary-hover: #a78bfa;
-      --primary-glow: rgba(139, 92, 246, 0.35);
-      --user-bubble: linear-gradient(135deg, #7c3aed, #4f46e5);
-      --ai-bubble: rgba(30, 41, 59, 0.9);
-      --danger: #ef4444;
-      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-      --sidebar-w: 280px;
+    :root, [data-theme="dark"] {
+      --bg: #0b0f19; --bg2: #111827; --surface: #1a2234;
+      --border: rgba(255,255,255,0.08); --text: #f1f5f9; --muted: #94a3b8;
+      --primary: #8b5cf6; --primary-h: #a78bfa; --glow: rgba(139,92,246,0.35);
+      --user: linear-gradient(135deg,#7c3aed,#4f46e5);
+      --ai: rgba(30,41,59,0.92); --danger: #ef4444;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body {
-      height: 100%; overflow: hidden;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: #0b0f19; color: var(--text);
-      -webkit-font-smoothing: antialiased;
+    [data-theme="light"] {
+      --bg: #f8fafc; --bg2: #ffffff; --surface: #ffffff;
+      --border: rgba(0,0,0,0.1); --text: #0f172a; --muted: #64748b;
+      --primary: #7c3aed; --primary-h: #6d28d9; --glow: rgba(124,58,237,0.2);
+      --user: linear-gradient(135deg,#7c3aed,#4f46e5);
+      --ai: #f1f5f9; --danger: #dc2626;
     }
-    body { display: flex; flex-direction: column; background: #0b0f19; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%;overflow:hidden;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+    body{display:flex;flex-direction:column}
 
     /* LOGIN */
-    .login-overlay {
-      position: fixed; inset: 0; background: #0b0f19; z-index: 9999;
-      display: flex; align-items: center; justify-content: center; padding: 20px;
-    }
-    .login-overlay.hidden { display: none; }
-    .login-card {
-      background: #1a2234; border: 1px solid var(--border); border-radius: 20px;
-      padding: 36px 32px; max-width: 400px; width: 100%; text-align: center;
-      box-shadow: var(--shadow);
-    }
-    .login-card img {
-      width: 100%; max-width: 320px; border-radius: 12px; margin-bottom: 20px;
-      border: 1px solid rgba(139, 92, 246, 0.3);
-    }
-    .login-card h1 {
-      font-size: 1.5rem; margin-bottom: 8px;
-      background: linear-gradient(90deg, #c4b5fd, #67e8f9);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    .login-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 24px; }
-    .login-btn {
-      width: 100%; padding: 14px 20px; border: none; border-radius: 12px;
-      background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white;
-      font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35);
-    }
-    .login-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(139, 92, 246, 0.5); }
-    .login-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    .login-note { margin-top: 16px; font-size: 0.75rem; color: var(--text-muted); }
-    .visitor-count {
-      margin-top: 14px; padding: 8px 14px; border-radius: 10px;
-      background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.25);
-      font-size: 0.82rem; color: #c4b5fd; font-weight: 500;
-    }
-    .visitor-count-side {
-      font-size: 0.7rem; color: var(--text-muted); margin-top: 2px;
-    }
+    .login-overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+    .login-overlay.hidden{display:none}
+    .login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;max-width:400px;width:100%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+    .login-card img{width:100%;max-width:300px;border-radius:12px;margin-bottom:16px;border:1px solid rgba(139,92,246,.3)}
+    .login-card h1{font-size:1.45rem;margin-bottom:6px;background:linear-gradient(90deg,#c4b5fd,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .login-card p{color:var(--muted);font-size:.88rem;line-height:1.5;margin-bottom:20px}
+    .login-btn{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;font-size:.95rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+    .login-btn:disabled{opacity:.6;cursor:not-allowed}
+    .login-note{margin-top:12px;font-size:.72rem;color:var(--muted)}
+    .visitor-count{margin-top:12px;padding:7px 12px;border-radius:10px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.25);font-size:.8rem;color:#c4b5fd;font-weight:500}
 
     /* APP */
-    .app { display: none; height: 100%; width: 100%; }
-    .app.visible { display: flex; }
+    .app{display:none;height:100%;width:100%}
+    .app.visible{display:flex}
+    .sidebar{width:280px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:transform .3s}
+    .sidebar-header{padding:12px;border-bottom:1px solid var(--border)}
+    .new-chat-btn{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:11px;background:transparent;color:var(--text);font-size:.88rem;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px}
+    .new-chat-btn:hover{background:rgba(139,92,246,.1);border-color:var(--primary);color:var(--primary-h)}
+    .search-box{margin-top:8px;position:relative}
+    .search-box input{width:100%;padding:8px 10px 8px 32px;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text);font-size:.82rem;outline:none}
+    .search-box svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+    .conv-list{flex:1;overflow-y:auto;padding:6px}
+    .conv-item{padding:9px 10px;border-radius:9px;cursor:pointer;margin-bottom:2px;display:flex;align-items:center;gap:8px;position:relative}
+    .conv-item:hover{background:rgba(128,128,128,.08)}
+    .conv-item.active{background:rgba(139,92,246,.15)}
+    .conv-item .pin{font-size:.7rem;color:var(--primary)}
+    .conv-item .title{flex:1;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .conv-item .time{font-size:.68rem;color:var(--muted)}
+    .conv-item .acts{display:none;gap:2px}
+    .conv-item:hover .acts{display:flex}
+    .conv-item:hover .time{display:none}
+    .conv-item .acts button{width:22px;height:22px;border:none;border-radius:5px;background:transparent;color:var(--muted);cursor:pointer;font-size:12px}
+    .conv-item .acts button:hover{background:rgba(139,92,246,.2);color:var(--primary-h)}
+    .sidebar-footer{padding:10px 12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px}
+    .user-info{flex:1;min-width:0}
+    .user-info .name{font-size:.82rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .user-info .email,.visitor-count-side{font-size:.68rem;color:var(--muted)}
+    .logout-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .logout-btn:hover{background:rgba(239,68,68,.15);color:#fca5a5}
 
-    .sidebar {
-      width: var(--sidebar-w); background: #111827; border-right: 1px solid var(--border);
-      display: flex; flex-direction: column; flex-shrink: 0; transition: transform 0.3s ease;
-    }
-    .sidebar-header { padding: 14px 14px 10px; border-bottom: 1px solid var(--border); }
-    .new-chat-btn {
-      width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 12px;
-      background: transparent; color: var(--text); font-size: 0.9rem; font-weight: 500;
-      cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.2s;
-    }
-    .new-chat-btn:hover { background: rgba(139, 92, 246, 0.12); border-color: var(--primary); color: var(--primary-hover); }
-    .search-box { margin-top: 10px; position: relative; }
-    .search-box input {
-      width: 100%; padding: 9px 12px 9px 36px; border: 1px solid var(--border); border-radius: 10px;
-      background: #1a2234; color: var(--text); font-size: 0.85rem; outline: none;
-    }
-    .search-box input:focus { border-color: var(--primary); }
-    .search-box svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
-    .conv-list { flex: 1; overflow-y: auto; padding: 8px; }
-    .conv-list::-webkit-scrollbar { width: 4px; }
-    .conv-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
-    .conv-item {
-      padding: 10px 12px; border-radius: 10px; cursor: pointer; margin-bottom: 2px;
-      display: flex; align-items: center; gap: 10px; transition: background 0.15s; position: relative;
-    }
-    .conv-item:hover { background: rgba(255,255,255,0.05); }
-    .conv-item.active { background: rgba(139, 92, 246, 0.15); }
-    .conv-item .title { flex: 1; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .conv-item .time { font-size: 0.7rem; color: var(--text-muted); flex-shrink: 0; }
-    .conv-item .del-btn {
-      display: none; position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-      width: 24px; height: 24px; border: none; border-radius: 6px;
-      background: rgba(239, 68, 68, 0.2); color: #fca5a5; cursor: pointer; font-size: 14px;
-      align-items: center; justify-content: center;
-    }
-    .conv-item:hover .del-btn { display: flex; }
-    .conv-item:hover .time { display: none; }
-    .sidebar-footer { padding: 12px 14px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
-    .user-info { flex: 1; min-width: 0; }
-    .user-info .name { font-size: 0.85rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .user-info .email { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .logout-btn {
-      width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
-      background: transparent; color: var(--text-muted); cursor: pointer;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .logout-btn:hover { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.3); }
+    .main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
+    .header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--bg);gap:8px;flex-shrink:0}
+    .header-left{display:flex;align-items:center;gap:8px}
+    .menu-btn{display:none;width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;align-items:center;justify-content:center}
+    .logo{display:flex;align-items:center;gap:7px;font-weight:700;font-size:1rem}
+    .logo-icon{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#8b5cf6,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 14px var(--glow)}
+    .logo span{background:linear-gradient(90deg,#c4b5fd,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .header-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+    .model-select{appearance:none;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:6px 26px 6px 8px;border-radius:8px;font-size:.75rem;cursor:pointer;outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center}
+    .icon-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;flex-shrink:0}
+    .icon-btn:hover{background:rgba(139,92,246,.12);color:var(--primary-h);border-color:rgba(139,92,246,.35)}
 
-    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
-    .header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 16px; border-bottom: 1px solid var(--border); background: #0b0f19;
-      z-index: 50; flex-shrink: 0; gap: 10px;
-    }
-    .header-left { display: flex; align-items: center; gap: 10px; }
-    .menu-btn {
-      display: none; width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border);
-      background: #1a2234; color: var(--text-muted); cursor: pointer; align-items: center; justify-content: center;
-    }
-    .logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.05rem; }
-    .logo-icon {
-      width: 32px; height: 32px; border-radius: 8px;
-      background: linear-gradient(135deg, #8b5cf6, #06b6d4);
-      display: flex; align-items: center; justify-content: center; font-size: 15px;
-      box-shadow: 0 0 16px var(--primary-glow);
-    }
-    .logo span {
-      background: linear-gradient(90deg, #c4b5fd, #67e8f9);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    .header-actions { display: flex; align-items: center; gap: 8px; }
-    .model-select {
-      appearance: none; background: #1a2234; border: 1px solid var(--border); color: var(--text);
-      padding: 7px 30px 7px 10px; border-radius: 9px; font-size: 0.78rem; font-weight: 500;
-      cursor: pointer; outline: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat; background-position: right 8px center;
-    }
-    .model-select:hover, .model-select:focus { border-color: var(--primary); }
-    .icon-btn {
-      width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--border);
-      background: #1a2234; color: var(--text-muted); display: flex; align-items: center;
-      justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
-    }
-    .icon-btn:hover {
-      background: rgba(139, 92, 246, 0.15); color: var(--primary-hover);
-      border-color: rgba(139, 92, 246, 0.4);
-    }
-    .icon-btn:active { transform: rotate(180deg); }
+    .chat-container{flex:1;overflow-y:auto;padding:14px 14px 140px;display:flex;flex-direction:column;gap:16px}
+    .welcome{margin:auto;text-align:center;max-width:460px;padding:12px}
+    .welcome-icon{width:100%;max-width:360px;margin:0 auto 14px;border-radius:12px;overflow:hidden;box-shadow:0 0 36px var(--glow);border:1px solid rgba(139,92,246,.3)}
+    .welcome-icon img{width:100%;display:block}
+    .welcome h1{font-size:1.35rem;margin-bottom:4px}
+    .welcome p{color:var(--muted);font-size:.86rem;margin-bottom:16px}
+    .suggestions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+    .suggestion{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:10px 12px;text-align:left;cursor:pointer;font-size:.8rem;color:var(--muted)}
+    .suggestion:hover{border-color:var(--primary);color:var(--text)}
 
-    .chat-container {
-      flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px 16px 130px;
-      scroll-behavior: smooth; display: flex; flex-direction: column; gap: 18px;
-    }
-    .chat-container::-webkit-scrollbar { width: 5px; }
-    .chat-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
+    .message{display:flex;gap:9px;max-width:760px;width:100%;margin:0 auto}
+    .message.user{flex-direction:row-reverse}
+    .avatar{width:30px;height:30px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+    .message.user .avatar{background:var(--user);font-size:9px;color:#fff}
+    .message.ai .avatar{background:linear-gradient(135deg,#0e7490,#8b5cf6);color:#fff}
+    .bubble{padding:11px 14px;border-radius:14px;line-height:1.5;font-size:.9rem;max-width:85%;word-wrap:break-word;position:relative}
+    .message.user .bubble{background:var(--user);color:#fff;border-bottom-right-radius:4px}
+    .message.ai .bubble{background:var(--ai);border:1px solid var(--border);border-bottom-left-radius:4px}
+    .bubble pre{background:rgba(0,0,0,.3);padding:9px;border-radius:7px;overflow-x:auto;margin:7px 0;font-family:'JetBrains Mono',monospace;font-size:.78rem}
+    .bubble code{font-family:'JetBrains Mono',monospace;font-size:.82em;background:rgba(0,0,0,.2);padding:1px 4px;border-radius:3px}
+    .bubble-image{max-width:240px;max-height:180px;border-radius:9px;margin-bottom:7px;display:block;object-fit:cover}
+    .msg-actions{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
+    .msg-actions button{padding:5px 10px;border:1px solid var(--border);border-radius:7px;background:transparent;color:var(--muted);font-size:.72rem;cursor:pointer}
+    .msg-actions button:hover{border-color:var(--primary);color:var(--primary-h)}
+    .gen-image{max-width:100%;border-radius:10px;margin-top:8px;border:1px solid var(--border)}
 
-    .welcome { margin: auto; text-align: center; max-width: 480px; padding: 16px; animation: fadeUp 0.5s ease; }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-    .welcome-icon {
-      width: 100%; max-width: 380px; margin: 0 auto 18px; border-radius: 14px; overflow: hidden;
-      box-shadow: 0 0 40px var(--primary-glow), 0 8px 28px rgba(0,0,0,0.5);
-      border: 1px solid rgba(139, 92, 246, 0.35);
-    }
-    .welcome-icon img { width: 100%; height: auto; display: block; }
-    .welcome h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.03em; }
-    .welcome p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.55; margin-bottom: 22px; }
-    .suggestions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .suggestion {
-      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-      padding: 12px 14px; text-align: left; cursor: pointer; transition: all 0.2s;
-      font-size: 0.82rem; color: var(--text-muted); line-height: 1.4;
-    }
-    .suggestion:hover { border-color: var(--primary); background: rgba(139, 92, 246, 0.1); color: var(--text); transform: translateY(-1px); }
+    .typing{display:flex;gap:4px;padding:4px}
+    .typing span{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:bounce 1.3s infinite ease-in-out both}
+    .typing span:nth-child(1){animation-delay:-.32s}
+    .typing span:nth-child(2){animation-delay:-.16s}
+    @keyframes bounce{0%,80%,100%{transform:scale(.55);opacity:.4}40%{transform:scale(1);opacity:1}}
 
-    .message { display: flex; gap: 10px; max-width: 780px; width: 100%; margin: 0 auto; animation: msgIn 0.3s ease; }
-    @keyframes msgIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .message.user { flex-direction: row-reverse; }
-    .avatar {
-      width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600;
-    }
-    .message.user .avatar { background: linear-gradient(135deg, #7c3aed, #4f46e5); font-size: 10px; }
-    .message.ai .avatar { background: linear-gradient(135deg, #0e7490, #8b5cf6); }
-    .bubble {
-      padding: 12px 16px; border-radius: 16px; line-height: 1.55; font-size: 0.92rem;
-      max-width: 85%; word-wrap: break-word;
-    }
-    .message.user .bubble {
-      background: var(--user-bubble); color: white; border-bottom-right-radius: 5px;
-      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.22);
-    }
-    .message.ai .bubble { background: var(--ai-bubble); border: 1px solid var(--border); border-bottom-left-radius: 5px; }
-    .bubble pre { background: rgba(0,0,0,0.35); padding: 10px; border-radius: 8px; overflow-x: auto; margin: 8px 0; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
-    .bubble code { font-family: 'JetBrains Mono', monospace; font-size: 0.84em; background: rgba(0,0,0,0.25); padding: 1px 5px; border-radius: 4px; }
-    .bubble-image { max-width: 240px; max-height: 180px; border-radius: 10px; margin-bottom: 8px; display: block; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
-    .typing { display: flex; gap: 5px; padding: 6px 2px; }
-    .typing span { width: 7px; height: 7px; background: var(--text-muted); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
-    .typing span:nth-child(1) { animation-delay: -0.32s; }
-    .typing span:nth-child(2) { animation-delay: -0.16s; }
-    @keyframes bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
+    .input-area{position:absolute;bottom:0;left:0;right:0;padding:10px 12px 14px;background:linear-gradient(to top,var(--bg) 70%,transparent);z-index:40}
+    .file-preview{max-width:760px;margin:0 auto 8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:9px 11px}
+    .preview-content{display:flex;align-items:center;gap:9px;position:relative}
+    #previewImg{max-width:90px;max-height:70px;border-radius:7px;object-fit:cover}
+    .preview-file-info{font-size:.8rem}
+    .preview-file-info span:last-child{font-size:.7rem;color:var(--muted)}
+    .remove-file-btn{position:absolute;top:-4px;right:-4px;width:20px;height:20px;border-radius:50%;border:none;background:var(--danger);color:#fff;font-size:13px;cursor:pointer}
+    .preview-hint{margin-top:6px;font-size:.72rem;color:var(--muted)}
+    .input-wrapper{max-width:760px;margin:0 auto;display:flex;align-items:flex-end;gap:5px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:6px;box-shadow:0 4px 20px rgba(0,0,0,.15)}
+    .input-wrapper:focus-within{border-color:rgba(139,92,246,.5)}
+    .attach-btn,.mic-btn,.stop-btn{width:34px;height:34px;border-radius:10px;border:none;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+    .attach-btn:hover,.mic-btn:hover{color:var(--primary-h);background:rgba(139,92,246,.1)}
+    .mic-btn.listening{color:#ef4444;animation:pulse 1s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+    .stop-btn{background:rgba(239,68,68,.15);color:#fca5a5;display:none}
+    .stop-btn.show{display:flex}
+    #userInput{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:.9rem;font-family:inherit;resize:none;max-height:120px;min-height:20px;line-height:1.4;padding:6px 0}
+    #userInput::placeholder{color:var(--muted)}
+    .send-btn{width:36px;height:36px;border-radius:11px;border:none;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+    .send-btn:disabled{opacity:.5;cursor:not-allowed}
+    .footer-note{text-align:center;font-size:.7rem;color:var(--muted);margin-top:6px}
+    .footer-note a{color:var(--primary-h);text-decoration:none;font-weight:600}
 
-    .input-area {
-      position: absolute; bottom: 0; left: 0; right: 0; padding: 12px 16px 18px;
-      background: linear-gradient(to top, #0b0f19 65%, transparent); z-index: 40;
-    }
-    .file-preview {
-      max-width: 780px; margin: 0 auto 10px; background: #1a2234; border: 1px solid var(--border);
-      border-radius: 14px; padding: 10px 12px; animation: fadeUp 0.25s ease;
-    }
-    .preview-content { display: flex; align-items: center; gap: 10px; position: relative; }
-    #previewImg { max-width: 100px; max-height: 75px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); }
-    .preview-file-info { display: flex; flex-direction: column; gap: 2px; font-size: 0.82rem; }
-    .preview-file-info span:last-child { font-size: 0.72rem; color: var(--text-muted); }
-    .remove-file-btn {
-      position: absolute; top: -5px; right: -5px; width: 22px; height: 22px; border-radius: 50%;
-      border: none; background: var(--danger); color: white; font-size: 14px; line-height: 1;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-    }
-    .preview-hint { margin-top: 8px; font-size: 0.75rem; color: var(--text-muted); }
-    .input-wrapper {
-      max-width: 780px; margin: 0 auto; display: flex; align-items: flex-end; gap: 6px;
-      background: #1a2234; border: 1px solid var(--border); border-radius: 18px; padding: 7px;
-      box-shadow: var(--shadow); transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .input-wrapper:focus-within { border-color: rgba(139, 92, 246, 0.5); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12), var(--shadow); }
-    .attach-btn {
-      width: 36px; height: 36px; border-radius: 11px; border: none; background: transparent;
-      color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
-    }
-    .attach-btn:hover { color: var(--primary-hover); background: rgba(139, 92, 246, 0.1); }
-    #userInput {
-      flex: 1; background: transparent; border: none; outline: none; color: var(--text);
-      font-size: 0.92rem; font-family: inherit; resize: none; max-height: 130px; min-height: 22px;
-      line-height: 1.45; padding: 7px 0;
-    }
-    #userInput::placeholder { color: var(--text-muted); }
-    .send-btn {
-      width: 38px; height: 38px; border-radius: 12px; border: none;
-      background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white;
-      display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
-      box-shadow: 0 3px 12px rgba(139, 92, 246, 0.3); transition: all 0.2s;
-    }
-    .send-btn:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 5px 16px rgba(139, 92, 246, 0.45); }
-    .send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .footer-note { text-align: center; font-size: 0.72rem; color: var(--text-muted); margin-top: 8px; }
-    .footer-note a { color: var(--primary-hover); text-decoration: none; font-weight: 600; }
-    .footer-note a:hover { text-decoration: underline; }
+    .toast{position:fixed;top:56px;left:50%;transform:translateX(-50%) translateY(-12px);background:var(--surface);border:1px solid var(--border);padding:8px 14px;border-radius:9px;font-size:.82rem;z-index:100;opacity:0;transition:all .25s;pointer-events:none}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .toast.error{border-color:rgba(239,68,68,.4);color:#fca5a5}
 
-    .toast {
-      position: fixed; top: 60px; left: 50%; transform: translateX(-50%) translateY(-16px);
-      background: #1a2234; border: 1px solid var(--border); padding: 9px 16px; border-radius: 10px;
-      font-size: 0.84rem; z-index: 100; opacity: 0; transition: all 0.25s; pointer-events: none; box-shadow: var(--shadow);
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    .toast.error { border-color: rgba(239, 68, 68, 0.4); color: #fca5a5; }
+    /* Settings modal */
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:16px}
+    .modal-bg.show{display:flex}
+    .modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;max-width:440px;width:100%;max-height:90vh;overflow-y:auto}
+    .modal h2{font-size:1.1rem;margin-bottom:12px}
+    .modal label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px;margin-top:10px}
+    .modal textarea,.modal select{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:9px;background:var(--bg);color:var(--text);font-size:.85rem;font-family:inherit;outline:none;resize:vertical}
+    .modal textarea{min-height:90px}
+    .modal-actions{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+    .modal-actions button{padding:8px 16px;border-radius:9px;border:1px solid var(--border);cursor:pointer;font-size:.85rem;font-weight:500}
+    .btn-primary{background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;border:none}
+    .btn-ghost{background:transparent;color:var(--text)}
 
-    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90; }
-
-    @media (max-width: 768px) {
-      .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 100; transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
-      .sidebar-overlay.open { display: block; }
-      .menu-btn { display: flex; }
-      .suggestions { grid-template-columns: 1fr; }
-      .welcome-icon { max-width: 280px; }
-      .welcome h1 { font-size: 1.3rem; }
-      .model-select { max-width: 130px; font-size: 0.72rem; }
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:90}
+    @media(max-width:768px){
+      .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%)}
+      .sidebar.open{transform:translateX(0)}
+      .sidebar-overlay.open{display:block}
+      .menu-btn{display:flex}
+      .suggestions{grid-template-columns:1fr}
+      .welcome-icon{max-width:260px}
     }
   </style>
 </head>
 <body>
-
   <div class="login-overlay" id="loginOverlay">
     <div class="login-card">
       <img src="hero-ai.jpg" alt="GIL_XZ AI">
       <h1>GIL_XZ AI</h1>
       <p>Login dulu biar riwayat chat & project kamu tersimpan aman dan tidak hilang.</p>
       <button class="login-btn" id="loginBtn">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/>
-        </svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
         Login dengan Email / Google
       </button>
       <p class="login-note">Aman · Gratis · Riwayat tersimpan di akunmu</p>
@@ -314,11 +182,11 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <button class="new-chat-btn" id="newChatBtn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
           Percakapan Baru
         </button>
         <div class="search-box">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
           <input type="text" id="searchInput" placeholder="Cari riwayat...">
         </div>
       </div>
@@ -330,7 +198,7 @@
           <div class="visitor-count-side" id="visitorCountSide">👥 ... pengunjung</div>
         </div>
         <button class="logout-btn" id="logoutBtn" title="Keluar">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
         </button>
       </div>
     </aside>
@@ -338,28 +206,24 @@
     <div class="main">
       <header class="header">
         <div class="header-left">
-          <button class="menu-btn" id="menuBtn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-          </button>
-          <div class="logo">
-            <div class="logo-icon">∞</div>
-            <span>GIL_XZ AI</span>
-          </div>
+          <button class="menu-btn" id="menuBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+          <div class="logo"><div class="logo-icon">∞</div><span>GIL_XZ AI</span></div>
         </div>
         <div class="header-actions">
-          <select class="model-select" id="modelSelect" title="Pilih Model AI">
+          <select class="model-select" id="modelSelect">
             <option value="gpt-5.4-nano">GPT-5.4 Nano</option>
             <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
             <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B</option>
             <option value="z-ai/glm-4.7-flash">GLM-4.7 Flash</option>
-            <option value="deepseek-chat">DeepSeek Chat</option>
+            <option value="deepseek-chat">DeepSeek</option>
             <option value="claude-3-5-haiku-latest">Claude Haiku</option>
           </select>
-          <button class="icon-btn" id="refreshBtn" title="Refresh web">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="M23 4v6h-6M1 20v-6h6"/>
-              <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
-            </svg>
+          <button class="icon-btn" id="imgGenBtn" title="Generate gambar">🎨</button>
+          <button class="icon-btn" id="exportBtn" title="Export chat">📄</button>
+          <button class="icon-btn" id="settingsBtn" title="System Prompt">⚙️</button>
+          <button class="icon-btn" id="themeBtn" title="Ganti tema">🌙</button>
+          <button class="icon-btn" id="refreshBtn" title="Refresh">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
           </button>
         </div>
       </header>
@@ -367,25 +231,27 @@
       <div class="chat-container" id="chatContainer"></div>
 
       <div class="input-area">
-        <div id="filePreview" class="file-preview" style="display:none;">
+        <div id="filePreview" class="file-preview" style="display:none">
           <div class="preview-content">
-            <img id="previewImg" src="" alt="Preview" style="display:none;">
-            <div id="previewFileInfo" class="preview-file-info" style="display:none;">
+            <img id="previewImg" src="" style="display:none">
+            <div id="previewFileInfo" class="preview-file-info" style="display:none">
               <span id="previewFileName"></span>
               <span id="previewFileSize"></span>
             </div>
-            <button type="button" id="removeFileBtn" class="remove-file-btn" title="Hapus">×</button>
+            <button type="button" id="removeFileBtn" class="remove-file-btn">×</button>
           </div>
-          <div class="preview-hint">Opsional: tulis perintah (contoh: fix error, tambah fitur, jelaskan). Bisa langsung kirim tanpa teks.</div>
+          <div class="preview-hint">Opsional: tulis perintah. Bisa langsung kirim tanpa teks.</div>
         </div>
         <div class="input-wrapper">
-          <button type="button" class="attach-btn" id="attachBtn" title="Upload foto / file">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+          <button type="button" class="attach-btn" id="attachBtn" title="Upload">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
           </button>
-          <input type="file" id="fileInput" accept="image/*,.pdf,.txt,.doc,.docx,.csv,.json,.md" hidden>
-          <textarea id="userInput" rows="1" placeholder="Ketik pesanmu di sini..."></textarea>
+          <button type="button" class="mic-btn" id="micBtn" title="Input suara">🎤</button>
+          <input type="file" id="fileInput" accept="image/*,.txt,.md,.csv,.json,.js,.html,.css,.py,.ts" hidden>
+          <textarea id="userInput" rows="1" placeholder="Ketik pesanmu..."></textarea>
+          <button type="button" class="stop-btn" id="stopBtn" title="Stop">⏹</button>
           <button class="send-btn" id="sendBtn" title="Kirim">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
           </button>
         </div>
         <div class="footer-note"><a href="https://t.me/GIL_XZ" target="_blank" rel="noopener">GIL_XZ.t.me</a></div>
@@ -393,515 +259,429 @@
     </div>
   </div>
 
+  <!-- Settings Modal -->
+  <div class="modal-bg" id="settingsModal">
+    <div class="modal">
+      <h2>⚙️ System Prompt</h2>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:8px">Atur kepribadian AI. Contoh: "Kamu adalah tutor coding yang sabar" atau "Jawab singkat dan formal".</p>
+      <label>System Prompt</label>
+      <textarea id="systemPromptInput" placeholder="Kamu adalah asisten AI yang membantu, ramah, dan jelas..."></textarea>
+      <label>Preset cepat</label>
+      <select id="promptPreset">
+        <option value="">— Pilih preset —</option>
+        <option value="Kamu adalah tutor coding yang sabar. Jelaskan langkah demi langkah dengan bahasa sederhana.">Tutor Coding</option>
+        <option value="Kamu adalah asisten menulis kreatif. Bantu buat ide, cerita, dan teks yang menarik.">Penulis Kreatif</option>
+        <option value="Jawab singkat, padat, dan to the point. Hindari penjelasan panjang kecuali diminta.">Jawaban Singkat</option>
+        <option value="Kamu adalah guru sekolah yang ramah. Jelaskan konsep sulit dengan analogi mudah dipahami siswa.">Guru Sekolah</option>
+        <option value="Kamu adalah ahli debugging. Fokus temukan error dan berikan kode yang sudah diperbaiki secara lengkap.">Debug Helper</option>
+      </select>
+      <div class="modal-actions">
+        <button class="btn-ghost" id="closeSettings">Batal</button>
+        <button class="btn-primary" id="saveSettings">Simpan</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
-    let isGenerating = false;
-    let conversations = [];
-    let currentConvId = null;
-    let selectedFile = null;
-    let selectedDataUrl = null;
-    let selectedFileText = null;
+  let isGenerating=false, stopRequested=false, conversations=[], currentConvId=null;
+  let selectedFile=null, selectedDataUrl=null, selectedFileText=null;
+  let systemPrompt = localStorage.getItem('gilxz_system') || 'Kamu adalah GIL_XZ AI, asisten yang ramah, jelas, dan membantu. Jawab dalam bahasa Indonesia kecuali diminta lain.';
+  let recognition=null, isListening=false;
 
-    const loginOverlay = document.getElementById('loginOverlay');
-    const loginBtn = document.getElementById('loginBtn');
-    const app = document.getElementById('app');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-    const menuBtn = document.getElementById('menuBtn');
-    const newChatBtn = document.getElementById('newChatBtn');
-    const searchInput = document.getElementById('searchInput');
-    const convList = document.getElementById('convList');
-    const userName = document.getElementById('userName');
-    const userEmail = document.getElementById('userEmail');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const chatContainer = document.getElementById('chatContainer');
-    const userInput = document.getElementById('userInput');
-    const sendBtn = document.getElementById('sendBtn');
-    const modelSelect = document.getElementById('modelSelect');
-    const attachBtn = document.getElementById('attachBtn');
-    const fileInput = document.getElementById('fileInput');
-    const filePreview = document.getElementById('filePreview');
-    const previewImg = document.getElementById('previewImg');
-    const previewFileInfo = document.getElementById('previewFileInfo');
-    const previewFileName = document.getElementById('previewFileName');
-    const previewFileSize = document.getElementById('previewFileSize');
-    const removeFileBtn = document.getElementById('removeFileBtn');
-    const toast = document.getElementById('toast');
+  // Theme
+  const savedTheme = localStorage.getItem('gilxz_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
 
-    async function checkAuth() {
-      try {
-        if (typeof puter !== 'undefined' && puter.auth && puter.auth.isSignedIn && puter.auth.isSignedIn()) {
-          await showApp();
-        } else {
-          loginOverlay.classList.remove('hidden');
-          app.classList.remove('visible');
-        }
-      } catch (e) {
-        loginOverlay.classList.remove('hidden');
-      }
+  const $ = id => document.getElementById(id);
+  const loginOverlay=$('loginOverlay'), loginBtn=$('loginBtn'), app=$('app');
+  const sidebar=$('sidebar'), sidebarOverlay=$('sidebarOverlay'), menuBtn=$('menuBtn');
+  const newChatBtn=$('newChatBtn'), searchInput=$('searchInput'), convList=$('convList');
+  const userName=$('userName'), userEmail=$('userEmail'), logoutBtn=$('logoutBtn');
+  const chatContainer=$('chatContainer'), userInput=$('userInput'), sendBtn=$('sendBtn');
+  const modelSelect=$('modelSelect'), attachBtn=$('attachBtn'), fileInput=$('fileInput');
+  const filePreview=$('filePreview'), previewImg=$('previewImg'), previewFileInfo=$('previewFileInfo');
+  const previewFileName=$('previewFileName'), previewFileSize=$('previewFileSize'), removeFileBtn=$('removeFileBtn');
+  const toast=$('toast'), stopBtn=$('stopBtn'), micBtn=$('micBtn');
+  const themeBtn=$('themeBtn'), exportBtn=$('exportBtn'), settingsBtn=$('settingsBtn');
+  const refreshBtn=$('refreshBtn'), imgGenBtn=$('imgGenBtn');
+  const settingsModal=$('settingsModal'), systemPromptInput=$('systemPromptInput');
+  const promptPreset=$('promptPreset'), closeSettings=$('closeSettings'), saveSettings=$('saveSettings');
+
+  // AUTH
+  async function checkAuth(){
+    try{
+      if(typeof puter!=='undefined' && puter.auth && puter.auth.isSignedIn && puter.auth.isSignedIn()) await showApp();
+      else { loginOverlay.classList.remove('hidden'); app.classList.remove('visible'); }
+    }catch(e){ loginOverlay.classList.remove('hidden'); }
+  }
+  loginBtn.onclick = async ()=>{
+    loginBtn.disabled=true; loginBtn.textContent='Membuka login...';
+    try{ await puter.auth.signIn(); await showApp(); }
+    catch(e){ showToast('Login gagal/dibatalkan',true); loginBtn.disabled=false; loginBtn.innerHTML='Login dengan Email / Google'; }
+  };
+  logoutBtn.onclick = async ()=>{
+    try{ if(puter.auth?.signOut) await puter.auth.signOut(); }catch(e){}
+    conversations=[]; currentConvId=null; app.classList.remove('visible'); loginOverlay.classList.remove('hidden');
+  };
+  async function showApp(){
+    loginOverlay.classList.add('hidden'); app.classList.add('visible');
+    try{ const u=await puter.auth.getUser(); if(u){ userName.textContent=u.username||u.name||'User'; userEmail.textContent=u.email||''; } }catch(e){}
+    await loadConversations();
+    if(!conversations.length) createNewConversation(); else switchConversation(conversations[0].id);
+    userInput.focus();
+  }
+
+  // CONVERSATIONS
+  function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+  function createNewConversation(){
+    const c={id:uid(),title:'Percakapan Baru',messages:[],updatedAt:Date.now(),pinned:false};
+    conversations.unshift(c); currentConvId=c.id; saveConversations(); renderConvList(); renderChat(); closeSidebar();
+  }
+  function switchConversation(id){ currentConvId=id; renderConvList(); renderChat(); closeSidebar(); }
+  function getCurrentConv(){ return conversations.find(c=>c.id===currentConvId); }
+  function togglePin(id,e){
+    e.stopPropagation();
+    const c=conversations.find(x=>x.id===id); if(!c) return;
+    c.pinned=!c.pinned; c.updatedAt=Date.now();
+    sortConvs(); saveConversations(); renderConvList();
+  }
+  function deleteConversation(id,e){
+    e.stopPropagation();
+    conversations=conversations.filter(c=>c.id!==id);
+    if(currentConvId===id){ if(conversations.length) currentConvId=conversations[0].id; else{ createNewConversation(); return; } }
+    saveConversations(); renderConvList(); renderChat();
+  }
+  function sortConvs(){
+    conversations.sort((a,b)=>{
+      if(a.pinned && !b.pinned) return -1;
+      if(!a.pinned && b.pinned) return 1;
+      return b.updatedAt-a.updatedAt;
+    });
+  }
+  function updateTitle(text){
+    const c=getCurrentConv(); if(!c) return;
+    if(c.title==='Percakapan Baru' && text) c.title=text.slice(0,40)+(text.length>40?'...':'');
+    c.updatedAt=Date.now(); sortConvs(); saveConversations(); renderConvList();
+  }
+  async function saveConversations(){
+    try{ if(puter.kv) await puter.kv.set('gilxz_conversations', JSON.stringify(conversations)); }catch(e){}
+    try{ localStorage.setItem('gilxz_conversations', JSON.stringify(conversations)); }catch(e){}
+  }
+  async function loadConversations(){
+    let d=null;
+    try{ if(puter.kv) d=await puter.kv.get('gilxz_conversations'); }catch(e){}
+    if(!d) try{ d=localStorage.getItem('gilxz_conversations'); }catch(e){}
+    if(d){ try{ conversations=JSON.parse(d); if(!Array.isArray(conversations)) conversations=[]; }catch(e){ conversations=[]; } }
+    sortConvs();
+  }
+  function renderConvList(filter=''){
+    const q=filter.toLowerCase().trim();
+    const list=q?conversations.filter(c=>c.title.toLowerCase().includes(q)||c.messages.some(m=>(m.content||'').toLowerCase().includes(q))):conversations;
+    convList.innerHTML=list.map(c=>`
+      <div class="conv-item ${c.id===currentConvId?'active':''}" data-id="${c.id}">
+        ${c.pinned?'<span class="pin">📌</span>':''}
+        <div class="title">${esc(c.title)}</div>
+        <div class="time">${fmtTime(c.updatedAt)}</div>
+        <div class="acts">
+          <button data-pin="${c.id}" title="Pin">${c.pinned?'📌':'📍'}</button>
+          <button data-del="${c.id}" title="Hapus">×</button>
+        </div>
+      </div>`).join('');
+    convList.querySelectorAll('.conv-item').forEach(el=>el.onclick=()=>switchConversation(el.dataset.id));
+    convList.querySelectorAll('[data-pin]').forEach(el=>el.onclick=e=>togglePin(el.dataset.pin,e));
+    convList.querySelectorAll('[data-del]').forEach(el=>el.onclick=e=>deleteConversation(el.dataset.del,e));
+  }
+  function fmtTime(ts){ const d=new Date(ts),n=new Date(); return d.toDateString()===n.toDateString()?d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}):d.toLocaleDateString('id-ID',{day:'numeric',month:'short'}); }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // RENDER CHAT
+  function renderChat(){
+    const conv=getCurrentConv(); chatContainer.innerHTML='';
+    if(!conv||!conv.messages.length){
+      chatContainer.innerHTML=`<div class="welcome" id="welcome">
+        <div class="welcome-icon"><img src="hero-ai.jpg" alt="GIL_XZ AI"></div>
+        <h1>Halo! Aku GIL_XZ AI</h1>
+        <p>Chat unlimited · Upload file · Generate gambar · Suara · Export. Riwayat tersimpan aman.</p>
+        <div class="suggestions">
+          <div class="suggestion" data-p="Jelaskan AI dengan bahasa sederhana">Jelaskan AI sederhana</div>
+          <div class="suggestion" data-p="Bikin ide nama brand modern">Ide nama brand</div>
+          <div class="suggestion" data-p="Tulis puisi malam berbintang">Puisi malam</div>
+          <div class="suggestion" data-p="Rencana belajar coding 30 hari">Belajar coding 30 hari</div>
+        </div></div>`;
+      document.querySelectorAll('.suggestion').forEach(el=>el.onclick=()=>{userInput.value=el.dataset.p;sendMessage();});
+      return;
     }
-
-    loginBtn.addEventListener('click', async () => {
-      loginBtn.disabled = true;
-      loginBtn.textContent = 'Membuka login...';
-      try {
-        await puter.auth.signIn();
-        await showApp();
-      } catch (err) {
-        console.error(err);
-        showToast('Login gagal / dibatalkan', true);
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg> Login dengan Email / Google';
+    conv.messages.forEach((m,i)=>addMsgDOM(m.content,m.role,m.image||null,m.genImage||null,false,i));
+    scrollBottom();
+  }
+  function addMsgDOM(text,role,imgUrl,genImg,animate,msgIdx){
+    const div=document.createElement('div'); div.className=`message ${role}`;
+    if(!animate) div.style.animation='none';
+    const av=document.createElement('div'); av.className='avatar'; av.textContent=role==='user'?'Kamu':'∞';
+    const bub=document.createElement('div'); bub.className='bubble';
+    if(imgUrl){ const im=document.createElement('img'); im.src=imgUrl; im.className='bubble-image'; bub.appendChild(im); }
+    if(genImg){ const im=document.createElement('img'); im.src=genImg; im.className='gen-image'; bub.appendChild(im); }
+    if(role==='ai'){
+      const t=document.createElement('div'); t.innerHTML=formatText(text); bub.appendChild(t);
+      // actions for AI messages
+      if(msgIdx!==undefined){
+        const acts=document.createElement('div'); acts.className='msg-actions';
+        const speakBtn=document.createElement('button'); speakBtn.textContent='🔊 Baca';
+        speakBtn.onclick=()=>speakText(text);
+        const regenBtn=document.createElement('button'); regenBtn.textContent='🔄 Regenerate';
+        regenBtn.onclick=()=>regenerate(msgIdx);
+        acts.appendChild(speakBtn); acts.appendChild(regenBtn);
+        bub.appendChild(acts);
       }
-    });
+    } else if(text){ const t=document.createElement('div'); t.textContent=text; bub.appendChild(t); }
+    div.appendChild(av); div.appendChild(bub); chatContainer.appendChild(div);
+    return bub;
+  }
+  function formatText(text){
+    let h=String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    h=h.replace(/```([\s\S]*?)```/g,'<pre>$1</pre>');
+    h=h.replace(/`([^`]+)`/g,'<code>$1</code>');
+    h=h.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    h=h.replace(/\*([^*]+)\*/g,'<em>$1</em>');
+    h=h.replace(/\n/g,'<br>');
+    return h;
+  }
+  function addTyping(){
+    const d=document.createElement('div'); d.className='message ai'; d.id='typingIndicator';
+    d.innerHTML='<div class="avatar">∞</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+    chatContainer.appendChild(d); scrollBottom();
+  }
+  function removeTyping(){ const e=$('typingIndicator'); if(e) e.remove(); }
+  function scrollBottom(){ requestAnimationFrame(()=>{chatContainer.scrollTop=chatContainer.scrollHeight;}); }
 
-    logoutBtn.addEventListener('click', async () => {
-      try { if (puter.auth && puter.auth.signOut) await puter.auth.signOut(); } catch (e) {}
-      conversations = []; currentConvId = null;
-      app.classList.remove('visible');
-      loginOverlay.classList.remove('hidden');
-      loginBtn.disabled = false;
-      loginBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg> Login dengan Email / Google';
-    });
-
-    async function showApp() {
-      loginOverlay.classList.add('hidden');
-      app.classList.add('visible');
-      try {
-        const user = await puter.auth.getUser();
-        if (user) {
-          userName.textContent = user.username || user.name || 'User';
-          userEmail.textContent = user.email || '';
-        }
-      } catch (e) { userName.textContent = 'User'; }
-      await loadConversations();
-      if (conversations.length === 0) createNewConversation();
-      else switchConversation(conversations[0].id);
+  // FILE
+  attachBtn.onclick=()=>fileInput.click();
+  removeFileBtn.onclick=clearFile;
+  fileInput.onchange=async e=>{
+    const f=e.target.files[0]; if(!f) return;
+    if(f.size>8*1024*1024){ showToast('Maks 8MB',true); fileInput.value=''; return; }
+    selectedFile=f; selectedDataUrl=null; selectedFileText=null;
+    previewImg.style.display='none'; previewFileInfo.style.display='none';
+    if(f.type.startsWith('image/')){
+      const r=new FileReader(); r.onload=ev=>{ selectedDataUrl=ev.target.result; previewImg.src=selectedDataUrl; previewImg.style.display='block'; filePreview.style.display='block'; userInput.focus(); }; r.readAsDataURL(f);
+    } else {
+      previewFileName.textContent=f.name; previewFileSize.textContent=fmtBytes(f.size); previewFileInfo.style.display='flex'; filePreview.style.display='block';
+      if(f.type.startsWith('text/')||/\.(txt|md|csv|json|js|html|css|py|ts)$/i.test(f.name)) try{ selectedFileText=await f.text(); }catch(e){}
       userInput.focus();
     }
+  };
+  function clearFile(){ selectedFile=null; selectedDataUrl=null; selectedFileText=null; fileInput.value=''; filePreview.style.display='none'; previewImg.src=''; previewImg.style.display='none'; previewFileInfo.style.display='none'; }
+  function fmtBytes(b){ return b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(1)+' MB'; }
 
-    function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  // SEND
+  userInput.oninput=()=>{ userInput.style.height='auto'; userInput.style.height=Math.min(userInput.scrollHeight,120)+'px'; };
+  userInput.onkeydown=e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); } };
+  sendBtn.onclick=sendMessage;
+  stopBtn.onclick=()=>{ stopRequested=true; showToast('Menghentikan...'); };
 
-    function createNewConversation() {
-      const conv = { id: uid(), title: 'Percakapan Baru', messages: [], updatedAt: Date.now() };
-      conversations.unshift(conv);
-      currentConvId = conv.id;
-      saveConversations();
-      renderConvList();
-      renderChat();
-      closeSidebar();
+  async function sendMessage(overrideText){
+    let text=(overrideText!==undefined?overrideText:userInput.value).trim();
+    const hasFile=!!selectedFile;
+    if((!text&&!hasFile)||isGenerating) return;
+    if(hasFile&&!text){
+      text=selectedDataUrl?'Analisis dan jelaskan gambar ini secara detail.':(selectedFileText?'Analisis file ini. Jika ada error, perbaiki dan tampilkan kode lengkap yang sudah diperbaiki.':'Analisis file ini.');
     }
-
-    function switchConversation(id) {
-      currentConvId = id;
-      renderConvList();
-      renderChat();
-      closeSidebar();
-    }
-
-    function deleteConversation(id, e) {
-      e.stopPropagation();
-      conversations = conversations.filter(c => c.id !== id);
-      if (currentConvId === id) {
-        if (conversations.length > 0) currentConvId = conversations[0].id;
-        else { createNewConversation(); return; }
-      }
-      saveConversations();
-      renderConvList();
-      renderChat();
-    }
-
-    function getCurrentConv() { return conversations.find(c => c.id === currentConvId); }
-
-    function updateCurrentTitle(text) {
-      const conv = getCurrentConv();
-      if (!conv) return;
-      if (conv.title === 'Percakapan Baru' && text) {
-        conv.title = text.slice(0, 40) + (text.length > 40 ? '...' : '');
-      }
-      conv.updatedAt = Date.now();
-      conversations = [conv, ...conversations.filter(c => c.id !== conv.id)];
-      saveConversations();
-      renderConvList();
-    }
-
-    async function saveConversations() {
-      try { if (puter.kv) await puter.kv.set('gilxz_conversations', JSON.stringify(conversations)); } catch (e) {}
-      try { localStorage.setItem('gilxz_conversations', JSON.stringify(conversations)); } catch (e) {}
-    }
-
-    async function loadConversations() {
-      let data = null;
-      try { if (puter.kv) data = await puter.kv.get('gilxz_conversations'); } catch (e) {}
-      if (!data) { try { data = localStorage.getItem('gilxz_conversations'); } catch (e) {} }
-      if (data) {
-        try { conversations = JSON.parse(data); if (!Array.isArray(conversations)) conversations = []; }
-        catch (e) { conversations = []; }
-      }
-    }
-
-    function renderConvList(filter = '') {
-      const q = filter.toLowerCase().trim();
-      const list = q
-        ? conversations.filter(c => c.title.toLowerCase().includes(q) || c.messages.some(m => (m.content || '').toLowerCase().includes(q)))
-        : conversations;
-      convList.innerHTML = list.map(c => {
-        const time = formatTime(c.updatedAt);
-        return `<div class="conv-item ${c.id === currentConvId ? 'active' : ''}" data-id="${c.id}">
-          <div class="title">${escapeHtml(c.title)}</div>
-          <div class="time">${time}</div>
-          <button class="del-btn" data-del="${c.id}" title="Hapus">×</button>
-        </div>`;
-      }).join('');
-      convList.querySelectorAll('.conv-item').forEach(el => el.addEventListener('click', () => switchConversation(el.dataset.id)));
-      convList.querySelectorAll('.del-btn').forEach(el => el.addEventListener('click', (e) => deleteConversation(el.dataset.del, e)));
-    }
-
-    function formatTime(ts) {
-      const d = new Date(ts); const now = new Date();
-      if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-      return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-    }
-
-    function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-    function renderChat() {
-      const conv = getCurrentConv();
-      chatContainer.innerHTML = '';
-      if (!conv || conv.messages.length === 0) {
-        chatContainer.innerHTML = `
-          <div class="welcome" id="welcome">
-            <div class="welcome-icon"><img src="hero-ai.jpg" alt="GIL_XZ AI"></div>
-            <h1>Halo! Aku GIL_XZ AI</h1>
-            <p>Chat AI unlimited. Pilih model favoritmu, upload foto/file, dan mulai ngobrol. Riwayatmu tersimpan aman.</p>
-            <div class="suggestions">
-              <div class="suggestion" data-prompt="Jelaskan artificial intelligence dengan bahasa sederhana">Jelaskan AI dengan bahasa sederhana</div>
-              <div class="suggestion" data-prompt="Bikin ide nama brand modern untuk toko online">Ide nama brand modern</div>
-              <div class="suggestion" data-prompt="Tulis puisi pendek tentang malam berbintang">Tulis puisi malam berbintang</div>
-              <div class="suggestion" data-prompt="Bantu aku bikin rencana belajar coding 30 hari">Rencana belajar coding 30 hari</div>
-            </div>
-          </div>`;
-        document.querySelectorAll('.suggestion').forEach(el => {
-          el.addEventListener('click', () => { userInput.value = el.dataset.prompt; sendMessage(); });
-        });
-        return;
-      }
-      conv.messages.forEach(m => addMessageToDOM(m.content, m.role, m.image || null, false));
-      scrollToBottom();
-    }
-
-    function addMessageToDOM(text, role, imageDataUrl = null, animate = true) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = `message ${role}`;
-      if (!animate) msgDiv.style.animation = 'none';
-      const avatar = document.createElement('div');
-      avatar.className = 'avatar';
-      avatar.textContent = role === 'user' ? 'Kamu' : '∞';
-      const bubble = document.createElement('div');
-      bubble.className = 'bubble';
-      if (imageDataUrl) {
-        const img = document.createElement('img');
-        img.src = imageDataUrl; img.className = 'bubble-image';
-        bubble.appendChild(img);
-      }
-      if (role === 'ai') bubble.innerHTML = (imageDataUrl ? bubble.innerHTML : '') + formatText(text);
-      else if (text) { const t = document.createElement('div'); t.textContent = text; bubble.appendChild(t); }
-      msgDiv.appendChild(avatar); msgDiv.appendChild(bubble);
-      chatContainer.appendChild(msgDiv);
-      return bubble;
-    }
-
-    function formatText(text) {
-      let html = String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      html = html.replace(/```([\s\S]*?)```/g, '<pre>$1</pre>');
-      html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-      html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-      html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-      html = html.replace(/\n/g, '<br>');
-      return html;
-    }
-
-    function addTyping() {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = 'message ai'; msgDiv.id = 'typingIndicator';
-      msgDiv.innerHTML = '<div class="avatar">∞</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
-      chatContainer.appendChild(msgDiv); scrollToBottom();
-    }
-    function removeTyping() { const el = document.getElementById('typingIndicator'); if (el) el.remove(); }
-    function scrollToBottom() { requestAnimationFrame(() => { chatContainer.scrollTop = chatContainer.scrollHeight; }); }
-
-    attachBtn.addEventListener('click', () => fileInput.click());
-    removeFileBtn.addEventListener('click', clearSelectedFile);
-    fileInput.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      if (file.size > 8 * 1024 * 1024) { showToast('File terlalu besar (maks 8MB)', true); fileInput.value = ''; return; }
-      selectedFile = file; selectedDataUrl = null; selectedFileText = null;
-      previewImg.style.display = 'none'; previewFileInfo.style.display = 'none';
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          selectedDataUrl = ev.target.result; previewImg.src = selectedDataUrl;
-          previewImg.style.display = 'block'; filePreview.style.display = 'block';
-          userInput.placeholder = 'Tulis apa yang ingin dilakukan dengan foto ini...'; userInput.focus();
-        };
-        reader.readAsDataURL(file);
+    isGenerating=true; stopRequested=false; sendBtn.disabled=true; stopBtn.classList.add('show');
+    const curText=text, curImg=selectedDataUrl, curFileText=selectedFileText, curName=selectedFile?.name||null, isImg=!!selectedDataUrl;
+    if(overrideText===undefined){ userInput.value=''; userInput.style.height='auto'; }
+    clearFile();
+    const wel=$('welcome'); if(wel) wel.remove();
+    addMsgDOM(curText,'user',curImg,null,true);
+    const conv=getCurrentConv();
+    if(conv){ conv.messages.push({role:'user',content:curText+(curName?' [File: '+curName+']':''),image:curImg||null}); updateTitle(curText); }
+    addTyping();
+    let model=modelSelect.value;
+    if(isImg){ const v=['gemini-2.5-flash','gpt-5.4-nano']; if(!v.includes(model)) model='gemini-2.5-flash'; }
+    try{
+      let response;
+      const sys = systemPrompt ? [{role:'system', content: systemPrompt}] : [];
+      if(isImg && curImg){
+        response = await puter.ai.chat(curText, curImg, {model, stream:true});
+      } else if(curFileText){
+        const prompt = `Berikut isi file "${curName}":\n\n\`\`\`\n${curFileText.slice(0,14000)}\n\`\`\`\n\nPerintah: ${curText}\n\nPENTING: Jika diminta fix/tambah fitur, WAJIB tampilkan SELURUH kode lengkap dalam satu blok \`\`\`.`;
+        response = await puter.ai.chat([{role:'system',content:systemPrompt},{role:'user',content:prompt}], {model, stream:true});
       } else {
-        previewFileName.textContent = file.name; previewFileSize.textContent = formatBytes(file.size);
-        previewFileInfo.style.display = 'flex'; filePreview.style.display = 'block';
-        userInput.placeholder = 'Tulis apa yang ingin dilakukan dengan file ini...';
-        if (file.type.startsWith('text/') || /\.(txt|md|csv|json|js|html|css|py)$/i.test(file.name)) {
-          try { selectedFileText = await file.text(); } catch (e) {}
-        }
-        userInput.focus();
+        const msgs = [...sys, ...(conv?conv.messages.slice(-12):[]).map(m=>({role:m.role==='user'?'user':'assistant',content:m.content}))];
+        response = await puter.ai.chat(msgs, {model, stream:true});
       }
+      removeTyping();
+      const bub = addMsgDOM('','ai',null,null,true);
+      let full='';
+      for await (const part of response){
+        if(stopRequested) break;
+        if(part?.text){ full+=part.text; bub.querySelector('div') ? bub.querySelector('div').innerHTML=formatText(full) : (bub.innerHTML=formatText(full)); scrollBottom(); }
+      }
+      if(!full.trim()) full = stopRequested ? '(Dihentikan)' : 'Maaf, tidak ada jawaban.';
+      if(bub.querySelector('div')) bub.querySelector('div').innerHTML=formatText(full); else bub.innerHTML=formatText(full);
+      // actions
+      const acts=document.createElement('div'); acts.className='msg-actions';
+      const sb=document.createElement('button'); sb.textContent='🔊 Baca'; sb.onclick=()=>speakText(full);
+      const rb=document.createElement('button'); rb.textContent='🔄 Regenerate'; rb.onclick=()=>regenerateLast();
+      acts.appendChild(sb); acts.appendChild(rb); bub.appendChild(acts);
+      addDownloadButtons(bub, full, curName);
+      if(conv){ conv.messages.push({role:'assistant',content:full}); conv.updatedAt=Date.now(); saveConversations(); }
+    }catch(err){
+      removeTyping(); console.error(err);
+      addMsgDOM('Terjadi kesalahan: '+(err.message||'coba lagi'),'ai');
+      showToast('Gagal',true);
+    }finally{
+      isGenerating=false; stopRequested=false; sendBtn.disabled=false; stopBtn.classList.remove('show'); userInput.focus();
+    }
+  }
+
+  function regenerateLast(){
+    const conv=getCurrentConv(); if(!conv||conv.messages.length<2) return;
+    // find last user message
+    let lastUser=null;
+    for(let i=conv.messages.length-1;i>=0;i--){ if(conv.messages[i].role==='user'){ lastUser=conv.messages[i]; break; } }
+    if(!lastUser) return;
+    // remove trailing assistant messages after last user
+    while(conv.messages.length && conv.messages[conv.messages.length-1].role==='assistant') conv.messages.pop();
+    saveConversations(); renderChat();
+    sendMessage(lastUser.content.replace(/ \[File:.*\]$/,''));
+  }
+  function regenerate(idx){ /* simplified: use regenerateLast */ regenerateLast(); }
+
+  function addDownloadButtons(bubble, fullText, originalFileName){
+    const blocks=fullText.match(/```[\s\S]*?```/g); if(!blocks) return;
+    const wrap=document.createElement('div'); wrap.style.cssText='display:flex;flex-wrap:wrap;gap:6px;margin-top:10px';
+    blocks.forEach((block,idx)=>{
+      let code=block.replace(/^```[\w]*\n?/,'').replace(/```$/,'').trim(); if(code.length<30) return;
+      let filename=originalFileName||('hasil-'+(idx+1)+'.txt');
+      const lm=block.match(/^```(\w+)/);
+      if(lm){ const map={javascript:'js',js:'js',html:'html',css:'css',python:'py',py:'py',json:'json',ts:'ts'}; const ext=map[lm[1].toLowerCase()]; if(ext) filename=originalFileName?originalFileName.replace(/\.[^.]+$/,'')+'-fixed.'+ext:'hasil.'+ext; }
+      const copyBtn=document.createElement('button'); copyBtn.textContent='📋 Copy';
+      copyBtn.style.cssText='padding:6px 11px;border:1px solid rgba(139,92,246,.4);border-radius:7px;background:rgba(139,92,246,.12);color:#c4b5fd;font-size:.75rem;font-weight:600;cursor:pointer';
+      copyBtn.onclick=async()=>{ try{ await navigator.clipboard.writeText(code); copyBtn.textContent='✅ Copied'; showToast('Disalin'); setTimeout(()=>copyBtn.textContent='📋 Copy',1800);}catch(e){showToast('Gagal copy',true);} };
+      const dlBtn=document.createElement('button'); dlBtn.textContent='⬇️ '+filename;
+      dlBtn.style.cssText='padding:6px 11px;border:none;border-radius:7px;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;font-size:.75rem;font-weight:600;cursor:pointer';
+      dlBtn.onclick=()=>{ const blob=new Blob([code],{type:'text/plain;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click(); URL.revokeObjectURL(a.href); showToast('File: '+filename); };
+      wrap.appendChild(copyBtn); wrap.appendChild(dlBtn);
     });
+    if(wrap.children.length) bubble.appendChild(wrap);
+  }
 
-    function clearSelectedFile() {
-      selectedFile = null; selectedDataUrl = null; selectedFileText = null; fileInput.value = '';
-      filePreview.style.display = 'none'; previewImg.src = ''; previewImg.style.display = 'none';
-      previewFileInfo.style.display = 'none'; userInput.placeholder = 'Ketik pesanmu di sini...';
-    }
-    function formatBytes(b) {
-      if (b < 1024) return b + ' B'; if (b < 1048576) return (b/1024).toFixed(1) + ' KB'; return (b/1048576).toFixed(1) + ' MB';
-    }
+  // TTS
+  function speakText(text){
+    if(!window.speechSynthesis){ showToast('TTS tidak didukung',true); return; }
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text.replace(/```[\s\S]*?```/g,' kode ').slice(0,800));
+    u.lang='id-ID'; u.rate=1; window.speechSynthesis.speak(u);
+    showToast('Membacakan...');
+  }
 
-    userInput.addEventListener('input', () => {
-      userInput.style.height = 'auto';
-      userInput.style.height = Math.min(userInput.scrollHeight, 130) + 'px';
-    });
-    userInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-    });
-    sendBtn.addEventListener('click', sendMessage);
+  // VOICE INPUT
+  micBtn.onclick=()=>{
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SR){ showToast('Browser tidak support voice input',true); return; }
+    if(isListening){ recognition.stop(); return; }
+    recognition=new SR(); recognition.lang='id-ID'; recognition.continuous=false; recognition.interimResults=false;
+    recognition.onstart=()=>{ isListening=true; micBtn.classList.add('listening'); showToast('Mendengarkan...'); };
+    recognition.onend=()=>{ isListening=false; micBtn.classList.remove('listening'); };
+    recognition.onerror=()=>{ isListening=false; micBtn.classList.remove('listening'); showToast('Gagal voice',true); };
+    recognition.onresult=e=>{ userInput.value=(userInput.value+' '+e.results[0][0].transcript).trim(); userInput.dispatchEvent(new Event('input')); };
+    recognition.start();
+  };
 
-    async function sendMessage() {
-      let text = userInput.value.trim();
-      const hasFile = !!selectedFile;
-      if ((!text && !hasFile) || isGenerating) return;
+  // EXPORT
+  exportBtn.onclick=()=>{
+    const conv=getCurrentConv(); if(!conv||!conv.messages.length){ showToast('Chat kosong',true); return; }
+    let txt='GIL_XZ AI — '+conv.title+'\n'+'='.repeat(40)+'\n\n';
+    conv.messages.forEach(m=>{ txt+=(m.role==='user'?'Kamu: ':'AI: ')+m.content+'\n\n'; });
+    const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(conv.title||'chat').replace(/[^\w]+/g,'_')+'.txt'; a.click();
+    showToast('Chat diexport');
+  };
 
-      // Kalau cuma kirim file/foto tanpa caption → auto isi perintah default
-      if (hasFile && !text) {
-        if (selectedDataUrl) {
-          text = 'Analisis dan jelaskan gambar ini secara detail.';
-        } else if (selectedFileText) {
-          text = 'Analisis file ini. Jika ada error, perbaiki dan tampilkan kode lengkap yang sudah diperbaiki.';
-        } else {
-          text = 'Analisis file ini.';
-        }
+  // THEME
+  themeBtn.onclick=()=>{
+    const cur=document.documentElement.getAttribute('data-theme')||'dark';
+    const next=cur==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    localStorage.setItem('gilxz_theme',next);
+    themeBtn.textContent=next==='dark'?'🌙':'☀️';
+  };
+  themeBtn.textContent=savedTheme==='dark'?'🌙':'☀️';
+
+  // SETTINGS / SYSTEM PROMPT
+  settingsBtn.onclick=()=>{ systemPromptInput.value=systemPrompt; settingsModal.classList.add('show'); };
+  closeSettings.onclick=()=>settingsModal.classList.remove('show');
+  promptPreset.onchange=()=>{ if(promptPreset.value) systemPromptInput.value=promptPreset.value; };
+  saveSettings.onclick=()=>{
+    systemPrompt=systemPromptInput.value.trim()||'Kamu adalah GIL_XZ AI yang ramah dan membantu.';
+    localStorage.setItem('gilxz_system', systemPrompt);
+    settingsModal.classList.remove('show');
+    showToast('System prompt disimpan');
+  };
+  settingsModal.onclick=e=>{ if(e.target===settingsModal) settingsModal.classList.remove('show'); };
+
+  // IMAGE GENERATION
+  imgGenBtn.onclick=async ()=>{
+    const prompt=userInput.value.trim()||prompt('Deskripsikan gambar yang ingin dibuat:');
+    if(!prompt) return;
+    userInput.value=''; isGenerating=true; sendBtn.disabled=true;
+    const wel=$('welcome'); if(wel) wel.remove();
+    addMsgDOM('🎨 Generate gambar: '+prompt,'user',null,null,true);
+    const conv=getCurrentConv();
+    if(conv){ conv.messages.push({role:'user',content:'[Generate gambar] '+prompt}); updateTitle(prompt); }
+    addTyping();
+    try{
+      // puter.ai.txt2img
+      const result = await puter.ai.txt2img(prompt);
+      removeTyping();
+      let imgUrl = null;
+      if(typeof result==='string') imgUrl=result;
+      else if(result?.url) imgUrl=result.url;
+      else if(result?.src) imgUrl=result.src;
+      else if(Array.isArray(result)&&result[0]) imgUrl=typeof result[0]==='string'?result[0]:result[0].url;
+      // sometimes returns HTMLImageElement or blob
+      if(!imgUrl && result instanceof HTMLImageElement) imgUrl=result.src;
+      if(imgUrl){
+        const bub=addMsgDOM('Gambar berhasil dibuat:','ai',null,imgUrl,true);
+        if(conv){ conv.messages.push({role:'assistant',content:'[Gambar] '+prompt, genImage:imgUrl}); saveConversations(); }
+      } else {
+        addMsgDOM('Gagal generate gambar. Coba model/prompt lain.','ai');
+        console.log('txt2img result', result);
       }
+    }catch(err){
+      removeTyping(); console.error(err);
+      addMsgDOM('Generate gambar gagal: '+(err.message||'error'),'ai');
+      showToast('Gagal generate gambar',true);
+    }finally{ isGenerating=false; sendBtn.disabled=false; }
+  };
 
-      isGenerating = true; sendBtn.disabled = true;
-      const currentText = text, currentDataUrl = selectedDataUrl, currentFileText = selectedFileText;
-      const currentFileName = selectedFile ? selectedFile.name : null, isImage = !!selectedDataUrl;
-      userInput.value = ''; userInput.style.height = 'auto'; clearSelectedFile();
+  // REFRESH
+  refreshBtn.onclick=()=>location.reload();
+  newChatBtn.onclick=createNewConversation;
+  searchInput.oninput=()=>renderConvList(searchInput.value);
+  menuBtn.onclick=()=>{ sidebar.classList.add('open'); sidebarOverlay.classList.add('open'); };
+  sidebarOverlay.onclick=closeSidebar;
+  function closeSidebar(){ sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open'); }
 
-      const wel = document.getElementById('welcome'); if (wel) wel.remove();
-      addMessageToDOM(currentText, 'user', currentDataUrl);
+  function showToast(msg,err){ toast.textContent=msg; toast.className='toast show'+(err?' error':''); setTimeout(()=>toast.classList.remove('show'),2800); }
 
-      const conv = getCurrentConv();
-      if (conv) {
-        conv.messages.push({ role: 'user', content: currentText + (currentFileName ? ' [File: ' + currentFileName + ']' : ''), image: currentDataUrl || null });
-        updateCurrentTitle(currentText);
-      }
-      addTyping();
+  // VISITOR
+  async function updateVisitorCount(){
+    const loginEl=$('visitorCountLogin'), sideEl=$('visitorCountSide'), KEY='gilxz-ai-visits';
+    try{
+      const hit=!sessionStorage.getItem('gilxz_visit_hit');
+      if(hit) sessionStorage.setItem('gilxz_visit_hit','1');
+      const url='https://countapi.mileshilliard.com/api/v1/'+(hit?'hit':'get')+'/'+KEY;
+      const res=await fetch(url); const data=await res.json(); const num=data.value||data.count||'?';
+      if(loginEl) loginEl.textContent='👥 Total pengunjung: '+Number(num).toLocaleString('id-ID');
+      if(sideEl) sideEl.textContent='👥 '+Number(num).toLocaleString('id-ID')+' pengunjung';
+    }catch(e){ if(loginEl) loginEl.textContent='👥 Total pengunjung: -'; }
+  }
 
-      let model = modelSelect.value;
-      if (isImage) {
-        const visionOk = ['gemini-2.5-flash', 'gpt-5.4-nano', 'meta-llama/llama-4-scout'];
-        if (!visionOk.includes(model)) model = 'gemini-2.5-flash';
-      }
-
-      try {
-        let response;
-        const lowerText = currentText.toLowerCase();
-
-        // Deteksi apakah user minta HD / enhance gambar
-        const isHdRequest = isImage && /hd|upscale|enhance|perjelas|tingkatkan|rapikan foto|jadiin hd|jadi hd/i.test(currentText);
-
-        if (isImage && currentDataUrl) {
-          if (isHdRequest) {
-            // Model gratis belum bisa return gambar HD yang sudah di-upscale.
-            // Beri jawaban jujur + tetap analisis gambar.
-            response = await puter.ai.chat(
-              currentText + '\n\n(Catatan sistem: Kamu tidak bisa mengembalikan file gambar yang sudah di-HD. Jelaskan dengan sopan bahwa fitur upscale/HD image belum tersedia di versi ini, lalu analisis gambar yang dikirim user dan berikan saran cara enhance yang bagus.)',
-              currentDataUrl,
-              { model, stream: true }
-            );
-          } else {
-            response = await puter.ai.chat(currentText, currentDataUrl, { model, stream: true });
-          }
-        } else if (currentFileText) {
-          // Instruksi kuat supaya AI selalu return kode LENGKAP yang sudah diperbaiki
-          const fullPrompt =
-            'Berikut isi file "' + currentFileName + '":\n\n```\n' +
-            currentFileText.slice(0, 14000) +
-            '\n```\n\nPerintah user: ' + currentText +
-            '\n\nPENTING: Jika user meminta memperbaiki error, menambah fitur, atau mengubah kode, ' +
-            'WAJIB tampilkan SELURUH kode yang sudah diperbaiki/diubah di dalam satu blok kode (```). ' +
-            'Jangan potong. Jangan hanya jelaskan perubahan. Berikan file lengkap yang siap dipakai.';
-          response = await puter.ai.chat(fullPrompt, { model, stream: true });
-        } else if (hasFile && !isImage && !currentFileText) {
-          response = await puter.ai.chat(
-            'User mengirim file "' + currentFileName + '" dan meminta: "' + currentText +
-            '". Jelaskan bahwa saat ini hanya gambar & file teks (.txt, .js, .html, .css, .py, .json, dll) yang bisa diproses penuh. PDF/Word kompleks masih terbatas.',
-            { model, stream: true }
-          );
-        } else {
-          const msgs = (conv ? conv.messages.slice(-12) : []).map(m => ({
-            role: m.role === 'user' ? 'user' : 'assistant',
-            content: m.content
-          }));
-          response = await puter.ai.chat(msgs, { model, stream: true });
-        }
-
-        removeTyping();
-        const bubble = addMessageToDOM('', 'ai');
-        let fullText = '';
-        for await (const part of response) {
-          if (part && part.text) {
-            fullText += part.text;
-            bubble.innerHTML = formatText(fullText);
-            scrollToBottom();
-          }
-        }
-        if (!fullText.trim()) {
-          fullText = 'Maaf, aku tidak mendapat jawaban. Coba lagi ya!';
-          bubble.innerHTML = formatText(fullText);
-        }
-
-        // Tambahkan tombol Download untuk setiap blok kode yang cukup panjang
-        addDownloadButtons(bubble, fullText, currentFileName);
-
-        if (conv) {
-          conv.messages.push({ role: 'assistant', content: fullText });
-          conv.updatedAt = Date.now();
-          saveConversations();
-        }
-      } catch (err) {
-        removeTyping(); console.error(err);
-        let msg = 'Terjadi kesalahan. ';
-        if (err.message && (err.message.includes('auth') || err.message.includes('login'))) msg += 'Coba login ulang.';
-        else if (err.message) msg += err.message;
-        else msg += 'Coba refresh atau pilih model lain.';
-        addMessageToDOM(msg, 'ai');
-        showToast('Gagal mendapatkan respons', true);
-      } finally {
-        isGenerating = false; sendBtn.disabled = false; userInput.focus();
-      }
-    }
-
-    // Tambah tombol Copy + Download di bawah blok kode panjang
-    function addDownloadButtons(bubble, fullText, originalFileName) {
-      const codeBlocks = fullText.match(/```[\s\S]*?```/g);
-      if (!codeBlocks || codeBlocks.length === 0) return;
-
-      const btnWrap = document.createElement('div');
-      btnWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;';
-
-      codeBlocks.forEach((block, idx) => {
-        let code = block.replace(/^```[\w]*\n?/, '').replace(/```$/, '').trim();
-        if (code.length < 30) return;
-
-        let filename = originalFileName || ('hasil-' + (idx + 1) + '.txt');
-        const langMatch = block.match(/^```(\w+)/);
-        if (langMatch) {
-          const extMap = { javascript:'js', js:'js', html:'html', css:'css', python:'py', py:'py', json:'json', ts:'ts', typescript:'ts', java:'java', cpp:'cpp', c:'c', md:'md', markdown:'md', xml:'xml', sql:'sql' };
-          const ext = extMap[langMatch[1].toLowerCase()];
-          if (ext && !originalFileName) filename = 'hasil-' + (idx + 1) + '.' + ext;
-          else if (ext && originalFileName) filename = originalFileName.replace(/\.[^.]+$/, '') + '-fixed.' + ext;
-        } else if (originalFileName) {
-          filename = originalFileName.replace(/(\.[^.]+)?$/, (m) => '-fixed' + (m || '.txt'));
-        }
-
-        // Tombol Copy
-        const copyBtn = document.createElement('button');
-        copyBtn.innerHTML = '📋 Copy';
-        copyBtn.style.cssText = 'padding:8px 14px;border:1px solid rgba(139,92,246,0.4);border-radius:8px;background:rgba(139,92,246,0.15);color:#c4b5fd;font-size:0.82rem;font-weight:600;cursor:pointer;';
-        copyBtn.onclick = async () => {
-          try {
-            await navigator.clipboard.writeText(code);
-            copyBtn.innerHTML = '✅ Copied!';
-            showToast('Kode berhasil disalin');
-            setTimeout(() => { copyBtn.innerHTML = '📋 Copy'; }, 2000);
-          } catch (e) {
-            showToast('Gagal copy', true);
-          }
-        };
-
-        // Tombol Download (AI "kirim" file)
-        const dlBtn = document.createElement('button');
-        dlBtn.innerHTML = '⬇️ Download ' + filename;
-        dlBtn.style.cssText = 'padding:8px 14px;border:none;border-radius:8px;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:white;font-size:0.82rem;font-weight:600;cursor:pointer;';
-        dlBtn.onclick = () => {
-          const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          showToast('File dikirim: ' + filename);
-        };
-
-        btnWrap.appendChild(copyBtn);
-        btnWrap.appendChild(dlBtn);
-      });
-
-      if (btnWrap.children.length > 0) bubble.appendChild(btnWrap);
-    }
-
-    function showToast(msg, isError = false) {
-      toast.textContent = msg;
-      toast.className = 'toast show' + (isError ? ' error' : '');
-      setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-
-    newChatBtn.addEventListener('click', createNewConversation);
-    searchInput.addEventListener('input', () => renderConvList(searchInput.value));
-    menuBtn.addEventListener('click', () => { sidebar.classList.add('open'); sidebarOverlay.classList.add('open'); });
-    sidebarOverlay.addEventListener('click', closeSidebar);
-    function closeSidebar() { sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open'); }
-
-    // Tombol Refresh web
-    document.getElementById('refreshBtn').addEventListener('click', () => {
-      location.reload();
-    });
-
-    // ========== VISITOR COUNTER ==========
-    async function updateVisitorCount() {
-      const loginEl = document.getElementById('visitorCountLogin');
-      const sideEl = document.getElementById('visitorCountSide');
-      const KEY = 'gilxz-ai-visits';
-
-      try {
-        // Hanya hit +1 sekali per sesi browser (supaya refresh tidak nambah terus)
-        const alreadyHit = sessionStorage.getItem('gilxz_visit_hit');
-        let url;
-        if (!alreadyHit) {
-          url = 'https://countapi.mileshilliard.com/api/v1/hit/' + KEY;
-          sessionStorage.setItem('gilxz_visit_hit', '1');
-        } else {
-          url = 'https://countapi.mileshilliard.com/api/v1/get/' + KEY;
-        }
-
-        const res = await fetch(url);
-        const data = await res.json();
-        const num = data.value || data.count || '?';
-
-        if (loginEl) loginEl.textContent = '👥 Total pengunjung: ' + Number(num).toLocaleString('id-ID');
-        if (sideEl) sideEl.textContent = '👥 ' + Number(num).toLocaleString('id-ID') + ' pengunjung';
-      } catch (e) {
-        if (loginEl) loginEl.textContent = '👥 Total pengunjung: -';
-        if (sideEl) sideEl.textContent = '👥 - pengunjung';
-      }
-    }
-
-    updateVisitorCount();
-    checkAuth();
+  updateVisitorCount();
+  checkAuth();
   </script>
 </body>
 </html>
