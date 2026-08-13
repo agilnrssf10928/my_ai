@@ -382,16 +382,26 @@
     convList.innerHTML=list.map(c=>`
       <div class="conv-item ${c.id===currentConvId?'active':''}" data-id="${c.id}">
         ${c.pinned?'<span class="pin">📌</span>':''}
-        <div class="title">${esc(c.title)}</div>
+        <div class="title" title="Klik 2x untuk rename">${esc(c.title)}</div>
         <div class="time">${fmtTime(c.updatedAt)}</div>
         <div class="acts">
+          <button data-ren="${c.id}" title="Rename">✏️</button>
           <button data-pin="${c.id}" title="Pin">${c.pinned?'📌':'📍'}</button>
           <button data-del="${c.id}" title="Hapus">×</button>
         </div>
       </div>`).join('');
-    convList.querySelectorAll('.conv-item').forEach(el=>el.onclick=()=>switchConversation(el.dataset.id));
+    convList.querySelectorAll('.conv-item').forEach(el=>{
+      el.onclick=()=>switchConversation(el.dataset.id);
+      el.querySelector('.title')?.addEventListener('dblclick', e=>{ e.stopPropagation(); renameConv(el.dataset.id); });
+    });
+    convList.querySelectorAll('[data-ren]').forEach(el=>el.onclick=e=>{ e.stopPropagation(); renameConv(el.dataset.ren); });
     convList.querySelectorAll('[data-pin]').forEach(el=>el.onclick=e=>togglePin(el.dataset.pin,e));
     convList.querySelectorAll('[data-del]').forEach(el=>el.onclick=e=>deleteConversation(el.dataset.del,e));
+  }
+  function renameConv(id){
+    const c=conversations.find(x=>x.id===id); if(!c) return;
+    const name=prompt('Nama percakapan baru:', c.title);
+    if(name && name.trim()){ c.title=name.trim().slice(0,60); c.updatedAt=Date.now(); saveConversations(); renderConvList(); showToast('Judul diubah'); }
   }
   function fmtTime(ts){ const d=new Date(ts),n=new Date(); return d.toDateString()===n.toDateString()?d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}):d.toLocaleDateString('id-ID',{day:'numeric',month:'short'}); }
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -425,19 +435,46 @@
     if(genImg){ const im=document.createElement('img'); im.src=genImg; im.className='gen-image'; bub.appendChild(im); }
     if(role==='ai'){
       const t=document.createElement('div'); t.innerHTML=formatText(text); bub.appendChild(t);
-      // actions for AI messages
       if(msgIdx!==undefined){
         const acts=document.createElement('div'); acts.className='msg-actions';
         const speakBtn=document.createElement('button'); speakBtn.textContent='🔊 Baca';
         speakBtn.onclick=()=>speakText(text);
         const regenBtn=document.createElement('button'); regenBtn.textContent='🔄 Regenerate';
-        regenBtn.onclick=()=>regenerate(msgIdx);
-        acts.appendChild(speakBtn); acts.appendChild(regenBtn);
+        regenBtn.onclick=()=>regenerateLast();
+        const delBtn=document.createElement('button'); delBtn.textContent='🗑️ Hapus';
+        delBtn.onclick=()=>deleteMessage(msgIdx);
+        acts.appendChild(speakBtn); acts.appendChild(regenBtn); acts.appendChild(delBtn);
         bub.appendChild(acts);
       }
-    } else if(text){ const t=document.createElement('div'); t.textContent=text; bub.appendChild(t); }
+    } else {
+      if(text){ const t=document.createElement('div'); t.className='msg-text'; t.textContent=text; bub.appendChild(t); }
+      if(msgIdx!==undefined){
+        const acts=document.createElement('div'); acts.className='msg-actions';
+        const editBtn=document.createElement('button'); editBtn.textContent='✏️ Edit';
+        editBtn.onclick=()=>editMessage(msgIdx);
+        const delBtn=document.createElement('button'); delBtn.textContent='🗑️ Hapus';
+        delBtn.onclick=()=>deleteMessage(msgIdx);
+        acts.appendChild(editBtn); acts.appendChild(delBtn);
+        bub.appendChild(acts);
+      }
+    }
     div.appendChild(av); div.appendChild(bub); chatContainer.appendChild(div);
     return bub;
+  }
+  function deleteMessage(idx){
+    const conv=getCurrentConv(); if(!conv) return;
+    if(!confirm('Hapus pesan ini?')) return;
+    conv.messages.splice(idx,1); conv.updatedAt=Date.now(); saveConversations(); renderChat(); showToast('Pesan dihapus');
+  }
+  function editMessage(idx){
+    const conv=getCurrentConv(); if(!conv||!conv.messages[idx]||conv.messages[idx].role!=='user') return;
+    const old=conv.messages[idx].content.replace(/ \[File:.*\]$/,'');
+    const neu=prompt('Edit pesan:', old);
+    if(neu===null || !neu.trim()) return;
+    // hapus pesan dari idx ke akhir, lalu kirim ulang
+    conv.messages = conv.messages.slice(0, idx);
+    saveConversations(); renderChat();
+    sendMessage(neu.trim());
   }
   function formatText(text){
     let h=String(text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -666,6 +703,82 @@
   function closeSidebar(){ sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open'); }
 
   function showToast(msg,err){ toast.textContent=msg; toast.className='toast show'+(err?' error':''); setTimeout(()=>toast.classList.remove('show'),2800); }
+
+  // ===== 2. DRAG & DROP FILE =====
+  const dropZone = document.querySelector('.main') || document.body;
+  ['dragenter','dragover'].forEach(ev=>{
+    dropZone.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); dropZone.style.outline='2px dashed var(--primary)'; });
+  });
+  ['dragleave','drop'].forEach(ev=>{
+    dropZone.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); dropZone.style.outline=''; });
+  });
+  dropZone.addEventListener('drop', async e=>{
+    const f = e.dataTransfer?.files?.[0];
+    if(!f) return;
+    // simulate file input
+    const dt = new DataTransfer(); dt.items.add(f); fileInput.files = dt.files;
+    fileInput.dispatchEvent(new Event('change'));
+    showToast('File di-drop: '+f.name);
+  });
+
+  // ===== 3. PASTE IMAGE (Ctrl+V) =====
+  document.addEventListener('paste', async e=>{
+    const items = e.clipboardData?.items; if(!items) return;
+    for(const it of items){
+      if(it.type.startsWith('image/')){
+        e.preventDefault();
+        const blob = it.getAsFile(); if(!blob) continue;
+        const file = new File([blob], 'paste-'+Date.now()+'.png', {type: blob.type});
+        const dt = new DataTransfer(); dt.items.add(file); fileInput.files = dt.files;
+        fileInput.dispatchEvent(new Event('change'));
+        showToast('Gambar di-paste');
+        break;
+      }
+    }
+  });
+
+  // ===== 5. CARI DALAM CHAT =====
+  // Tambah search box kecil di header jika belum ada
+  (function(){
+    const ha = document.querySelector('.header-actions');
+    if(!ha || $('chatSearchBtn')) return;
+    const btn = document.createElement('button');
+    btn.className='icon-btn'; btn.id='chatSearchBtn'; btn.title='Cari dalam chat'; btn.textContent='🔍';
+    ha.insertBefore(btn, ha.firstChild);
+    btn.onclick = ()=>{
+      const q = prompt('Cari kata dalam chat ini:');
+      if(!q || !q.trim()) return;
+      const conv = getCurrentConv(); if(!conv) return;
+      const found = conv.messages.filter(m => (m.content||'').toLowerCase().includes(q.toLowerCase()));
+      if(!found.length){ showToast('Tidak ditemukan', true); return; }
+      showToast('Ditemukan '+found.length+' pesan');
+      // highlight: re-render and scroll to first match visually via mark
+      renderChat();
+      const bubbles = chatContainer.querySelectorAll('.bubble');
+      let first=null;
+      bubbles.forEach(b=>{
+        if(b.textContent.toLowerCase().includes(q.toLowerCase())){
+          b.style.outline='2px solid var(--primary)';
+          b.style.outlineOffset='2px';
+          if(!first) first=b;
+          setTimeout(()=>{ b.style.outline=''; }, 4000);
+        }
+      });
+      if(first) first.scrollIntoView({behavior:'smooth', block:'center'});
+    };
+  })();
+
+  // ===== 6. KEYBOARD SHORTCUTS =====
+  document.addEventListener('keydown', e=>{
+    // Ctrl/Cmd + N → chat baru
+    if((e.ctrlKey||e.metaKey) && e.key==='n'){ e.preventDefault(); createNewConversation(); showToast('Percakapan baru'); }
+    // Ctrl/Cmd + K → fokus input
+    if((e.ctrlKey||e.metaKey) && e.key==='k'){ e.preventDefault(); userInput.focus(); }
+    // Esc → stop generating
+    if(e.key==='Escape' && isGenerating){ stopRequested=true; showToast('Menghentikan...'); }
+    // Ctrl/Cmd + Enter → send (extra)
+    if((e.ctrlKey||e.metaKey) && e.key==='Enter'){ e.preventDefault(); sendMessage(); }
+  });
 
   // VISITOR
   async function updateVisitorCount(){
