@@ -152,6 +152,32 @@
     .btn-ghost{background:transparent;color:var(--text)}
 
     .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:90}
+
+    /* VIDEO PANEL */
+    .video-panel-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:150;align-items:stretch;justify-content:flex-end}
+    .video-panel-bg.show{display:flex}
+    .video-panel{width:100%;max-width:420px;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;height:100%;animation:slideIn .25s ease}
+    @keyframes slideIn{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+    .video-panel-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}
+    .video-panel-header h2{font-size:1.05rem}
+    .video-search-row{display:flex;gap:8px;padding:12px 14px;border-bottom:1px solid var(--border)}
+    .video-search-row input{flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font-size:.88rem;outline:none}
+    .video-search-row input:focus{border-color:var(--primary)}
+    .btn-primary-sm{padding:9px 14px;border:none;border-radius:10px;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;font-weight:600;font-size:.85rem;cursor:pointer;white-space:nowrap}
+    .video-recs{padding:12px 14px;border-bottom:1px solid var(--border)}
+    .rec-label{font-size:.75rem;color:var(--muted);margin-bottom:8px;font-weight:500}
+    .rec-chips{display:flex;flex-wrap:wrap;gap:6px}
+    .rec-chip{padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.78rem;cursor:pointer}
+    .rec-chip:hover{border-color:var(--primary);background:rgba(139,92,246,.12);color:var(--primary-h)}
+    .video-results{flex:1;overflow-y:auto;padding:12px 14px}
+    .video-empty{text-align:center;color:var(--muted);font-size:.85rem;padding:40px 10px}
+    .video-card{margin-bottom:14px;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface)}
+    .video-card-title{padding:8px 10px 2px;font-size:.82rem;font-weight:600;line-height:1.35}
+    .video-card-meta{padding:0 10px 8px;font-size:.7rem;color:var(--muted)}
+    .video-card iframe{width:100%;aspect-ratio:16/9;border:0;display:block}
+    .video-card-link{display:block;padding:6px 10px 10px;font-size:.72rem;color:var(--primary-h);text-decoration:none}
+    .video-loading{text-align:center;padding:30px;color:var(--muted);font-size:.85rem}
+
     @media(max-width:768px){
       .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%)}
       .sidebar.open{transform:translateX(0)}
@@ -218,6 +244,7 @@
             <option value="deepseek-chat">DeepSeek</option>
             <option value="claude-3-5-haiku-latest">Claude Haiku</option>
           </select>
+          <button class="icon-btn" id="videoMenuBtn" title="Menu Video">☰</button>
           <button class="icon-btn" id="imgGenBtn" title="Generate gambar">🎨</button>
           <button class="icon-btn" id="exportBtn" title="Export chat">📄</button>
           <button class="icon-btn" id="settingsBtn" title="System Prompt">⚙️</button>
@@ -227,6 +254,36 @@
           </button>
         </div>
       </header>
+
+      <!-- VIDEO PANEL -->
+      <div class="video-panel-bg" id="videoPanelBg">
+        <div class="video-panel" id="videoPanel">
+          <div class="video-panel-header">
+            <h2>🎬 Video</h2>
+            <button class="icon-btn" id="closeVideoPanel" title="Tutup">✕</button>
+          </div>
+          <div class="video-search-row">
+            <input type="text" id="videoSearchInput" placeholder="Cari video... (contoh: upin ipin)">
+            <button id="videoSearchBtn" class="btn-primary-sm">Cari</button>
+          </div>
+          <div class="video-recs" id="videoRecs">
+            <div class="rec-label">Rekomendasi</div>
+            <div class="rec-chips">
+              <button class="rec-chip" data-q="upin ipin">Upin & Ipin</button>
+              <button class="rec-chip" data-q="spongebob bahasa indonesia">Spongebob</button>
+              <button class="rec-chip" data-q="doraemon">Doraemon</button>
+              <button class="rec-chip" data-q="naruto">Naruto</button>
+              <button class="rec-chip" data-q="lagu anak indonesia">Lagu Anak</button>
+              <button class="rec-chip" data-q="kartun lucu">Kartun Lucu</button>
+              <button class="rec-chip" data-q="one piece">One Piece</button>
+              <button class="rec-chip" data-q="tutorial coding pemula">Tutorial Coding</button>
+            </div>
+          </div>
+          <div class="video-results" id="videoResults">
+            <div class="video-empty">Pilih rekomendasi atau ketik pencarian di atas</div>
+          </div>
+        </div>
+      </div>
 
       <div class="chat-container" id="chatContainer"></div>
 
@@ -305,7 +362,9 @@
   const previewFileName=$('previewFileName'), previewFileSize=$('previewFileSize'), removeFileBtn=$('removeFileBtn');
   const toast=$('toast'), stopBtn=$('stopBtn'), micBtn=$('micBtn');
   const themeBtn=$('themeBtn'), exportBtn=$('exportBtn'), settingsBtn=$('settingsBtn');
-  const refreshBtn=$('refreshBtn'), imgGenBtn=$('imgGenBtn');
+  const refreshBtn=$('refreshBtn'), imgGenBtn=$('imgGenBtn'), videoMenuBtn=$('videoMenuBtn');
+  const videoPanelBg=$('videoPanelBg'), closeVideoPanel=$('closeVideoPanel');
+  const videoSearchInput=$('videoSearchInput'), videoSearchBtn=$('videoSearchBtn'), videoResults=$('videoResults');
   const settingsModal=$('settingsModal'), systemPromptInput=$('systemPromptInput');
   const promptPreset=$('promptPreset'), closeSettings=$('closeSettings'), saveSettings=$('saveSettings');
 
@@ -773,6 +832,44 @@
   };
 
   // REFRESH
+  // ===== VIDEO PANEL (☰) =====
+  function openVideoPanel(){ videoPanelBg.classList.add('show'); }
+  function closeVidPanel(){ videoPanelBg.classList.remove('show'); }
+  videoMenuBtn.onclick = openVideoPanel;
+  closeVideoPanel.onclick = closeVidPanel;
+  videoPanelBg.onclick = e => { if(e.target === videoPanelBg) closeVidPanel(); };
+
+  async function loadVideoResults(query){
+    if(!query || !query.trim()) return;
+    videoResults.innerHTML = '<div class="video-loading">Mencari video...</div>';
+    try{
+      const videos = await searchVideos(query.trim());
+      if(!videos.length){
+        videoResults.innerHTML = `<div class="video-empty">Tidak ketemu.<br><a href="https://www.youtube.com/results?search_query=${encodeURIComponent(query)}" target="_blank" rel="noopener" style="color:var(--primary-h)">Cari di YouTube →</a></div>`;
+        return;
+      }
+      videoResults.innerHTML = videos.slice(0,6).map(v => `
+        <div class="video-card">
+          <div class="video-card-title">${esc(v.title)}</div>
+          <div class="video-card-meta">${esc(v.author||'')} ${v.views? ' · '+esc(v.views):''}</div>
+          <iframe src="https://www.youtube.com/embed/${v.videoId}" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          <a class="video-card-link" href="https://www.youtube.com/watch?v=${v.videoId}" target="_blank" rel="noopener">Buka di YouTube ↗</a>
+        </div>
+      `).join('');
+    }catch(e){
+      videoResults.innerHTML = `<div class="video-empty">Gagal memuat. <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(query)}" target="_blank" rel="noopener" style="color:var(--primary-h)">Cari di YouTube →</a></div>`;
+    }
+  }
+
+  videoSearchBtn.onclick = () => loadVideoResults(videoSearchInput.value);
+  videoSearchInput.onkeydown = e => { if(e.key==='Enter') loadVideoResults(videoSearchInput.value); };
+  document.querySelectorAll('.rec-chip').forEach(chip => {
+    chip.onclick = () => {
+      videoSearchInput.value = chip.dataset.q;
+      loadVideoResults(chip.dataset.q);
+    };
+  });
+
   refreshBtn.onclick=()=>location.reload();
   newChatBtn.onclick=createNewConversation;
   searchInput.oninput=()=>renderConvList(searchInput.value);
