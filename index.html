@@ -41,26 +41,91 @@
     /* APP */
     .app{display:none;height:100%;width:100%}
     .app.visible{display:flex}
-    .sidebar{width:280px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:transform .3s}
-    .sidebar-header{padding:12px;border-bottom:1px solid var(--border)}
-    .new-chat-btn{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:11px;background:transparent;color:var(--text);font-size:.88rem;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px}
-    .new-chat-btn:hover{background:rgba(139,92,246,.1);border-color:var(--primary);color:var(--primary-h)}
-    .search-box{margin-top:8px;position:relative}
-    .search-box input{width:100%;padding:8px 10px 8px 32px;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text);font-size:.82rem;outline:none}
-    .search-box svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
-    .conv-list{flex:1;overflow-y:auto;padding:6px}
-    .conv-item{padding:9px 10px;border-radius:9px;cursor:pointer;margin-bottom:2px;display:flex;align-items:center;gap:8px;position:relative}
-    .conv-item:hover{background:rgba(128,128,128,.08)}
-    .conv-item.active{background:rgba(139,92,246,.15)}
-    .conv-item .pin{font-size:.7rem;color:var(--primary)}
-    .conv-item .title{flex:1;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .conv-item .time{font-size:.68rem;color:var(--muted)}
-    .conv-item .acts{display:none;gap:2px}
+    .sidebar{
+      width:300px;display:flex;flex-direction:column;flex-shrink:0;
+      background:linear-gradient(180deg, rgba(17,24,39,.97) 0%, rgba(11,15,25,.98) 100%);
+      border-right:1px solid rgba(139,92,246,.12);
+      backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      transition:transform .35s cubic-bezier(.22,1,.36,1);
+      box-shadow:4px 0 24px rgba(0,0,0,.15);
+    }
+    [data-theme="light"] .sidebar{
+      background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);
+      border-right:1px solid rgba(0,0,0,.06);
+    }
+    .sidebar-header{
+      padding:16px 14px 12px;border-bottom:1px solid rgba(139,92,246,.1);
+      background:linear-gradient(180deg, rgba(139,92,246,.06), transparent);
+    }
+    .new-chat-btn{
+      width:100%;padding:11px 14px;border:none;border-radius:14px;
+      background:linear-gradient(135deg,#8b5cf6,#6366f1);
+      color:#fff;font-size:.88rem;font-weight:600;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;gap:8px;
+      box-shadow:0 4px 16px rgba(139,92,246,.35);
+      transition:transform .15s, box-shadow .15s;
+    }
+    .new-chat-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(139,92,246,.45)}
+    .new-chat-btn:active{transform:translateY(0)}
+    .search-box{margin-top:12px;position:relative}
+    .search-box input{
+      width:100%;padding:10px 12px 10px 36px;border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;background:rgba(255,255,255,.04);color:var(--text);
+      font-size:.83rem;outline:none;transition:border-color .2s, background .2s;
+    }
+    [data-theme="light"] .search-box input{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08)}
+    .search-box input:focus{border-color:rgba(139,92,246,.5);background:rgba(139,92,246,.06)}
+    .search-box svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;opacity:.7}
+    .conv-list{
+      flex:1;overflow-y:auto;padding:10px 10px 14px;
+      scrollbar-width:thin;scrollbar-color:rgba(139,92,246,.3) transparent;
+    }
+    .conv-list::-webkit-scrollbar{width:4px}
+    .conv-list::-webkit-scrollbar-thumb{background:rgba(139,92,246,.3);border-radius:4px}
+    .conv-item{
+      padding:11px 12px;border-radius:12px;cursor:pointer;margin-bottom:4px;
+      display:flex;align-items:center;gap:10px;position:relative;
+      border:1px solid transparent;transition:all .18s ease;
+    }
+    .conv-item:hover{
+      background:rgba(139,92,246,.08);border-color:rgba(139,92,246,.12);
+    }
+    .conv-item.active{
+      background:linear-gradient(135deg, rgba(139,92,246,.18), rgba(99,102,241,.12));
+      border-color:rgba(139,92,246,.25);
+      box-shadow:0 2px 12px rgba(139,92,246,.12);
+    }
+    .conv-item.active::before{
+      content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;
+      border-radius:0 4px 4px 0;background:linear-gradient(180deg,#a78bfa,#6366f1);
+    }
+    .conv-item .pin{font-size:.72rem;filter:drop-shadow(0 0 4px rgba(139,92,246,.5))}
+    .conv-item .title{
+      flex:1;font-size:.84rem;font-weight:500;white-space:nowrap;overflow:hidden;
+      text-overflow:ellipsis;letter-spacing:-.01em;
+    }
+    .conv-item .time{font-size:.68rem;color:var(--muted);opacity:.8;flex-shrink:0}
+    .conv-item .acts{display:none;gap:3px;flex-shrink:0}
     .conv-item:hover .acts{display:flex}
     .conv-item:hover .time{display:none}
-    .conv-item .acts button{width:22px;height:22px;border:none;border-radius:5px;background:transparent;color:var(--muted);cursor:pointer;font-size:12px}
-    .conv-item .acts button:hover{background:rgba(139,92,246,.2);color:var(--primary-h)}
-    .sidebar-footer{padding:10px 12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px}
+    .conv-item .acts button{
+      width:26px;height:26px;border:none;border-radius:8px;
+      background:rgba(255,255,255,.05);color:var(--muted);cursor:pointer;font-size:12px;
+      transition:all .15s;
+    }
+    .conv-item .acts button:hover{background:rgba(139,92,246,.25);color:var(--primary-h)}
+    .sidebar-footer{
+      padding:12px 14px;border-top:1px solid rgba(139,92,246,.1);
+      display:flex;align-items:center;gap:10px;
+      background:linear-gradient(0deg, rgba(139,92,246,.04), transparent);
+    }
+    .sidebar-footer .user-info .name{font-weight:600;font-size:.84rem}
+    .logout-btn{
+      width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);color:var(--muted);cursor:pointer;
+      display:flex;align-items:center;justify-content:center;transition:all .15s;
+    }
+    .logout-btn:hover{background:rgba(239,68,68,.15);color:#fca5a5;border-color:rgba(239,68,68,.3)}
     .user-info{flex:1;min-width:0}
     .user-info .name{font-size:.82rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .user-info .email,.visitor-count-side{font-size:.68rem;color:var(--muted)}
@@ -137,6 +202,23 @@
     .toast{position:fixed;top:56px;left:50%;transform:translateX(-50%) translateY(-12px);background:var(--surface);border:1px solid var(--border);padding:8px 14px;border-radius:9px;font-size:.82rem;z-index:100;opacity:0;transition:all .25s;pointer-events:none}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     .toast.error{border-color:rgba(239,68,68,.4);color:#fca5a5}
+
+    .more-menu-wrap{position:relative}
+    .more-dropdown{
+      display:none;position:absolute;top:110%;left:0;min-width:200px;z-index:80;
+      background:var(--surface);border:1px solid var(--border);border-radius:12px;
+      box-shadow:0 8px 28px rgba(0,0,0,.35);padding:6px;overflow:hidden;
+    }
+    .more-dropdown.show{display:block}
+    .more-dropdown button{
+      width:100%;text-align:left;padding:10px 12px;border:none;border-radius:8px;
+      background:transparent;color:var(--text);font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:8px;
+    }
+    .more-dropdown button:hover{background:rgba(139,92,246,.12)}
+    .more-dropdown button.danger{color:#fca5a5}
+    .more-dropdown button.danger:hover{background:rgba(239,68,68,.12)}
+    .more-dropdown .sep{height:1px;background:var(--border);margin:4px 0}
+
 
     /* ===== EXTRA FEATURES ===== */
     .streak-badge{font-size:.7rem;background:rgba(251,191,36,.15);color:#fbbf24;padding:2px 8px;border-radius:99px;margin-left:6px}
@@ -268,7 +350,17 @@
     <div class="main">
       <header class="header">
         <div class="header-left">
-          <button class="menu-btn" id="menuBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+          <button class="menu-btn" id="menuBtn" title="Sidebar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+          <div class="more-menu-wrap">
+            <button class="icon-btn" id="moreBtn" title="Menu riwayat">⋮</button>
+            <div class="more-dropdown" id="moreDropdown">
+              <button type="button" id="moreNewChat">➕ Percakapan Baru</button>
+              <button type="button" id="moreHistory">📋 Lihat Riwayat</button>
+              <button type="button" id="moreSearch">🔍 Cari Riwayat</button>
+              <div class="sep"></div>
+              <button type="button" id="moreClearAll" class="danger">🗑️ Hapus Semua Riwayat</button>
+            </div>
+          </div>
           <div class="logo"><div class="logo-icon">∞</div><span>GIL_XZ AI</span><span class="streak-badge" id="streakBadge" title="Streak harian">🔥 0</span></div>
         </div>
         <div class="header-actions">
@@ -355,6 +447,7 @@
                 <button class="tool-btn" id="btnPass">🔑 Password Random</button>
                 <button class="tool-btn" id="btnName">🎲 Acak Nama</button>
                 <button class="tool-btn" id="btnSound">🔔 Suara UI</button>
+                <button class="tool-btn" id="btnClearAll" style="grid-column:1/-1;border-color:rgba(239,68,68,.4);color:#fca5a5">🗑️ Hapus Semua Chat & Riwayat</button>
               </div>
             </div>
             <div class="tools-section">
@@ -1170,6 +1263,22 @@
     showToast(uiSound?'Suara UI ON':'Suara UI OFF');
   };
 
+  // Hapus semua chat & riwayat
+  if($('btnClearAll')) $('btnClearAll').onclick = async ()=>{
+    if(!confirm('Yakin hapus SEMUA percakapan dan riwayat?\n\nTindakan ini tidak bisa dibatalkan.')) return;
+    if(!confirm('Benar-benar hapus semua? Ketik OK untuk lanjut.')) return;
+    conversations = [];
+    currentConvId = null;
+    try{ if(puter.kv) await puter.kv.set('gilxz_conversations', '[]'); }catch(e){}
+    try{ localStorage.setItem('gilxz_conversations', '[]'); }catch(e){}
+    createNewConversation();
+    renderConvList();
+    renderChat();
+    updateStatsUI();
+    closeTools();
+    showToast('Semua chat & riwayat dihapus');
+  };
+
   // Quick tools
   if($('btnCalc')) $('btnCalc').onclick = ()=>{
     const exp = prompt('Kalkulator — ketik hitungan (contoh: 12*8+5):');
@@ -1316,6 +1425,58 @@
   // Lightweight: count on user send via input wrapper
   sendBtn.addEventListener('click', ()=>{ setTimeout(()=>{ bumpStats(); beep(620,0.05); }, 100); }, true);
 
+
+
+  // ===== MENU TITIK TIGA (⋮) =====
+  (function(){
+    const moreBtn = $('moreBtn');
+    const moreDropdown = $('moreDropdown');
+    if(!moreBtn || !moreDropdown) return;
+
+    moreBtn.onclick = (e) => {
+      e.stopPropagation();
+      moreDropdown.classList.toggle('show');
+    };
+    document.addEventListener('click', () => moreDropdown.classList.remove('show'));
+    moreDropdown.addEventListener('click', e => e.stopPropagation());
+
+    const moreNewChat = $('moreNewChat');
+    const moreHistory = $('moreHistory');
+    const moreSearch = $('moreSearch');
+    const moreClearAll = $('moreClearAll');
+
+    if(moreNewChat) moreNewChat.onclick = () => {
+      moreDropdown.classList.remove('show');
+      createNewConversation();
+      showToast('Percakapan baru');
+    };
+    if(moreHistory) moreHistory.onclick = () => {
+      moreDropdown.classList.remove('show');
+      sidebar.classList.add('open');
+      sidebarOverlay.classList.add('open');
+    };
+    if(moreSearch) moreSearch.onclick = () => {
+      moreDropdown.classList.remove('show');
+      sidebar.classList.add('open');
+      sidebarOverlay.classList.add('open');
+      setTimeout(() => { searchInput.focus(); searchInput.select(); }, 200);
+      showToast('Ketik di kolom cari riwayat');
+    };
+    if(moreClearAll) moreClearAll.onclick = async () => {
+      moreDropdown.classList.remove('show');
+      if(!confirm('Yakin hapus SEMUA percakapan dan riwayat?')) return;
+      if(!confirm('Benar-benar hapus semua riwayat?')) return;
+      conversations = [];
+      currentConvId = null;
+      try{ if(puter.kv) await puter.kv.set('gilxz_conversations', '[]'); }catch(e){}
+      try{ localStorage.setItem('gilxz_conversations', '[]'); }catch(e){}
+      createNewConversation();
+      renderConvList();
+      renderChat();
+      if(typeof updateStatsUI==='function') updateStatsUI();
+      showToast('Semua riwayat dihapus');
+    };
+  })();
 
   updateVisitorCount();
   checkAuth();
