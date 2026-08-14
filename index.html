@@ -351,16 +351,6 @@
       <header class="header">
         <div class="header-left">
           <button class="menu-btn" id="menuBtn" title="Sidebar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
-          <div class="more-menu-wrap">
-            <button class="icon-btn" id="moreBtn" title="Menu riwayat">⋮</button>
-            <div class="more-dropdown" id="moreDropdown">
-              <button type="button" id="moreNewChat">➕ Percakapan Baru</button>
-              <button type="button" id="moreHistory">📋 Lihat Riwayat</button>
-              <button type="button" id="moreSearch">🔍 Cari Riwayat</button>
-              <div class="sep"></div>
-              <button type="button" id="moreClearAll" class="danger">🗑️ Hapus Semua Riwayat</button>
-            </div>
-          </div>
           <div class="logo"><div class="logo-icon">∞</div><span>GIL_XZ AI</span><span class="streak-badge" id="streakBadge" title="Streak harian">🔥 0</span></div>
         </div>
         <div class="header-actions">
@@ -372,15 +362,26 @@
             <option value="deepseek-chat">DeepSeek</option>
             <option value="claude-3-5-haiku-latest">Claude Haiku</option>
           </select>
-          <button class="icon-btn" id="toolsBtn" title="Tools & Fitur">🧰</button>
-          <button class="icon-btn" id="videoMenuBtn" title="Menu Video">☰</button>
-          <button class="icon-btn" id="imgGenBtn" title="Generate gambar">🎨</button>
-          <button class="icon-btn" id="exportBtn" title="Export chat">📄</button>
-          <button class="icon-btn" id="settingsBtn" title="System Prompt">⚙️</button>
-          <button class="icon-btn" id="themeBtn" title="Ganti tema">🌙</button>
-          <button class="icon-btn" id="refreshBtn" title="Refresh">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-          </button>
+          <div class="more-menu-wrap" style="position:relative">
+            <button class="icon-btn" id="moreBtn" title="Semua menu">⋮</button>
+            <div class="more-dropdown more-dropdown-right" id="moreDropdown">
+              <button type="button" id="moreNewChat">➕ Percakapan Baru</button>
+              <button type="button" id="moreHistory">📋 Lihat Riwayat</button>
+              <button type="button" id="moreSearch">🔍 Cari Riwayat</button>
+              <button type="button" id="moreClearAll" class="danger">🗑️ Hapus Semua Riwayat</button>
+              <div class="sep"></div>
+              <button type="button" id="toolsBtn">🧰 Buka Tools</button>
+              <button type="button" id="moreCloseTools">🚪 Keluar Tools</button>
+              <button type="button" id="videoMenuBtn">🎬 Menu Video</button>
+              <button type="button" id="imgGenBtn">🎨 Generate Gambar</button>
+              <button type="button" id="exportBtn">📄 Export Chat</button>
+              <button type="button" id="settingsBtn">⚙️ System Prompt</button>
+              <button type="button" id="themeBtn">🌙 Ganti Tema</button>
+              <button type="button" id="refreshBtn">🔄 Refresh Web</button>
+              <div class="sep"></div>
+              <button type="button" id="moreLogout" class="danger">🚪 Keluar / Logout</button>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -471,6 +472,9 @@
                 <button class="wp-btn" data-wp="sunset" style="background:linear-gradient(135deg,#7c2d12,#9a3412)" title="Sunset"></button>
                 <button class="wp-btn" data-wp="midnight" style="background:linear-gradient(135deg,#020617,#1e293b)" title="Midnight"></button>
               </div>
+            </div>
+            <div class="tools-section">
+              <button class="tool-btn" id="btnExitTools" style="width:100%;grid-column:1/-1;border-color:rgba(239,68,68,.35);color:#fca5a5;text-align:center">🚪 Keluar dari Tools</button>
             </div>
           </div>
         </div>
@@ -856,72 +860,105 @@
 
   // ===== VIDEO SEARCH ENGINE =====
   async function searchVideos(query){
-    // 1) Piped API
-    const pipedApis = [
+    const out = [];
+    const seen = new Set();
+    const add = (list) => {
+      for(const v of list){
+        if(!v.videoId || v.videoId.length < 10 || seen.has(v.videoId)) continue;
+        seen.add(v.videoId); out.push(v);
+        if(out.length >= 6) break;
+      }
+    };
+
+    const tryFetchJson = async (url, ms=6000) => {
+      const res = await fetch(url, { signal: AbortSignal.timeout(ms) });
+      if(!res.ok) throw new Error('http '+res.status);
+      return res.json();
+    };
+    const proxies = [
+      u => u, // direct first
+      u => 'https://corsproxy.io/?' + encodeURIComponent(u),
+      u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u)
+    ];
+
+    // Piped instances
+    const piped = [
       'https://pipedapi.kavin.rocks',
       'https://pipedapi.adminforge.de',
       'https://pipedapi.nosebs.ru',
       'https://api.piped.private.coffee',
-      'https://pipedapi.leptons.xyz'
+      'https://pipedapi.leptons.xyz',
+      'https://pipedapi.darkness.services',
+      'https://pipedapi.reallyaweso.me'
     ];
-    for(const api of pipedApis){
-      try{
-        const res = await fetch(api+'/search?q='+encodeURIComponent(query)+'&filter=videos',{signal:AbortSignal.timeout(7000)});
-        if(!res.ok) continue;
-        const data = await res.json();
-        const items = data.items || data;
-        if(!Array.isArray(items)) continue;
-        const videos = items.filter(x=>(x.type==='stream'||x.type==='video')&&(x.url||x.id)).slice(0,6).map(v=>{
-          let id=v.id||'';
-          if(!id&&v.url){const m=String(v.url).match(/([a-zA-Z0-9_-]{11})/);if(m)id=m[1];}
-          return {videoId:id, title:v.title||'Video', author:v.uploaderName||v.uploader||'', views:v.views?Number(v.views).toLocaleString('id-ID')+' views':''};
-        }).filter(v=>v.videoId&&v.videoId.length>=10);
-        if(videos.length) return videos;
-      }catch(e){}
-    }
-    // 2) Invidious + proxy
-    const inv=['https://yewtu.be','https://inv.nadeko.net','https://invidious.nerdvpn.de','https://yt.artemislena.eu'];
-    const proxies=[u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u), u=>'https://corsproxy.io/?'+encodeURIComponent(u)];
-    for(const inst of inv){
+    for(const api of piped){
+      if(out.length >= 6) break;
       for(const px of proxies){
         try{
-          const res=await fetch(px(inst+'/api/v1/search?q='+encodeURIComponent(query)+'&type=video'),{signal:AbortSignal.timeout(7000)});
-          if(!res.ok) continue;
-          const data=await res.json();
-          if(!Array.isArray(data)) continue;
-          const videos=data.filter(x=>x.type==='video'&&x.videoId).slice(0,6).map(v=>({
-            videoId:v.videoId, title:v.title||'Video', author:v.author||'',
-            views:v.viewCount?Number(v.viewCount).toLocaleString('id-ID')+' views':''
+          const data = await tryFetchJson(px(api+'/search?q='+encodeURIComponent(query)+'&filter=videos'));
+          const items = data.items || data;
+          if(!Array.isArray(items)) continue;
+          add(items.filter(x=>(x.type==='stream'||x.type==='video')).map(v=>{
+            let id = v.id || '';
+            if(!id && v.url){ const m=String(v.url).match(/(?:v=|youtu\.be\/|\/watch\?v=|\/shorts\/)?([a-zA-Z0-9_-]{11})/); if(m) id=m[1]; }
+            if(id && id.length>11){ const m=id.match(/[a-zA-Z0-9_-]{11}/); id=m?m[0]:''; }
+            return { videoId:id, title:v.title||'Video', author:v.uploaderName||v.uploader||'', views:v.views?Number(v.views).toLocaleString('id-ID')+' views':'' };
           }));
-          if(videos.length) return videos;
+          if(out.length) break;
         }catch(e){}
       }
     }
-    return [];
+
+    // Invidious
+    if(out.length < 3){
+      const inv = ['https://yewtu.be','https://inv.nadeko.net','https://invidious.nerdvpn.de','https://yt.artemislena.eu','https://invidious.flokinet.to'];
+      for(const inst of inv){
+        if(out.length >= 6) break;
+        for(const px of proxies.slice(1)){ // proxy only (CORS)
+          try{
+            const data = await tryFetchJson(px(inst+'/api/v1/search?q='+encodeURIComponent(query)+'&type=video'));
+            if(!Array.isArray(data)) continue;
+            add(data.filter(x=>x.type==='video'&&x.videoId).map(v=>({
+              videoId:v.videoId, title:v.title||'Video', author:v.author||'',
+              views:v.viewCount?Number(v.viewCount).toLocaleString('id-ID')+' views':''
+            })));
+            if(out.length) break;
+          }catch(e){}
+        }
+      }
+    }
+    return out;
   }
 
   function renderVideoCardsHTML(query, videos){
+    const ytSearch = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query);
+    // Fallback selalu ada: embed search + link (tanpa API key)
+    const fallback = `
+      <div style="margin-top:10px;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:rgba(0,0,0,.15)">
+        <div style="padding:8px 10px;font-size:.78rem;color:var(--muted)">Preview pencarian YouTube</div>
+        <iframe src="https://www.youtube-nocookie.com/embed?listType=search&list=${encodeURIComponent(query)}" style="width:100%;aspect-ratio:16/9;border:0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      </div>
+      <a href="${ytSearch}" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;padding:8px 14px;border-radius:10px;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;font-size:.82rem;font-weight:600;text-decoration:none">Buka hasil di YouTube →</a>
+    `;
+
     if(!videos.length){
-      return `<div style="text-align:center;padding:12px;color:var(--muted);font-size:.85rem">
-        Tidak ketemu lewat API untuk "<b>${esc(query)}</b>".<br>
-        Tetap bisa tonton dari pencarian YouTube di bawah:
-        <div style="margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid var(--border)">
-          <iframe src="https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(query)}" style="width:100%;aspect-ratio:16/9;border:0" allowfullscreen loading="lazy"></iframe>
-        </div>
-        <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(query)}" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;color:var(--primary-h)">Buka di YouTube →</a>
+      return `<div style="padding:8px;font-size:.85rem;color:var(--text)">
+        <div style="margin-bottom:6px">🎬 Pencarian: <b>${esc(query)}</b></div>
+        <div style="color:var(--muted);font-size:.8rem;margin-bottom:8px">API eksternal sedang terbatas. Pakai player YouTube di bawah (tanpa API key).</div>
+        ${fallback}
       </div>`;
     }
     return `<div style="margin-bottom:6px;font-size:.85rem">🎬 Hasil: <b>${esc(query)}</b></div>` +
-      videos.slice(0,4).map((v,i)=>`
+      videos.slice(0,5).map((v,i)=>`
         <div style="margin:10px 0;padding:8px;border:1px solid var(--border);border-radius:12px;background:rgba(0,0,0,.12)">
           <div style="font-size:.82rem;font-weight:600;margin-bottom:4px">${i+1}. ${esc(v.title)}</div>
           <div style="font-size:.7rem;color:var(--muted);margin-bottom:6px">${esc(v.author||'')} ${v.views?' · '+esc(v.views):''}</div>
           <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px">
-            <iframe src="https://www.youtube.com/embed/${v.videoId}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allowfullscreen loading="lazy"></iframe>
+            <iframe src="https://www.youtube-nocookie.com/embed/${v.videoId}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
           </div>
           <a href="https://www.youtube.com/watch?v=${v.videoId}" target="_blank" rel="noopener" style="font-size:.72rem;color:var(--primary-h)">Buka di YouTube ↗</a>
         </div>`).join('') +
-      `<div style="margin-top:6px;font-size:.75rem"><a href="https://www.youtube.com/results?search_query=${encodeURIComponent(query)}" target="_blank" rel="noopener" style="color:var(--primary-h)">Lihat semua di YouTube →</a></div>`;
+      `<div style="margin-top:8px">${fallback}</div>`;
   }
 
   function regenerateLast(){
@@ -994,9 +1031,10 @@
     const next=cur==='dark'?'light':'dark';
     document.documentElement.setAttribute('data-theme',next);
     localStorage.setItem('gilxz_theme',next);
-    themeBtn.textContent=next==='dark'?'🌙':'☀️';
+    themeBtn.textContent = (next==='dark'?'🌙':'☀️') + ' Ganti Tema';
+    showToast(next==='dark'?'Mode gelap':'Mode terang');
   };
-  themeBtn.textContent=savedTheme==='dark'?'🌙':'☀️';
+  if(themeBtn) themeBtn.textContent = (savedTheme==='dark'?'🌙':'☀️') + ' Ganti Tema';
 
   // SETTINGS / SYSTEM PROMPT
   settingsBtn.onclick=()=>{ systemPromptInput.value=systemPrompt; settingsModal.classList.add('show'); };
@@ -1230,6 +1268,8 @@
   function openTools(){ if(toolsBg) toolsBg.classList.add('show'); updateStatsUI(); }
   function closeTools(){ if(toolsBg) toolsBg.classList.remove('show'); }
   if(toolsBtn) toolsBtn.onclick = openTools;
+  if($('btnExitTools')) $('btnExitTools').onclick = () => { closeTools(); showToast('Tools ditutup'); };
+
   if(closeToolsBtn) closeToolsBtn.onclick = closeTools;
   if(toolsBg) toolsBg.onclick = e=>{ if(e.target===toolsBg) closeTools(); };
 
@@ -1427,55 +1467,60 @@
 
 
 
-  // ===== MENU TITIK TIGA (⋮) =====
+  // ===== MENU TITIK TIGA (⋮) — SEMUA FITUR =====
   (function(){
     const moreBtn = $('moreBtn');
     const moreDropdown = $('moreDropdown');
     if(!moreBtn || !moreDropdown) return;
 
+    function closeMore(){ moreDropdown.classList.remove('show'); }
+
     moreBtn.onclick = (e) => {
       e.stopPropagation();
       moreDropdown.classList.toggle('show');
     };
-    document.addEventListener('click', () => moreDropdown.classList.remove('show'));
-    moreDropdown.addEventListener('click', e => e.stopPropagation());
+    document.addEventListener('click', () => closeMore());
+    moreDropdown.addEventListener('click', e => {
+      e.stopPropagation();
+      if(e.target.closest('button')) setTimeout(() => closeMore(), 50);
+    });
 
-    const moreNewChat = $('moreNewChat');
-    const moreHistory = $('moreHistory');
-    const moreSearch = $('moreSearch');
-    const moreClearAll = $('moreClearAll');
+    const bind = (id, fn) => {
+      const el = $(id);
+      if(el) el.onclick = (e) => { e.preventDefault(); closeMore(); fn(); };
+    };
 
-    if(moreNewChat) moreNewChat.onclick = () => {
-      moreDropdown.classList.remove('show');
-      createNewConversation();
-      showToast('Percakapan baru');
-    };
-    if(moreHistory) moreHistory.onclick = () => {
-      moreDropdown.classList.remove('show');
-      sidebar.classList.add('open');
-      sidebarOverlay.classList.add('open');
-    };
-    if(moreSearch) moreSearch.onclick = () => {
-      moreDropdown.classList.remove('show');
-      sidebar.classList.add('open');
-      sidebarOverlay.classList.add('open');
-      setTimeout(() => { searchInput.focus(); searchInput.select(); }, 200);
+    bind('moreNewChat', () => { createNewConversation(); showToast('Percakapan baru'); });
+    bind('moreHistory', () => { sidebar.classList.add('open'); sidebarOverlay.classList.add('open'); });
+    bind('moreSearch', () => {
+      sidebar.classList.add('open'); sidebarOverlay.classList.add('open');
+      setTimeout(() => { searchInput.focus(); }, 200);
       showToast('Ketik di kolom cari riwayat');
-    };
-    if(moreClearAll) moreClearAll.onclick = async () => {
-      moreDropdown.classList.remove('show');
+    });
+    bind('moreClearAll', async () => {
       if(!confirm('Yakin hapus SEMUA percakapan dan riwayat?')) return;
       if(!confirm('Benar-benar hapus semua riwayat?')) return;
-      conversations = [];
-      currentConvId = null;
+      conversations = []; currentConvId = null;
       try{ if(puter.kv) await puter.kv.set('gilxz_conversations', '[]'); }catch(e){}
       try{ localStorage.setItem('gilxz_conversations', '[]'); }catch(e){}
-      createNewConversation();
-      renderConvList();
-      renderChat();
+      createNewConversation(); renderConvList(); renderChat();
       if(typeof updateStatsUI==='function') updateStatsUI();
       showToast('Semua riwayat dihapus');
-    };
+    });
+    bind('toolsBtn', () => { if(typeof openTools==='function') openTools(); else { const t=$('toolsBg'); if(t) t.classList.add('show'); } });
+    bind('moreCloseTools', () => {
+      if(typeof closeTools==='function') closeTools();
+      const t=$('toolsBg'); if(t) t.classList.remove('show');
+      const v=$('videoPanelBg'); if(v) v.classList.remove('show');
+      showToast('Tools ditutup');
+    });
+    bind('moreLogout', async () => {
+      try{ if(puter.auth?.signOut) await puter.auth.signOut(); }catch(e){}
+      conversations=[]; currentConvId=null;
+      app.classList.remove('visible');
+      loginOverlay.classList.remove('hidden');
+      showToast('Berhasil keluar');
+    });
   })();
 
   updateVisitorCount();
