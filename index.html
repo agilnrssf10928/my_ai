@@ -138,6 +138,42 @@
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     .toast.error{border-color:rgba(239,68,68,.4);color:#fca5a5}
 
+    /* ===== EXTRA FEATURES ===== */
+    .streak-badge{font-size:.7rem;background:rgba(251,191,36,.15);color:#fbbf24;padding:2px 8px;border-radius:99px;margin-left:6px}
+    .focus-mode .sidebar,.focus-mode .sidebar-overlay{display:none!important}
+    .focus-mode .main{width:100%}
+    .focus-mode .menu-btn{display:none}
+    .tools-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:160;align-items:stretch;justify-content:flex-end}
+    .tools-bg.show{display:flex}
+    .tools-panel{width:100%;max-width:400px;background:var(--bg2);border-left:1px solid var(--border);height:100%;display:flex;flex-direction:column;animation:slideIn .25s ease}
+    .tools-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}
+    .tools-body{flex:1;overflow-y:auto;padding:14px}
+    .tools-section{margin-bottom:18px}
+    .tools-section h3{font-size:.8rem;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em}
+    .tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .tool-btn{padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font-size:.8rem;cursor:pointer;text-align:left}
+    .tool-btn:hover{border-color:var(--primary);background:rgba(139,92,246,.1)}
+    .tpl-chip{display:inline-block;padding:6px 10px;margin:3px;border-radius:8px;border:1px solid var(--border);background:var(--surface);font-size:.75rem;cursor:pointer;color:var(--text)}
+    .tpl-chip:hover{border-color:var(--primary);color:var(--primary-h)}
+    .pomodoro-box{padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);text-align:center}
+    .pomodoro-time{font-size:2rem;font-weight:700;font-variant-numeric:tabular-nums;margin:8px 0}
+    .pomodoro-actions{display:flex;gap:8px;justify-content:center}
+    .pomodoro-actions button{padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;font-size:.8rem}
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .stat-card{padding:10px;border-radius:10px;background:var(--surface);border:1px solid var(--border);text-align:center}
+    .stat-card .num{font-size:1.3rem;font-weight:700;color:var(--primary-h)}
+    .stat-card .lbl{font-size:.7rem;color:var(--muted)}
+    .wallpaper-opts{display:flex;flex-wrap:wrap;gap:6px}
+    .wp-btn{width:36px;height:36px;border-radius:8px;border:2px solid transparent;cursor:pointer}
+    .wp-btn.active{border-color:var(--primary-h)}
+    .msg-reacts{display:flex;gap:4px;margin-top:6px}
+    .msg-reacts button{background:transparent;border:1px solid var(--border);border-radius:6px;padding:2px 6px;cursor:pointer;font-size:.75rem;opacity:.7}
+    .msg-reacts button:hover,.msg-reacts button.on{opacity:1;border-color:var(--primary)}
+    .compare-box{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+    .compare-col{border:1px solid var(--border);border-radius:10px;padding:8px;font-size:.8rem;background:rgba(0,0,0,.1)}
+    .compare-col h4{font-size:.75rem;color:var(--muted);margin-bottom:6px}
+    .learn-score{font-size:.85rem;color:#34d399;margin-top:6px}
+
     /* Settings modal */
     .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:16px}
     .modal-bg.show{display:flex}
@@ -233,7 +269,7 @@
       <header class="header">
         <div class="header-left">
           <button class="menu-btn" id="menuBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
-          <div class="logo"><div class="logo-icon">∞</div><span>GIL_XZ AI</span></div>
+          <div class="logo"><div class="logo-icon">∞</div><span>GIL_XZ AI</span><span class="streak-badge" id="streakBadge" title="Streak harian">🔥 0</span></div>
         </div>
         <div class="header-actions">
           <select class="model-select" id="modelSelect">
@@ -244,6 +280,7 @@
             <option value="deepseek-chat">DeepSeek</option>
             <option value="claude-3-5-haiku-latest">Claude Haiku</option>
           </select>
+          <button class="icon-btn" id="toolsBtn" title="Tools & Fitur">🧰</button>
           <button class="icon-btn" id="videoMenuBtn" title="Menu Video">☰</button>
           <button class="icon-btn" id="imgGenBtn" title="Generate gambar">🎨</button>
           <button class="icon-btn" id="exportBtn" title="Export chat">📄</button>
@@ -281,6 +318,67 @@
           </div>
           <div class="video-results" id="videoResults">
             <div class="video-empty">Pilih rekomendasi atau ketik pencarian di atas</div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- TOOLS PANEL -->
+      <div class="tools-bg" id="toolsBg">
+        <div class="tools-panel">
+          <div class="tools-header">
+            <h2>🧰 Tools & Fitur</h2>
+            <button class="icon-btn" id="closeToolsBtn">✕</button>
+          </div>
+          <div class="tools-body">
+            <div class="tools-section">
+              <h3>Statistik</h3>
+              <div class="stats-grid">
+                <div class="stat-card"><div class="num" id="statMsgs">0</div><div class="lbl">Pesan</div></div>
+                <div class="stat-card"><div class="num" id="statChats">0</div><div class="lbl">Chat</div></div>
+                <div class="stat-card"><div class="num" id="statStreak">0</div><div class="lbl">Streak 🔥</div></div>
+                <div class="stat-card"><div class="num" id="statLevel">1</div><div class="lbl">Level XP</div></div>
+              </div>
+            </div>
+            <div class="tools-section">
+              <h3>Template Prompt</h3>
+              <div id="tplList"></div>
+            </div>
+            <div class="tools-section">
+              <h3>Mode & Tools</h3>
+              <div class="tool-grid">
+                <button class="tool-btn" id="btnLearn">📚 Mode Belajar</button>
+                <button class="tool-btn" id="btnCompare">⚔️ Bandingkan 2 Model</button>
+                <button class="tool-btn" id="btnFact">💡 Fakta Random</button>
+                <button class="tool-btn" id="btnFocus">🎯 Mode Fokus</button>
+                <button class="tool-btn" id="btnCalc">🧮 Kalkulator</button>
+                <button class="tool-btn" id="btnPass">🔑 Password Random</button>
+                <button class="tool-btn" id="btnName">🎲 Acak Nama</button>
+                <button class="tool-btn" id="btnSound">🔔 Suara UI</button>
+              </div>
+            </div>
+            <div class="tools-section">
+              <h3>Pomodoro Belajar</h3>
+              <div class="pomodoro-box">
+                <div class="pomodoro-time" id="pomoTime">25:00</div>
+                <div class="pomodoro-actions">
+                  <button id="pomoStart">Start</button>
+                  <button id="pomoPause">Pause</button>
+                  <button id="pomoReset">Reset</button>
+                </div>
+              </div>
+            </div>
+            <div class="tools-section">
+              <h3>Wallpaper</h3>
+              <div class="wallpaper-opts" id="wpOpts">
+                <button class="wp-btn active" data-wp="default" style="background:#0b0f19" title="Default"></button>
+                <button class="wp-btn" data-wp="purple" style="background:linear-gradient(135deg,#1e1b4b,#4c1d95)" title="Purple"></button>
+                <button class="wp-btn" data-wp="ocean" style="background:linear-gradient(135deg,#0c4a6e,#164e63)" title="Ocean"></button>
+                <button class="wp-btn" data-wp="forest" style="background:linear-gradient(135deg,#064e3b,#14532d)" title="Forest"></button>
+                <button class="wp-btn" data-wp="sunset" style="background:linear-gradient(135deg,#7c2d12,#9a3412)" title="Sunset"></button>
+                <button class="wp-btn" data-wp="midnight" style="background:linear-gradient(135deg,#020617,#1e293b)" title="Midnight"></button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -647,7 +745,11 @@
       const acts=document.createElement('div'); acts.className='msg-actions';
       const sb=document.createElement('button'); sb.textContent='🔊 Baca'; sb.onclick=()=>speakText(full);
       const rb=document.createElement('button'); rb.textContent='🔄 Regenerate'; rb.onclick=()=>regenerateLast();
-      acts.appendChild(sb); acts.appendChild(rb); bub.appendChild(acts);
+      acts.appendChild(sb); acts.appendChild(rb);
+      const reacts=document.createElement('div'); reacts.className='msg-reacts';
+      ['👍','😂','🔥','💡'].forEach(e=>{ const b=document.createElement('button'); b.textContent=e; b.dataset.react=e; reacts.appendChild(b); });
+      acts.appendChild(reacts);
+      bub.appendChild(acts);
       addDownloadButtons(bub, full, curName);
       if(conv){ conv.messages.push({role:'assistant',content:full}); conv.updatedAt=Date.now(); saveConversations(); }
     }catch(err){
@@ -975,6 +1077,245 @@
       if(sideEl) sideEl.textContent='👥 '+Number(num).toLocaleString('id-ID')+' pengunjung';
     }catch(e){ if(loginEl) loginEl.textContent='👥 Total pengunjung: -'; }
   }
+
+
+  // ========== ALL EXTRA FEATURES ==========
+  const toolsBtn = $('toolsBtn'), toolsBg = $('toolsBg'), closeToolsBtn = $('closeToolsBtn');
+  const streakBadge = $('streakBadge');
+
+  // Stats & Streak
+  function loadStats(){
+    try{ return JSON.parse(localStorage.getItem('gilxz_stats')||'{"msgs":0,"xp":0,"streak":0,"lastDay":""}'); }catch(e){ return {msgs:0,xp:0,streak:0,lastDay:''}; }
+  }
+  function saveStats(s){ localStorage.setItem('gilxz_stats', JSON.stringify(s)); updateStatsUI(s); }
+  function updateStatsUI(s){
+    s = s || loadStats();
+    const level = Math.floor(s.xp/50)+1;
+    if($('statMsgs')) $('statMsgs').textContent = s.msgs;
+    if($('statChats')) $('statChats').textContent = conversations.length;
+    if($('statStreak')) $('statStreak').textContent = s.streak;
+    if($('statLevel')) $('statLevel').textContent = level;
+    if(streakBadge) streakBadge.textContent = '🔥 '+s.streak;
+  }
+  function bumpStats(){
+    const s = loadStats();
+    s.msgs++; s.xp += 5;
+    const today = new Date().toDateString();
+    if(s.lastDay !== today){
+      const yest = new Date(Date.now()-86400000).toDateString();
+      s.streak = (s.lastDay === yest) ? s.streak+1 : 1;
+      s.lastDay = today;
+    }
+    saveStats(s);
+  }
+  updateStatsUI();
+
+  // Templates
+  const TEMPLATES = [
+    {t:'Ringkas teks', p:'Ringkas teks berikut supaya lebih pendek dan jelas:\n\n'},
+    {t:'Bantu PR', p:'Bantu aku kerjakan soal ini langkah demi langkah dengan penjelasan mudah:\n\n'},
+    {t:'Ide konten', p:'Kasih 5 ide konten menarik tentang: '},
+    {t:'Perbaiki grammar', p:'Perbaiki ejaan dan grammar teks ini, lalu jelaskan perubahannya:\n\n'},
+    {t:'Jelaskan seperti anak 10 thn', p:'Jelaskan topik ini seolah-olah ke anak 10 tahun: '},
+    {t:'Buat kuis', p:'Buatkan 5 soal kuis pilihan ganda tentang: '},
+    {t:'Rencana belajar', p:'Buatkan rencana belajar 7 hari untuk topik: '},
+    {t:'Debug kode', p:'Cari error di kode ini dan berikan versi yang sudah diperbaiki secara lengkap:\n\n'}
+  ];
+  function renderTemplates(){
+    const el = $('tplList'); if(!el) return;
+    el.innerHTML = TEMPLATES.map(x=>`<span class="tpl-chip" data-p="${esc(x.p)}">${x.t}</span>`).join('');
+    el.querySelectorAll('.tpl-chip').forEach(c=>c.onclick=()=>{
+      userInput.value = c.dataset.p;
+      userInput.focus();
+      closeTools();
+      showToast('Template dimasukkan');
+    });
+  }
+  renderTemplates();
+
+  // Tools panel
+  function openTools(){ if(toolsBg) toolsBg.classList.add('show'); updateStatsUI(); }
+  function closeTools(){ if(toolsBg) toolsBg.classList.remove('show'); }
+  if(toolsBtn) toolsBtn.onclick = openTools;
+  if(closeToolsBtn) closeToolsBtn.onclick = closeTools;
+  if(toolsBg) toolsBg.onclick = e=>{ if(e.target===toolsBg) closeTools(); };
+
+  // Focus mode
+  let focusMode = localStorage.getItem('gilxz_focus')==='1';
+  function applyFocus(){
+    document.body.classList.toggle('focus-mode', focusMode);
+    localStorage.setItem('gilxz_focus', focusMode?'1':'0');
+  }
+  applyFocus();
+  if($('btnFocus')) $('btnFocus').onclick = ()=>{
+    focusMode = !focusMode; applyFocus();
+    showToast(focusMode?'Mode Fokus ON':'Mode Fokus OFF');
+    closeTools();
+  };
+
+  // UI Sound
+  let uiSound = localStorage.getItem('gilxz_sound')!=='0';
+  function beep(freq=600, dur=0.06){
+    if(!uiSound) return;
+    try{
+      const ctx = new (window.AudioContext||window.webkitAudioContext)();
+      const o = ctx.createOscillator(); const g = ctx.createGain();
+      o.frequency.value=freq; o.connect(g); g.connect(ctx.destination);
+      g.gain.value=0.05; o.start(); o.stop(ctx.currentTime+dur);
+    }catch(e){}
+  }
+  if($('btnSound')) $('btnSound').onclick = ()=>{
+    uiSound = !uiSound; localStorage.setItem('gilxz_sound', uiSound?'1':'0');
+    if(uiSound) beep(800,0.08);
+    showToast(uiSound?'Suara UI ON':'Suara UI OFF');
+  };
+
+  // Quick tools
+  if($('btnCalc')) $('btnCalc').onclick = ()=>{
+    const exp = prompt('Kalkulator — ketik hitungan (contoh: 12*8+5):');
+    if(!exp) return;
+    try{
+      // aman: hanya angka dan operator dasar
+      if(!/^[\d\s\+\-\*\/\.\(\)%]+$/.test(exp)) throw new Error('karakter tidak valid');
+      const r = Function('"use strict";return ('+exp+')')();
+      showToast('Hasil: '+r);
+      userInput.value = exp+' = '+r;
+    }catch(e){ showToast('Hitungan tidak valid',true); }
+  };
+  if($('btnPass')) $('btnPass').onclick = ()=>{
+    const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%';
+    let p=''; for(let i=0;i<12;i++) p+=chars[Math.floor(Math.random()*chars.length)];
+    userInput.value = 'Password random: '+p;
+    showToast('Password dibuat'); closeTools();
+  };
+  if($('btnName')) $('btnName').onclick = ()=>{
+    const a=['Aether','Nova','Pixel','Zeno','Luna','Kai','Mira','Rex','Yuki','Aiko','Bima','Surya','Nara','Vega'];
+    const b=['Storm','Forge','Labs','Wave','Core','Byte','Spark','Quest','Craft','Orbit'];
+    const n=a[Math.floor(Math.random()*a.length)]+' '+b[Math.floor(Math.random()*b.length)];
+    userInput.value = 'Nama acak: '+n;
+    showToast(n); closeTools();
+  };
+
+  // Fakta random
+  const FACTS = [
+    'Gurita punya 3 jantung.',
+    'Madu tidak pernah basi.',
+    'Cahaya matahari butuh 8 menit sampai ke Bumi.',
+    'Otak manusia ~75% air.',
+    'Ada lebih banyak bintang di alam semesta daripada butir pasir di semua pantai Bumi.',
+    'Hiu sudah ada sebelum pohon ada di Bumi.',
+    'Banana secara botani adalah berry, tapi stroberi bukan.',
+    'Tulang paha lebih kuat dari beton.',
+    'Seekor siput bisa tidur sampai 3 tahun.',
+    'Air panas kadang membeku lebih cepat dari air dingin (efek Mpemba).'
+  ];
+  if($('btnFact')) $('btnFact').onclick = ()=>{
+    const f = FACTS[Math.floor(Math.random()*FACTS.length)];
+    closeTools();
+    const wel=$('welcome'); if(wel) wel.remove();
+    addMsgDOM('Kasih fakta menarik','user',null,null,true);
+    addMsgDOM('💡 **Fakta random:** '+f,'ai',null,null,true);
+    const conv=getCurrentConv();
+    if(conv){ conv.messages.push({role:'user',content:'Kasih fakta menarik'}); conv.messages.push({role:'assistant',content:'💡 Fakta random: '+f}); conv.updatedAt=Date.now(); saveConversations(); }
+    bumpStats(); beep(500,0.05);
+  };
+
+  // Mode Belajar
+  if($('btnLearn')) $('btnLearn').onclick = ()=>{
+    closeTools();
+    const topik = prompt('Mode Belajar — topik apa yang mau dipelajari? (contoh: fotosintesis, pecahan, HTML)');
+    if(!topik) return;
+    userInput.value = 'Kamu adalah guru yang sabar. Ajarkan aku tentang "'+topik+'" dengan bahasa sederhana. Lalu berikan 3 soal kuis pilihan ganda (A-D) di akhir, dan sebutkan kunci jawabannya di bagian paling bawah setelah semua soal.';
+    sendMessage();
+  };
+
+  // Bandingkan 2 model
+  if($('btnCompare')) $('btnCompare').onclick = async ()=>{
+    closeTools();
+    const q = prompt('Bandingkan 2 model — ketik pertanyaanmu:');
+    if(!q||!q.trim()) return;
+    if(isGenerating) return;
+    isGenerating=true; sendBtn.disabled=true;
+    const wel=$('welcome'); if(wel) wel.remove();
+    addMsgDOM(q,'user',null,null,true);
+    const conv=getCurrentConv();
+    if(conv){ conv.messages.push({role:'user',content:q}); updateTitle(q); }
+    addTyping();
+    const models = [modelSelect.value, modelSelect.value==='gemini-2.5-flash'?'gpt-5.4-nano':'gemini-2.5-flash'];
+    try{
+      const results = await Promise.all(models.map(async m=>{
+        try{
+          const r = await puter.ai.chat([{role:'system',content:systemPrompt},{role:'user',content:q}], {model:m, stream:false});
+          const text = typeof r==='string' ? r : (r?.message?.content || r?.text || JSON.stringify(r)).toString();
+          return {m, text};
+        }catch(e){ return {m, text:'(gagal: '+(e.message||'error')+')'}; }
+      }));
+      removeTyping();
+      const bub = addMsgDOM('','ai',null,null,true);
+      bub.innerHTML = '<div style="margin-bottom:6px;font-size:.85rem">⚔️ Perbandingan model</div><div class="compare-box">'+
+        results.map(r=>`<div class="compare-col"><h4>${esc(r.m)}</h4>${formatText(String(r.text).slice(0,2000))}</div>`).join('')+'</div>';
+      if(conv){ conv.messages.push({role:'assistant',content:'[Compare] '+results.map(r=>r.m+': '+String(r.text).slice(0,300)).join(' | ')}); saveConversations(); }
+      bumpStats(); beep(700,0.08);
+    }catch(e){ removeTyping(); addMsgDOM('Gagal membandingkan model','ai'); }
+    finally{ isGenerating=false; sendBtn.disabled=false; }
+  };
+
+  // Pomodoro
+  let pomoLeft = 25*60, pomoTimer=null, pomoRunning=false;
+  function renderPomo(){
+    const el=$('pomoTime'); if(!el) return;
+    const m=Math.floor(pomoLeft/60), s=pomoLeft%60;
+    el.textContent = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  }
+  if($('pomoStart')) $('pomoStart').onclick = ()=>{
+    if(pomoRunning) return;
+    pomoRunning=true;
+    pomoTimer=setInterval(()=>{
+      pomoLeft--; renderPomo();
+      if(pomoLeft<=0){
+        clearInterval(pomoTimer); pomoRunning=false; pomoLeft=25*60; renderPomo();
+        beep(880,0.2); showToast('Pomodoro selesai! Istirahat dulu ☕');
+        try{ if(Notification&&Notification.permission==='granted') new Notification('GIL_XZ AI',{body:'Pomodoro 25 menit selesai!'}); }catch(e){}
+      }
+    },1000);
+  };
+  if($('pomoPause')) $('pomoPause').onclick = ()=>{ pomoRunning=false; if(pomoTimer) clearInterval(pomoTimer); };
+  if($('pomoReset')) $('pomoReset').onclick = ()=>{ pomoRunning=false; if(pomoTimer) clearInterval(pomoTimer); pomoLeft=25*60; renderPomo(); };
+  renderPomo();
+
+  // Wallpaper
+  const WP = {
+    default:'#0b0f19',
+    purple:'linear-gradient(160deg,#0b0f19 0%,#1e1b4b 50%,#0b0f19 100%)',
+    ocean:'linear-gradient(160deg,#0b0f19 0%,#0c4a6e 50%,#0b0f19 100%)',
+    forest:'linear-gradient(160deg,#0b0f19 0%,#064e3b 50%,#0b0f19 100%)',
+    sunset:'linear-gradient(160deg,#0b0f19 0%,#7c2d12 50%,#0b0f19 100%)',
+    midnight:'linear-gradient(160deg,#020617 0%,#1e293b 50%,#020617 100%)'
+  };
+  function applyWp(name){
+    const bg = WP[name]||WP.default;
+    document.body.style.background = bg;
+    const main=document.querySelector('.main'); if(main) main.style.background=bg;
+    localStorage.setItem('gilxz_wp', name);
+    document.querySelectorAll('.wp-btn').forEach(b=>b.classList.toggle('active', b.dataset.wp===name));
+  }
+  document.querySelectorAll('.wp-btn').forEach(b=>b.onclick=()=>applyWp(b.dataset.wp));
+  applyWp(localStorage.getItem('gilxz_wp')||'default');
+
+  // Reactions on AI messages - enhance addMsgDOM path via event delegation
+  chatContainer.addEventListener('click', e=>{
+    const btn = e.target.closest('[data-react]');
+    if(!btn) return;
+    btn.classList.toggle('on');
+    beep(900,0.04);
+  });
+
+  // Hook bumpStats + beep into successful sends - patch via monkey on original flow
+  const _origSend = sendMessage;
+  // We already call bumpStats in fact; for normal chat add after assistant reply is hard without editing sendMessage.
+  // Lightweight: count on user send via input wrapper
+  sendBtn.addEventListener('click', ()=>{ setTimeout(()=>{ bumpStats(); beep(620,0.05); }, 100); }, true);
+
 
   updateVisitorCount();
   checkAuth();
