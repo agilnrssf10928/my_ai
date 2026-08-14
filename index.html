@@ -605,23 +605,7 @@
         const videos = await searchVideos(query);
         removeTyping();
         const bub = addMsgDOM('','ai',null,null,true);
-        if(!videos.length){
-          bub.innerHTML = formatText('Tidak ketemu video untuk **"'+query+'"**.\n\nCoba buka langsung: [YouTube Search](https://www.youtube.com/results?search_query='+encodeURIComponent(query)+')');
-        } else {
-          let html = '<div style="margin-bottom:8px">🎬 Hasil video untuk <b>'+esc(query)+'</b>:</div>';
-          videos.slice(0,3).forEach((v,i)=>{
-            html += `<div style="margin:12px 0;padding:10px;border:1px solid var(--border);border-radius:12px;background:rgba(0,0,0,.15)">
-              <div style="font-size:.85rem;font-weight:600;margin-bottom:6px">${i+1}. ${esc(v.title)}</div>
-              <div style="font-size:.72rem;color:var(--muted);margin-bottom:8px">${esc(v.author||'')} ${v.views? ' · '+v.views:''}</div>
-              <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px">
-                <iframe src="https://www.youtube.com/embed/${v.videoId}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>
-              </div>
-              <a href="https://www.youtube.com/watch?v=${v.videoId}" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;font-size:.75rem;color:var(--primary-h)">Buka di YouTube ↗</a>
-            </div>`;
-          });
-          html += `<div style="margin-top:8px;font-size:.75rem"><a href="https://www.youtube.com/results?search_query=${encodeURIComponent(query)}" target="_blank" rel="noopener" style="color:var(--primary-h)">Lihat semua di YouTube →</a></div>`;
-          bub.innerHTML = html;
-        }
+        bub.innerHTML = renderVideoCardsHTML(query, videos);
         const acts=document.createElement('div'); acts.className='msg-actions';
         const rb=document.createElement('button'); rb.textContent='🔄 Regenerate'; rb.onclick=()=>regenerateLast();
         acts.appendChild(rb); bub.appendChild(acts);
@@ -629,7 +613,8 @@
       } catch(err){
         removeTyping();
         console.error(err);
-        addMsgDOM('Gagal mencari video. Coba buka: https://www.youtube.com/results?search_query='+encodeURIComponent(query),'ai');
+        const bub = addMsgDOM('','ai',null,null,true);
+        bub.innerHTML = renderVideoCardsHTML(query, []);
       } finally {
         isGenerating=false; stopRequested=false; sendBtn.disabled=false; stopBtn.classList.remove('show'); userInput.focus();
       }
@@ -676,38 +661,72 @@
 
   // ===== VIDEO SEARCH ENGINE =====
   async function searchVideos(query){
-    const instances = [
-      'https://yewtu.be',
-      'https://inv.nadeko.net',
-      'https://invidious.nerdvpn.de',
-      'https://yt.artemislena.eu',
-      'https://invidious.flokinet.to'
+    // 1) Piped API
+    const pipedApis = [
+      'https://pipedapi.kavin.rocks',
+      'https://pipedapi.adminforge.de',
+      'https://pipedapi.nosebs.ru',
+      'https://api.piped.private.coffee',
+      'https://pipedapi.leptons.xyz'
     ];
-    const proxies = [
-      u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
-      u => 'https://corsproxy.io/?' + encodeURIComponent(u)
-    ];
-
-    for(const inst of instances){
-      for(const makeProxy of proxies){
+    for(const api of pipedApis){
+      try{
+        const res = await fetch(api+'/search?q='+encodeURIComponent(query)+'&filter=videos',{signal:AbortSignal.timeout(7000)});
+        if(!res.ok) continue;
+        const data = await res.json();
+        const items = data.items || data;
+        if(!Array.isArray(items)) continue;
+        const videos = items.filter(x=>(x.type==='stream'||x.type==='video')&&(x.url||x.id)).slice(0,6).map(v=>{
+          let id=v.id||'';
+          if(!id&&v.url){const m=String(v.url).match(/([a-zA-Z0-9_-]{11})/);if(m)id=m[1];}
+          return {videoId:id, title:v.title||'Video', author:v.uploaderName||v.uploader||'', views:v.views?Number(v.views).toLocaleString('id-ID')+' views':''};
+        }).filter(v=>v.videoId&&v.videoId.length>=10);
+        if(videos.length) return videos;
+      }catch(e){}
+    }
+    // 2) Invidious + proxy
+    const inv=['https://yewtu.be','https://inv.nadeko.net','https://invidious.nerdvpn.de','https://yt.artemislena.eu'];
+    const proxies=[u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u), u=>'https://corsproxy.io/?'+encodeURIComponent(u)];
+    for(const inst of inv){
+      for(const px of proxies){
         try{
-          const apiUrl = inst + '/api/v1/search?q=' + encodeURIComponent(query) + '&type=video';
-          const res = await fetch(makeProxy(apiUrl), { signal: AbortSignal.timeout(8000) });
+          const res=await fetch(px(inst+'/api/v1/search?q='+encodeURIComponent(query)+'&type=video'),{signal:AbortSignal.timeout(7000)});
           if(!res.ok) continue;
-          const data = await res.json();
+          const data=await res.json();
           if(!Array.isArray(data)) continue;
-          const videos = data.filter(x => x.type==='video' && x.videoId).slice(0,5).map(v => ({
-            videoId: v.videoId,
-            title: v.title || 'Video',
-            author: v.author || '',
-            views: v.viewCountText || (v.viewCount ? Number(v.viewCount).toLocaleString('id-ID')+' views' : '')
+          const videos=data.filter(x=>x.type==='video'&&x.videoId).slice(0,6).map(v=>({
+            videoId:v.videoId, title:v.title||'Video', author:v.author||'',
+            views:v.viewCount?Number(v.viewCount).toLocaleString('id-ID')+' views':''
           }));
           if(videos.length) return videos;
-        }catch(e){ /* try next */ }
+        }catch(e){}
       }
     }
-    // Fallback: no API results — return empty (UI will show YouTube link)
     return [];
+  }
+
+  function renderVideoCardsHTML(query, videos){
+    if(!videos.length){
+      return `<div style="text-align:center;padding:12px;color:var(--muted);font-size:.85rem">
+        Tidak ketemu lewat API untuk "<b>${esc(query)}</b>".<br>
+        Tetap bisa tonton dari pencarian YouTube di bawah:
+        <div style="margin-top:12px;border-radius:12px;overflow:hidden;border:1px solid var(--border)">
+          <iframe src="https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(query)}" style="width:100%;aspect-ratio:16/9;border:0" allowfullscreen loading="lazy"></iframe>
+        </div>
+        <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(query)}" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;color:var(--primary-h)">Buka di YouTube →</a>
+      </div>`;
+    }
+    return `<div style="margin-bottom:6px;font-size:.85rem">🎬 Hasil: <b>${esc(query)}</b></div>` +
+      videos.slice(0,4).map((v,i)=>`
+        <div style="margin:10px 0;padding:8px;border:1px solid var(--border);border-radius:12px;background:rgba(0,0,0,.12)">
+          <div style="font-size:.82rem;font-weight:600;margin-bottom:4px">${i+1}. ${esc(v.title)}</div>
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:6px">${esc(v.author||'')} ${v.views?' · '+esc(v.views):''}</div>
+          <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px">
+            <iframe src="https://www.youtube.com/embed/${v.videoId}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" allowfullscreen loading="lazy"></iframe>
+          </div>
+          <a href="https://www.youtube.com/watch?v=${v.videoId}" target="_blank" rel="noopener" style="font-size:.72rem;color:var(--primary-h)">Buka di YouTube ↗</a>
+        </div>`).join('') +
+      `<div style="margin-top:6px;font-size:.75rem"><a href="https://www.youtube.com/results?search_query=${encodeURIComponent(query)}" target="_blank" rel="noopener" style="color:var(--primary-h)">Lihat semua di YouTube →</a></div>`;
   }
 
   function regenerateLast(){
@@ -844,20 +863,9 @@
     videoResults.innerHTML = '<div class="video-loading">Mencari video...</div>';
     try{
       const videos = await searchVideos(query.trim());
-      if(!videos.length){
-        videoResults.innerHTML = `<div class="video-empty">Tidak ketemu.<br><a href="https://www.youtube.com/results?search_query=${encodeURIComponent(query)}" target="_blank" rel="noopener" style="color:var(--primary-h)">Cari di YouTube →</a></div>`;
-        return;
-      }
-      videoResults.innerHTML = videos.slice(0,6).map(v => `
-        <div class="video-card">
-          <div class="video-card-title">${esc(v.title)}</div>
-          <div class="video-card-meta">${esc(v.author||'')} ${v.views? ' · '+esc(v.views):''}</div>
-          <iframe src="https://www.youtube.com/embed/${v.videoId}" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>
-          <a class="video-card-link" href="https://www.youtube.com/watch?v=${v.videoId}" target="_blank" rel="noopener">Buka di YouTube ↗</a>
-        </div>
-      `).join('');
+      videoResults.innerHTML = renderVideoCardsHTML(query.trim(), videos);
     }catch(e){
-      videoResults.innerHTML = `<div class="video-empty">Gagal memuat. <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(query)}" target="_blank" rel="noopener" style="color:var(--primary-h)">Cari di YouTube →</a></div>`;
+      videoResults.innerHTML = renderVideoCardsHTML(query.trim(), []);
     }
   }
 
