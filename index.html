@@ -189,7 +189,7 @@
     .typing span:nth-child(2){animation-delay:-.16s}
     @keyframes bounce{0%,80%,100%{transform:scale(.55);opacity:.4}40%{transform:scale(1);opacity:1}}
 
-    .input-area{position:absolute;bottom:0;left:0;right:0;padding:10px 12px 14px;background:linear-gradient(to top,var(--bg) 70%,transparent);z-index:40}
+    .input-area{position:absolute;bottom:0;left:0;right:0;padding:10px 12px 14px;background:linear-gradient(to top,var(--bg) 70%,transparent);z-index:50}
     .file-preview{max-width:760px;margin:0 auto 8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:9px 11px}
     .preview-content{display:flex;align-items:center;gap:9px;position:relative}
     #previewImg{max-width:90px;max-height:70px;border-radius:7px;object-fit:cover}
@@ -221,6 +221,128 @@
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     .toast.error{border-color:rgba(239,68,68,.4);color:#fca5a5}
 
+    /* ===== BLUR UI (readable, not too transparent) ===== */
+    body{
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(139,92,246,.28), transparent 50%),
+        radial-gradient(ellipse 60% 40% at 90% 10%, rgba(99,102,241,.18), transparent 45%),
+        radial-gradient(ellipse 50% 50% at 50% 100%, rgba(168,85,247,.12), transparent 50%),
+        var(--bg) !important;
+      background-attachment: fixed !important;
+    }
+    [data-theme="light"] body{
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(139,92,246,.12), transparent 50%),
+        #f1f5f9 !important;
+    }
+    .header{
+      background:rgba(11,15,25,.88) !important;
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(255,255,255,.08) !important;
+    }
+    [data-theme="light"] .header{
+      background:rgba(255,255,255,.92) !important;
+      border-bottom:1px solid rgba(0,0,0,.08) !important;
+    }
+    .sidebar{
+      background:rgba(15,20,32,.94) !important;
+      backdrop-filter:blur(14px) !important;
+      -webkit-backdrop-filter:blur(14px) !important;
+      border-left:1px solid rgba(255,255,255,.1) !important;
+    }
+    [data-theme="light"] .sidebar{
+      background:rgba(255,255,255,.96) !important;
+    }
+    .bubble{
+      background:rgba(30,41,59,.95) !important;
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,.1) !important;
+      color:var(--text) !important;
+    }
+    .message.user .bubble{
+      background:rgba(109,40,217,.92) !important;
+      border:1px solid rgba(167,139,250,.4) !important;
+      color:#fff !important;
+    }
+    [data-theme="light"] .bubble{
+      background:rgba(255,255,255,.96) !important;
+      border:1px solid rgba(0,0,0,.08) !important;
+      color:#0f172a !important;
+    }
+    [data-theme="light"] .message.user .bubble{
+      background:rgba(124,58,237,.92) !important;
+      color:#fff !important;
+    }
+    .input-area{
+      background:linear-gradient(to top, rgba(11,15,25,.92) 65%, rgba(11,15,25,.4) 100%) !important;
+    }
+    .input-wrapper{
+      background:rgba(30,41,59,.92) !important;
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,.12) !important;
+    }
+    [data-theme="light"] .input-wrapper{
+      background:rgba(255,255,255,.95) !important;
+      border:1px solid rgba(0,0,0,.1) !important;
+    }
+    .more-dropdown,.tools-panel,.video-panel,.modal{
+      background:rgba(15,20,32,.96) !important;
+      backdrop-filter:blur(14px) !important;
+      -webkit-backdrop-filter:blur(14px) !important;
+      border:1px solid rgba(255,255,255,.1) !important;
+    }
+    [data-theme="light"] .more-dropdown,
+    [data-theme="light"] .tools-panel,
+    [data-theme="light"] .video-panel,
+    [data-theme="light"] .modal{
+      background:rgba(255,255,255,.97) !important;
+    }
+    .icon-btn,.menu-btn,.model-select,.attach-btn,.mic-btn{
+      background:rgba(30,41,59,.85) !important;
+      border:1px solid rgba(255,255,255,.1) !important;
+    }
+    .conv-item.active{
+      background:rgba(139,92,246,.28) !important;
+    }
+    .tools-bg,.video-panel-bg,.modal-bg,.sidebar-overlay{
+      background:rgba(0,0,0,.5) !important;
+      backdrop-filter:blur(3px);
+      -webkit-backdrop-filter:blur(3px);
+    }
+    .chat-container{background:transparent !important}
+    .main{background:transparent !important}
+    .avatar{
+      background:rgba(139,92,246,.85) !important;
+      border:1px solid rgba(167,139,250,.4);
+      color:#fff !important;
+    }
+    .message.user .avatar{
+      background:rgba(99,102,241,.9) !important;
+      color:#fff !important;
+    }
+    .welcome{background:transparent !important}
+    .suggestion{
+      background:rgba(30,41,59,.85) !important;
+      border:1px solid rgba(255,255,255,.1) !important;
+    }
+    .file-preview{
+      background:rgba(30,41,59,.92) !important;
+      border:1px solid rgba(255,255,255,.1);
+    }
+    .visitor-count-top{
+      background:rgba(139,92,246,.25) !important;
+    }
+    .toast{
+      background:rgba(15,20,32,.95) !important;
+      backdrop-filter:blur(12px) !important;
+    }
+    .bubble, .bubble *{color:inherit}
+    .message.ai .bubble{color:var(--text) !important}
+    .message.user .bubble{color:#fff !important}
+
     /* ===== SMOOTH ANIMATIONS ===== */
     *{scroll-behavior:smooth}
     .message{animation:msgIn .35s cubic-bezier(.22,1,.36,1) both}
@@ -239,13 +361,13 @@
     .send-btn:hover{transform:scale(1.06);box-shadow:0 4px 16px rgba(139,92,246,.4)}
     .more-dropdown{
       transform-origin:top left;
-      animation:none;
       transition:opacity .2s ease, transform .25s cubic-bezier(.22,1,.36,1);
-      opacity:0;transform:translateY(-8px) scale(.96);pointer-events:none;
-      display:block !important;visibility:hidden;
+      display:none;
+      opacity:0;transform:translateY(-8px) scale(.96);
     }
     .more-dropdown.show{
-      opacity:1;transform:translateY(0) scale(1);pointer-events:auto;visibility:visible;
+      display:block;
+      opacity:1;transform:translateY(0) scale(1);
     }
     .sidebar{
       transition:transform .4s cubic-bezier(.22,1,.36,1) !important;
@@ -256,12 +378,14 @@
     }
     .sidebar-overlay.open{opacity:1}
     .tools-bg,.video-panel-bg,.modal-bg{
-      transition:opacity .3s ease, backdrop-filter .3s ease;
-      opacity:0;pointer-events:none;
-      display:flex !important;visibility:hidden;
+      display:none;
+      position:fixed;inset:0;
+      transition:opacity .3s ease;
+      opacity:0;
     }
     .tools-bg.show,.video-panel-bg.show,.modal-bg.show{
-      opacity:1;pointer-events:auto;visibility:visible;
+      display:flex;
+      opacity:1;
     }
     .tools-panel,.video-panel{
       transition:transform .4s cubic-bezier(.22,1,.36,1);
@@ -896,13 +1020,16 @@
   stopBtn.onclick=()=>{ stopRequested=true; showToast('Menghentikan...'); };
 
   async function sendMessage(overrideText){
+    try{
     let text=(overrideText!==undefined?overrideText:userInput.value).trim();
     const hasFile=!!selectedFile;
     if((!text&&!hasFile)||isGenerating) return;
     if(hasFile&&!text){
       text=selectedDataUrl?'Analisis dan jelaskan gambar ini secara detail.':(selectedFileText?'Analisis file ini. Jika ada error, perbaiki dan tampilkan kode lengkap yang sudah diperbaiki.':'Analisis file ini.');
     }
-    isGenerating=true; stopRequested=false; sendBtn.disabled=true; stopBtn.classList.add('show');
+    isGenerating=true; stopRequested=false;
+    if(sendBtn) sendBtn.disabled=true;
+    if(stopBtn) stopBtn.classList.add('show');
     const curText=text, curImg=selectedDataUrl, curFileText=selectedFileText, curName=selectedFile?.name||null, isImg=!!selectedDataUrl;
     if(overrideText===undefined){ userInput.value=''; userInput.style.height='auto'; }
     clearFile();
@@ -977,7 +1104,17 @@
       addMsgDOM('Terjadi kesalahan: '+(err.message||'coba lagi'),'ai');
       showToast('Gagal',true);
     }finally{
-      isGenerating=false; stopRequested=false; sendBtn.disabled=false; stopBtn.classList.remove('show'); userInput.focus();
+      isGenerating=false; stopRequested=false;
+      if(sendBtn) sendBtn.disabled=false;
+      if(stopBtn) stopBtn.classList.remove('show');
+      if(userInput) userInput.focus();
+    }
+    }catch(e){
+      console.error('sendMessage fatal', e);
+      isGenerating=false;
+      if(sendBtn) sendBtn.disabled=false;
+      if(stopBtn) stopBtn.classList.remove('show');
+      showToast('Gagal kirim: '+(e.message||'error'), true);
     }
   }
 
@@ -1649,6 +1786,19 @@
       showToast('Berhasil keluar');
     });
   })();
+
+
+  // Pastikan tombol kirim selalu jalan
+  isGenerating=false;
+  if(sendBtn){
+    sendBtn.disabled=false;
+    sendBtn.onclick=function(e){ e.preventDefault(); sendMessage(); };
+  }
+  if(userInput){
+    userInput.onkeydown=function(e){
+      if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
+    };
+  }
 
   updateVisitorCount();
   checkAuth();
