@@ -68,6 +68,16 @@
     .new-chat-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(139,92,246,.45)}
     .new-chat-btn:active{transform:translateY(0)}
     .search-box{margin-top:12px;position:relative}
+
+    .visitor-count-top{
+      margin-bottom:10px;padding:8px 12px;border-radius:12px;text-align:center;
+      background:linear-gradient(135deg,rgba(139,92,246,.18),rgba(99,102,241,.12));
+      border:1px solid rgba(139,92,246,.3);font-size:.8rem;color:#c4b5fd;font-weight:600;
+    }
+    [data-theme="light"] .visitor-count-top{color:#6d28d9;background:rgba(139,92,246,.1)}
+    .sidebar-header .search-box{margin-top:0;margin-bottom:10px}
+    .sidebar-header .new-chat-btn{margin-top:0}
+
     .search-box input{
       width:100%;padding:10px 12px 10px 36px;border:1px solid rgba(255,255,255,.08);
       border-radius:12px;background:rgba(255,255,255,.04);color:var(--text);
@@ -320,7 +330,7 @@
         Login dengan Email / Google
       </button>
       <p class="login-note">Aman · Gratis · Riwayat tersimpan di akunmu</p>
-      <div class="visitor-count" id="visitorCountLogin">👥 Total pengunjung: ...</div>
+      <div class="visitor-count" id="visitorCountLogin">Total pengunjung: ...</div>
     </div>
   </div>
 
@@ -328,21 +338,21 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <button class="new-chat-btn" id="newChatBtn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-          Percakapan Baru
-        </button>
+        <div class="visitor-count-top" id="visitorCountSide">Total pengunjung: ...</div>
         <div class="search-box">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
           <input type="text" id="searchInput" placeholder="Cari riwayat...">
         </div>
+        <button class="new-chat-btn" id="newChatBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Percakapan Baru
+        </button>
       </div>
       <div class="conv-list" id="convList"></div>
       <div class="sidebar-footer">
         <div class="user-info">
           <div class="name" id="userName">User</div>
           <div class="email" id="userEmail"></div>
-          <div class="visitor-count-side" id="visitorCountSide">👥 ... pengunjung</div>
         </div>
         <button class="logout-btn" id="logoutBtn" title="Keluar">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
@@ -386,6 +396,9 @@
             <option value="deepseek-chat">DeepSeek</option>
             <option value="claude-3-5-haiku-latest">Claude Haiku</option>
           </select>
+          <button class="icon-btn" id="refreshBtnHeader" title="Refresh">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          </button>
         </div>
       </header>
 
@@ -1134,7 +1147,9 @@
     };
   });
 
-  refreshBtn.onclick=()=>location.reload();
+  if(refreshBtn) refreshBtn.onclick=()=>location.reload();
+  const refreshBtnHeader=$('refreshBtnHeader');
+  if(refreshBtnHeader) refreshBtnHeader.onclick=()=>location.reload();
   newChatBtn.onclick=createNewConversation;
   searchInput.oninput=()=>renderConvList(searchInput.value);
   // menuBtn dihandle di menu dropdown kiri
@@ -1227,9 +1242,9 @@
       if(hit) sessionStorage.setItem('gilxz_visit_hit','1');
       const url='https://countapi.mileshilliard.com/api/v1/'+(hit?'hit':'get')+'/'+KEY;
       const res=await fetch(url); const data=await res.json(); const num=data.value||data.count||'?';
-      if(loginEl) loginEl.textContent='👥 Total pengunjung: '+Number(num).toLocaleString('id-ID');
-      if(sideEl) sideEl.textContent='👥 '+Number(num).toLocaleString('id-ID')+' pengunjung';
-    }catch(e){ if(loginEl) loginEl.textContent='👥 Total pengunjung: -'; }
+      if(loginEl) loginEl.textContent='Total pengunjung: '+Number(num).toLocaleString('id-ID');
+      if(sideEl) sideEl.textContent='Total pengunjung: '+Number(num).toLocaleString('id-ID');
+    }catch(e){ if(loginEl) loginEl.textContent='Total pengunjung: -'; }
   }
 
 
