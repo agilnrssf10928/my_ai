@@ -1146,6 +1146,26 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
       }
     }
 
+    // ===== AUTO IMAGE GENERATION INTENT =====
+    // Deteksi: "buat gambar ...", "buatin gambar ...", "generate gambar ...", "gambarin ...", dll
+    if(!hasFile){
+      const imgGenMatch = text.match(/^(?:buat(?:in)?|generate|bikin|gambarin|create|draw|gambarkan)\s+(?:gambar|image|foto)?\s*(.+)$/i)
+        || text.match(/^(?:gambar|image|foto)\s+(.+)$/i);
+      if(imgGenMatch && imgGenMatch[1] && imgGenMatch[1].trim().length > 3){
+        const imgPrompt = imgGenMatch[1].trim();
+        if(overrideText===undefined){ userInput.value=''; userInput.style.height='auto'; }
+        // Tampilkan pesan user dulu
+        addMsgDOM('🎨 '+text,'user',null,null,true);
+        const conv=getCurrentConv();
+        if(conv){
+          conv.messages.push({role:'user',content:'[Generate gambar] '+imgPrompt});
+          updateTitle(imgPrompt);
+        }
+        await generateImageFromPrompt(imgPrompt, true);
+        return;
+      }
+    }
+
     isGenerating=true; stopRequested=false;
     if(sendBtn) sendBtn.disabled=true;
     if(stopBtn) stopBtn.classList.add('show');
@@ -1437,18 +1457,24 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
   };
   settingsModal.onclick=e=>{ if(e.target===settingsModal) settingsModal.classList.remove('show'); };
 
-  // IMAGE GENERATION
-  imgGenBtn.onclick=async ()=>{
-    const prompt=userInput.value.trim()||prompt('Deskripsikan gambar yang ingin dibuat:');
-    if(!prompt) return;
-    userInput.value=''; isGenerating=true; sendBtn.disabled=true;
+  // IMAGE GENERATION (reusable)
+  async function generateImageFromPrompt(prompt, fromChat=false){
+    if(!prompt || !prompt.trim()) return false;
+    prompt = prompt.trim();
+    isGenerating=true;
+    if(sendBtn) sendBtn.disabled=true;
+    if(stopBtn) stopBtn.classList.add('show');
     const wel=$('welcome'); if(wel) wel.remove();
-    addMsgDOM('🎨 Generate gambar: '+prompt,'user',null,null,true);
+    if(!fromChat){
+      addMsgDOM('🎨 Generate gambar: '+prompt,'user',null,null,true);
+    }
     const conv=getCurrentConv();
-    if(conv){ conv.messages.push({role:'user',content:'[Generate gambar] '+prompt}); updateTitle(prompt); }
+    if(conv && !fromChat){
+      conv.messages.push({role:'user',content:'[Generate gambar] '+prompt});
+      updateTitle(prompt);
+    }
     addTyping();
     try{
-      // puter.ai.txt2img
       const result = await puter.ai.txt2img(prompt);
       removeTyping();
       let imgUrl = null;
@@ -1456,20 +1482,44 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
       else if(result?.url) imgUrl=result.url;
       else if(result?.src) imgUrl=result.src;
       else if(Array.isArray(result)&&result[0]) imgUrl=typeof result[0]==='string'?result[0]:result[0].url;
-      // sometimes returns HTMLImageElement or blob
       if(!imgUrl && result instanceof HTMLImageElement) imgUrl=result.src;
       if(imgUrl){
-        const bub=addMsgDOM('Gambar berhasil dibuat:','ai',null,imgUrl,true);
-        if(conv){ conv.messages.push({role:'assistant',content:'[Gambar] '+prompt, genImage:imgUrl}); saveConversations(); }
+        const bub=addMsgDOM('Ini gambarnya ✨','ai',null,imgUrl,true);
+        const acts=document.createElement('div'); acts.className='msg-actions';
+        const rb=document.createElement('button'); rb.textContent='Ulangi'; rb.onclick=()=>generateImageFromPrompt(prompt,true);
+        acts.appendChild(rb);
+        bub.appendChild(acts);
+        if(conv){
+          conv.messages.push({role:'assistant',content:'[Gambar] '+prompt, genImage:imgUrl});
+          conv.updatedAt=Date.now();
+          saveConversations();
+        }
+        showToast('Gambar berhasil dibuat!');
+        return true;
       } else {
-        addMsgDOM('Gagal generate gambar. Coba model/prompt lain.','ai');
+        addMsgDOM('Gagal generate gambar. Coba prompt yang lebih detail ya.','ai');
         console.log('txt2img result', result);
+        return false;
       }
     }catch(err){
-      removeTyping(); console.error(err);
-      addMsgDOM('Generate gambar gagal: '+(err.message||'error'),'ai');
+      removeTyping();
+      console.error(err);
+      addMsgDOM('Generate gambar gagal: '+(err.message||'error. Coba lagi ya.'),'ai');
       showToast('Gagal generate gambar',true);
-    }finally{ isGenerating=false; sendBtn.disabled=false; }
+      return false;
+    }finally{
+      isGenerating=false;
+      if(sendBtn) sendBtn.disabled=false;
+      if(stopBtn) stopBtn.classList.remove('show');
+      if(userInput) userInput.focus();
+    }
+  }
+
+  imgGenBtn.onclick=async ()=>{
+    const prompt=userInput.value.trim()||window.prompt('Deskripsikan gambar yang ingin dibuat:');
+    if(!prompt) return;
+    userInput.value='';
+    await generateImageFromPrompt(prompt, false);
   };
 
   // REFRESH
