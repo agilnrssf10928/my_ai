@@ -460,21 +460,32 @@
 
     .more-menu-wrap{position:relative;z-index:120}
     .more-dropdown{
-      position:absolute;top:calc(100% + 6px);left:0;right:auto;min-width:230px;z-index:200;
-      background:var(--surface);border:1px solid var(--border);border-radius:12px;
-      box-shadow:0 10px 32px rgba(0,0,0,.4);padding:6px;max-height:min(70vh,520px);overflow-y:auto;
+      position:absolute;top:calc(100% + 6px);left:0;right:auto;min-width:230px;z-index:300;
+      background:rgba(15,20,32,.98);border:1px solid rgba(255,255,255,.12);border-radius:14px;
+      box-shadow:0 12px 40px rgba(0,0,0,.55);padding:8px;max-height:min(70vh,520px);overflow-y:auto;
+      backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    }
+    [data-theme="light"] .more-dropdown{
+      background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.1);
     }
     .more-dropdown-right{left:auto!important;right:0!important}
     .more-dropdown button{
-      width:100%;text-align:left;padding:10px 12px;border:none;border-radius:8px;
-      background:transparent;color:var(--text);font-size:.84rem;cursor:pointer;
+      width:100%;text-align:left;padding:11px 14px;border:none;border-radius:10px;
+      background:transparent;color:var(--text);font-size:.86rem;cursor:pointer;
       display:block;white-space:nowrap;
     }
-    .more-dropdown button:hover{background:rgba(139,92,246,.12)}
+    .more-dropdown button:hover{background:rgba(139,92,246,.15)}
     .more-dropdown button.danger{color:#fca5a5}
     .more-dropdown button.danger:hover{background:rgba(239,68,68,.12)}
-    .more-dropdown .sep{height:1px;background:var(--border);margin:4px 0}
+    .more-dropdown .sep{height:1px;background:var(--border);margin:5px 0}
     .msg-actions button{font-size:.72rem!important}
+
+    /* Overlay gelap di belakang dropdown biar tidak ketimpa konten */
+    .more-backdrop{
+      display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:250;
+      backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+    }
+    .more-backdrop.show{display:block}
 
 
     /* ===== EXTRA FEATURES ===== */
@@ -556,6 +567,24 @@
       .menu-btn{display:flex!important}
       .suggestions{grid-template-columns:1fr}
       .welcome-icon{max-width:260px}
+
+      /* Fix menu dropdown biar tidak ketimpa konten di HP */
+      .more-dropdown{
+        position:fixed !important;
+        top:56px !important;
+        left:10px !important;
+        right:10px !important;
+        width:auto !important;
+        min-width:0 !important;
+        max-height:calc(100vh - 80px) !important;
+        border-radius:16px !important;
+        z-index:300 !important;
+        box-shadow:0 16px 48px rgba(0,0,0,.6) !important;
+      }
+      .more-dropdown button{
+        padding:13px 16px;
+        font-size:.9rem;
+      }
     }
   </style>
 </head>
@@ -575,6 +604,7 @@
   </div>
 
   <div class="app" id="app">
+    <div class="more-backdrop" id="moreBackdrop"></div>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
@@ -1914,15 +1944,27 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
   (function(){
     const moreBtn = $('menuBtn');
     const moreDropdown = $('moreDropdown');
+    const moreBackdrop = $('moreBackdrop');
     if(!moreBtn || !moreDropdown) return;
 
-    function closeMore(){ moreDropdown.classList.remove('show'); }
+    function closeMore(){
+      moreDropdown.classList.remove('show');
+      if(moreBackdrop) moreBackdrop.classList.remove('show');
+    }
+    function openMore(){
+      moreDropdown.classList.add('show');
+      if(moreBackdrop) moreBackdrop.classList.add('show');
+    }
 
     moreBtn.onclick = (e) => {
       e.stopPropagation();
-      moreDropdown.classList.toggle('show');
+      if(moreDropdown.classList.contains('show')) closeMore();
+      else openMore();
     };
-    document.addEventListener('click', () => closeMore());
+    if(moreBackdrop) moreBackdrop.onclick = closeMore;
+    document.addEventListener('click', (e) => {
+      if(!moreDropdown.contains(e.target) && e.target !== moreBtn && !moreBtn.contains(e.target)) closeMore();
+    });
     moreDropdown.addEventListener('click', e => {
       e.stopPropagation();
       if(e.target.closest('button')) setTimeout(() => closeMore(), 50);
