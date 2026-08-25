@@ -289,17 +289,27 @@
       background:rgba(255,255,255,.95) !important;
       border:1px solid rgba(0,0,0,.1) !important;
     }
-    .more-dropdown,.tools-panel,.video-panel,.modal{
+    .tools-panel,.video-panel,.modal{
       background:rgba(15,20,32,.96) !important;
       backdrop-filter:blur(14px) !important;
       -webkit-backdrop-filter:blur(14px) !important;
       border:1px solid rgba(255,255,255,.1) !important;
     }
-    [data-theme="light"] .more-dropdown,
+    /* more-dropdown sengaja solid (tanpa transparan/blur) */
+    .more-dropdown{
+      background:#111827 !important;
+      backdrop-filter:none !important;
+      -webkit-backdrop-filter:none !important;
+      border:1px solid rgba(255,255,255,.12) !important;
+    }
     [data-theme="light"] .tools-panel,
     [data-theme="light"] .video-panel,
     [data-theme="light"] .modal{
       background:rgba(255,255,255,.97) !important;
+    }
+    [data-theme="light"] .more-dropdown{
+      background:#ffffff !important;
+      border-color:rgba(0,0,0,.1) !important;
     }
     .icon-btn,.menu-btn,.model-select,.attach-btn,.mic-btn{
       background:rgba(30,41,59,.85) !important;
@@ -460,13 +470,12 @@
 
     .more-menu-wrap{position:relative;z-index:120}
     .more-dropdown{
-      position:absolute;top:calc(100% + 6px);left:0;right:auto;min-width:230px;z-index:300;
-      background:rgba(15,20,32,.98);border:1px solid rgba(255,255,255,.12);border-radius:14px;
+      position:absolute;top:calc(100% + 6px);left:0;right:auto;min-width:240px;z-index:300;
+      background:#111827;border:1px solid rgba(255,255,255,.12);border-radius:14px;
       box-shadow:0 12px 40px rgba(0,0,0,.55);padding:8px;max-height:min(70vh,520px);overflow-y:auto;
-      backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
     }
     [data-theme="light"] .more-dropdown{
-      background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.1);
+      background:#ffffff;border-color:rgba(0,0,0,.1);
     }
     .more-dropdown-right{left:auto!important;right:0!important}
     .more-dropdown button{
@@ -474,16 +483,15 @@
       background:transparent;color:var(--text);font-size:.86rem;cursor:pointer;
       display:block;white-space:nowrap;
     }
-    .more-dropdown button:hover{background:rgba(139,92,246,.15)}
+    .more-dropdown button:hover{background:rgba(139,92,246,.18)}
     .more-dropdown button.danger{color:#fca5a5}
-    .more-dropdown button.danger:hover{background:rgba(239,68,68,.12)}
+    .more-dropdown button.danger:hover{background:rgba(239,68,68,.15)}
     .more-dropdown .sep{height:1px;background:var(--border);margin:5px 0}
     .msg-actions button{font-size:.72rem!important}
 
-    /* Overlay gelap di belakang dropdown biar tidak ketimpa konten */
+    /* Overlay solid (tanpa blur) */
     .more-backdrop{
-      display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:250;
-      backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+      display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:250;
     }
     .more-backdrop.show{display:block}
 
@@ -568,18 +576,24 @@
       .suggestions{grid-template-columns:1fr}
       .welcome-icon{max-width:260px}
 
-      /* Fix menu dropdown biar tidak ketimpa konten di HP */
+      /* Menu dropdown solid & rapi di HP (tanpa transparan) */
       .more-dropdown{
         position:fixed !important;
         top:56px !important;
-        left:10px !important;
-        right:10px !important;
+        left:12px !important;
+        right:12px !important;
         width:auto !important;
         min-width:0 !important;
-        max-height:calc(100vh - 80px) !important;
-        border-radius:16px !important;
+        max-height:calc(100vh - 90px) !important;
+        border-radius:14px !important;
         z-index:300 !important;
-        box-shadow:0 16px 48px rgba(0,0,0,.6) !important;
+        background:#111827 !important;
+        box-shadow:0 16px 48px rgba(0,0,0,.7) !important;
+        backdrop-filter:none !important;
+        -webkit-backdrop-filter:none !important;
+      }
+      [data-theme="light"] .more-dropdown{
+        background:#ffffff !important;
       }
       .more-dropdown button{
         padding:13px 16px;
