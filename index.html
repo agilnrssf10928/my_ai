@@ -295,21 +295,10 @@
       -webkit-backdrop-filter:blur(14px) !important;
       border:1px solid rgba(255,255,255,.1) !important;
     }
-    /* more-dropdown sengaja solid (tanpa transparan/blur) */
-    .more-dropdown{
-      background:#111827 !important;
-      backdrop-filter:none !important;
-      -webkit-backdrop-filter:none !important;
-      border:1px solid rgba(255,255,255,.12) !important;
-    }
     [data-theme="light"] .tools-panel,
     [data-theme="light"] .video-panel,
     [data-theme="light"] .modal{
       background:rgba(255,255,255,.97) !important;
-    }
-    [data-theme="light"] .more-dropdown{
-      background:#ffffff !important;
-      border-color:rgba(0,0,0,.1) !important;
     }
     .icon-btn,.menu-btn,.model-select,.attach-btn,.mic-btn{
       background:rgba(30,41,59,.85) !important;
@@ -374,16 +363,6 @@
     .icon-btn:active,.menu-btn:active,.send-btn:active,.tool-btn:active,.new-chat-btn:active,.file-action-chip:active{transform:scale(.93)}
     .send-btn{transition:transform .22s cubic-bezier(.16,1,.3,1), box-shadow .3s ease, opacity .2s}
     .send-btn:hover{transform:scale(1.06);box-shadow:0 4px 18px rgba(139,92,246,.45)}
-    .more-dropdown{
-      transform-origin:top center;
-      transition:opacity .2s ease, transform .25s cubic-bezier(.16,1,.3,1);
-      display:none;
-      opacity:0;transform:translate3d(0,-8px,0) scale(.98);
-    }
-    .more-dropdown.show{
-      display:block;
-      opacity:1;transform:translate3d(0,0,0) scale(1);
-    }
     .sidebar{
       transition:transform .42s cubic-bezier(.16,1,.3,1) !important;
       will-change:transform;
@@ -467,30 +446,43 @@
       .icon-btn:hover,.menu-btn:hover,.attach-btn:hover,.mic-btn:hover,.send-btn:hover{transform:none;box-shadow:none}
     }
 
+    /* ===== MENU GARIS TIGA (FIXED) ===== */
+    .more-menu-wrap{position:relative;z-index:120}
+    .more-dropdown{
+      position:fixed;
+      top:50px !important;
+      right:12px !important;
+      left:auto !important;
+      min-width:240px;
+      z-index:300;
+      background:#111827;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      box-shadow:0 12px 40px rgba(0,0,0,.55);
+      padding:8px;
+      max-height:min(70vh,520px);
+      overflow-y:auto;
+      transition:opacity .2s ease, transform .25s cubic-bezier(.16,1,.3,1);
+      display:none;
+      opacity:0;
+      transform:translate3d(0,-8px,0) scale(.98);
+    }
+    .more-dropdown.show{
+      display:block;
+      opacity:1;
+      transform:translate3d(0,0,0) scale(1);
+    }
+    .more-backdrop{
+      display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:250;
+      backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+    }
+    .more-backdrop.show{display:block}
 
-   .more-menu-wrap{position:relative;z-index:120}
-.more-dropdown{
-  position:fixed; /* Ubah ke fixed agar tidak menimpa konten di bawahnya */
-  top:50px !important; /* Turunkan sedikit dari header */
-  left:auto !important;
-  right:12px !important; /* Tempel ke kanan */
-  min-width:240px;
-  z-index:300;
-  background:#111827;
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:14px;
-  box-shadow:0 12px 40px rgba(0,0,0,.55);
-  padding:8px;
-  max-height:min(70vh,520px);
-  overflow-y:auto;
-}
-/* Tambahkan latar belakang gelap (backdrop) agar teks chat tidak mengganggu */
-.more-backdrop{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:250;
-  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); /* Opsional: efek blur */
-}
-.more-backdrop.show{display:block}
-
+    [data-theme="light"] .more-dropdown{
+      background:#ffffff !important;
+      border-color:rgba(0,0,0,.1) !important;
+      color:#0f172a;
+    }
 
     /* ===== EXTRA FEATURES ===== */
     .streak-badge{font-size:.7rem;background:rgba(251,191,36,.15);color:#fbbf24;padding:2px 8px;border-radius:99px;margin-left:6px}
@@ -571,38 +563,6 @@
       .menu-btn{display:flex!important}
       .suggestions{grid-template-columns:1fr}
       .welcome-icon{max-width:260px}
-
-      /* Menu dropdown solid & rapi di HP (tanpa transparan) */
-      .more-dropdown{
-        position:fixed !important;
-        top:52px !important;
-        left:10px !important;
-        right:10px !important;
-        width:auto !important;
-        min-width:0 !important;
-        max-height:70vh !important;
-        border-radius:16px !important;
-        z-index:300 !important;
-        background:#0f172a !important;
-        border:1px solid rgba(255,255,255,.1) !important;
-        box-shadow:0 20px 50px rgba(0,0,0,.8) !important;
-        backdrop-filter:none !important;
-        -webkit-backdrop-filter:none !important;
-        padding:10px 8px !important;
-        overflow-y:auto !important;
-      }
-      [data-theme="light"] .more-dropdown{
-        background:#ffffff !important;
-        border-color:rgba(0,0,0,.12) !important;
-      }
-      .more-dropdown button{
-        padding:14px 16px !important;
-        font-size:.92rem !important;
-        border-radius:12px !important;
-      }
-      .more-dropdown .sep{
-        margin:6px 8px !important;
-      }
     }
   </style>
 </head>
