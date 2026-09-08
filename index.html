@@ -296,7 +296,7 @@
               <button type="button" id="moreClearAll" class="danger">🗑️ Hapus Semua Riwayat</button>
             </div>
           </div>
-          <div class="logo"><div class="logo-icon">∞</div><span>GIL_XZ AI</span><span class="streak-badge" id="streakBadge">🔥 0</span></div>
+          <div class="logo"><div class="logo-icon">∞</div><span>GIL_XZ AI</span><span class="streak-badge" id="streakBadge" title="Streak harian">🔥 0</span></div>
         </div>
         <div class="header-actions">
           <select class="model-select" id="modelSelect">
@@ -309,10 +309,10 @@
           </select>
           <button class="icon-btn" id="toolsBtn" title="Tools & Fitur">🧰</button>
           <button class="icon-btn" id="videoMenuBtn" title="Menu Video">☰</button>
-        
+          <button class="icon-btn" id="imgGenBtn" title="Generate gambar">🎨</button>
           <button class="icon-btn" id="exportBtn" title="Export chat">📄</button>
           <button class="icon-btn" id="settingsBtn" title="System Prompt">⚙️</button>
-
+          <button class="icon-btn" id="themeBtn" title="Ganti tema">🌙</button>
           <button class="icon-btn" id="refreshBtn" title="Refresh">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
           </button>
@@ -656,6 +656,7 @@
     const old=conv.messages[idx].content.replace(/ \[File:.*\]$/,'');
     const neu=prompt('Edit pesan:', old);
     if(neu===null || !neu.trim()) return;
+    // hapus pesan dari idx ke akhir, lalu kirim ulang
     conv.messages = conv.messages.slice(0, idx);
     saveConversations(); renderChat();
     sendMessage(neu.trim());
@@ -699,48 +700,17 @@
   // SEND
   userInput.oninput=()=>{ userInput.style.height='auto'; userInput.style.height=Math.min(userInput.scrollHeight,120)+'px'; };
   userInput.onkeydown=e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); } };
-
-  // 🔥 FIX: Hapus semua event listener lama dan pasang ulang dengan benar
-  // Hapus listener yang mungkin bertabrakan
-  sendBtn.replaceWith(sendBtn.cloneNode(true));
-  const newSendBtn = document.getElementById('sendBtn');
-  
-  // Pasang event listener baru
-  newSendBtn.onclick = function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('Send button clicked!');
-    sendMessage();
-  };
-
-  // Pastikan $('sendBtn') mengarah ke elemen baru
-  const sendBtnRef = newSendBtn;
-
-  // Tambahkan juga listener melalui addEventListener untuk safety
-  newSendBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('Send button clicked via addEventListener');
-    sendMessage();
-  });
-
+  sendBtn.onclick=sendMessage;
   stopBtn.onclick=()=>{ stopRequested=true; showToast('Menghentikan...'); };
 
   async function sendMessage(overrideText){
-    console.log('sendMessage dipanggil');
     let text=(overrideText!==undefined?overrideText:userInput.value).trim();
     const hasFile=!!selectedFile;
-    if((!text&&!hasFile)||isGenerating) {
-      console.log('Tidak ada teks atau sedang generating');
-      return;
-    }
+    if((!text&&!hasFile)||isGenerating) return;
     if(hasFile&&!text){
       text=selectedDataUrl?'Analisis dan jelaskan gambar ini secara detail.':(selectedFileText?'Analisis file ini. Jika ada error, perbaiki dan tampilkan kode lengkap yang sudah diperbaiki.':'Analisis file ini.');
     }
-    console.log('Mengirim pesan:', text.substring(0,50));
-    isGenerating=true; stopRequested=false; 
-    if(sendBtnRef) sendBtnRef.disabled=true; 
-    if(stopBtn) stopBtn.classList.add('show');
+    isGenerating=true; stopRequested=false; sendBtn.disabled=true; stopBtn.classList.add('show');
     const curText=text, curImg=selectedDataUrl, curFileText=selectedFileText, curName=selectedFile?.name||null, isImg=!!selectedDataUrl;
     if(overrideText===undefined){ userInput.value=''; userInput.style.height='auto'; }
     clearFile();
@@ -772,10 +742,7 @@
         const bub = addMsgDOM('','ai',null,null,true);
         bub.innerHTML = renderVideoCardsHTML(query, []);
       } finally {
-        isGenerating=false; stopRequested=false; 
-        if(sendBtnRef) sendBtnRef.disabled=false; 
-        if(stopBtn) stopBtn.classList.remove('show'); 
-        userInput.focus();
+        isGenerating=false; stopRequested=false; sendBtn.disabled=false; stopBtn.classList.remove('show'); userInput.focus();
       }
       return;
     }
@@ -818,15 +785,13 @@
       addMsgDOM('Terjadi kesalahan: '+(err.message||'coba lagi'),'ai');
       showToast('Gagal',true);
     }finally{
-      isGenerating=false; stopRequested=false; 
-      if(sendBtnRef) sendBtnRef.disabled=false; 
-      if(stopBtn) stopBtn.classList.remove('show'); 
-      userInput.focus();
+      isGenerating=false; stopRequested=false; sendBtn.disabled=false; stopBtn.classList.remove('show'); userInput.focus();
     }
   }
 
   // ===== VIDEO SEARCH ENGINE =====
   async function searchVideos(query){
+    // 1) Piped API
     const pipedApis = [
       'https://pipedapi.kavin.rocks',
       'https://pipedapi.adminforge.de',
@@ -849,6 +814,7 @@
         if(videos.length) return videos;
       }catch(e){}
     }
+    // 2) Invidious + proxy
     const inv=['https://yewtu.be','https://inv.nadeko.net','https://invidious.nerdvpn.de','https://yt.artemislena.eu'];
     const proxies=[u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u), u=>'https://corsproxy.io/?'+encodeURIComponent(u)];
     for(const inst of inv){
@@ -895,13 +861,16 @@
 
   function regenerateLast(){
     const conv=getCurrentConv(); if(!conv||conv.messages.length<2) return;
+    // find last user message
     let lastUser=null;
     for(let i=conv.messages.length-1;i>=0;i--){ if(conv.messages[i].role==='user'){ lastUser=conv.messages[i]; break; } }
     if(!lastUser) return;
+    // remove trailing assistant messages after last user
     while(conv.messages.length && conv.messages[conv.messages.length-1].role==='assistant') conv.messages.pop();
     saveConversations(); renderChat();
     sendMessage(lastUser.content.replace(/ \[File:.*\]$/,''));
   }
+  function regenerate(idx){ /* simplified: use regenerateLast */ regenerateLast(); }
 
   function addDownloadButtons(bubble, fullText, originalFileName){
     const blocks=fullText.match(/```[\s\S]*?```/g); if(!blocks) return;
@@ -960,9 +929,9 @@
     const next=cur==='dark'?'light':'dark';
     document.documentElement.setAttribute('data-theme',next);
     localStorage.setItem('gilxz_theme',next);
-    themeBtn.textContent=next==='dark'?'':'';
+    themeBtn.textContent=next==='dark'?'🌙':'☀️';
   };
-  themeBtn.textContent=savedTheme==='dark'?'':'';
+  themeBtn.textContent=savedTheme==='dark'?'🌙':'☀️';
 
   // SETTINGS / SYSTEM PROMPT
   settingsBtn.onclick=()=>{ systemPromptInput.value=systemPrompt; settingsModal.classList.add('show'); };
@@ -980,13 +949,14 @@
   imgGenBtn.onclick=async ()=>{
     const prompt=userInput.value.trim()||prompt('Deskripsikan gambar yang ingin dibuat:');
     if(!prompt) return;
-    userInput.value=''; isGenerating=true; if(sendBtnRef) sendBtnRef.disabled=true;
+    userInput.value=''; isGenerating=true; sendBtn.disabled=true;
     const wel=$('welcome'); if(wel) wel.remove();
-    addMsgDOM(' Generate gambar: '+prompt,'user',null,null,true);
+    addMsgDOM('🎨 Generate gambar: '+prompt,'user',null,null,true);
     const conv=getCurrentConv();
     if(conv){ conv.messages.push({role:'user',content:'[Generate gambar] '+prompt}); updateTitle(prompt); }
     addTyping();
     try{
+      // puter.ai.txt2img
       const result = await puter.ai.txt2img(prompt);
       removeTyping();
       let imgUrl = null;
@@ -994,6 +964,7 @@
       else if(result?.url) imgUrl=result.url;
       else if(result?.src) imgUrl=result.src;
       else if(Array.isArray(result)&&result[0]) imgUrl=typeof result[0]==='string'?result[0]:result[0].url;
+      // sometimes returns HTMLImageElement or blob
       if(!imgUrl && result instanceof HTMLImageElement) imgUrl=result.src;
       if(imgUrl){
         const bub=addMsgDOM('Gambar berhasil dibuat:','ai',null,imgUrl,true);
@@ -1006,18 +977,11 @@
       removeTyping(); console.error(err);
       addMsgDOM('Generate gambar gagal: '+(err.message||'error'),'ai');
       showToast('Gagal generate gambar',true);
-    }finally{ isGenerating=false; if(sendBtnRef) sendBtnRef.disabled=false; }
+    }finally{ isGenerating=false; sendBtn.disabled=false; }
   };
 
   // REFRESH
-  refreshBtn.onclick=()=>location.reload();
-  newChatBtn.onclick=createNewConversation;
-  searchInput.oninput=()=>renderConvList(searchInput.value);
-  menuBtn.onclick=()=>{ sidebar.classList.add('open'); sidebarOverlay.classList.add('open'); };
-  sidebarOverlay.onclick=closeSidebar;
-  function closeSidebar(){ sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open'); }
-
-  // VIDEO PANEL
+  // ===== VIDEO PANEL (☰) =====
   function openVideoPanel(){ videoPanelBg.classList.add('show'); }
   function closeVidPanel(){ videoPanelBg.classList.remove('show'); }
   videoMenuBtn.onclick = openVideoPanel;
@@ -1044,6 +1008,13 @@
     };
   });
 
+  refreshBtn.onclick=()=>location.reload();
+  newChatBtn.onclick=createNewConversation;
+  searchInput.oninput=()=>renderConvList(searchInput.value);
+  menuBtn.onclick=()=>{ sidebar.classList.add('open'); sidebarOverlay.classList.add('open'); };
+  sidebarOverlay.onclick=closeSidebar;
+  function closeSidebar(){ sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open'); }
+
   function showToast(msg,err){ toast.textContent=msg; toast.className='toast show'+(err?' error':''); setTimeout(()=>toast.classList.remove('show'),2800); }
 
   // ===== 2. DRAG & DROP FILE =====
@@ -1057,6 +1028,7 @@
   dropZone.addEventListener('drop', async e=>{
     const f = e.dataTransfer?.files?.[0];
     if(!f) return;
+    // simulate file input
     const dt = new DataTransfer(); dt.items.add(f); fileInput.files = dt.files;
     fileInput.dispatchEvent(new Event('change'));
     showToast('File di-drop: '+f.name);
@@ -1079,6 +1051,7 @@
   });
 
   // ===== 5. CARI DALAM CHAT =====
+  // Tambah search box kecil di header jika belum ada
   (function(){
     const ha = document.querySelector('.header-actions');
     if(!ha || $('chatSearchBtn')) return;
@@ -1092,6 +1065,7 @@
       const found = conv.messages.filter(m => (m.content||'').toLowerCase().includes(q.toLowerCase()));
       if(!found.length){ showToast('Tidak ditemukan', true); return; }
       showToast('Ditemukan '+found.length+' pesan');
+      // highlight: re-render and scroll to first match visually via mark
       renderChat();
       const bubbles = chatContainer.querySelectorAll('.bubble');
       let first=null;
@@ -1109,9 +1083,13 @@
 
   // ===== 6. KEYBOARD SHORTCUTS =====
   document.addEventListener('keydown', e=>{
+    // Ctrl/Cmd + N → chat baru
     if((e.ctrlKey||e.metaKey) && e.key==='n'){ e.preventDefault(); createNewConversation(); showToast('Percakapan baru'); }
+    // Ctrl/Cmd + K → fokus input
     if((e.ctrlKey||e.metaKey) && e.key==='k'){ e.preventDefault(); userInput.focus(); }
+    // Esc → stop generating
     if(e.key==='Escape' && isGenerating){ stopRequested=true; showToast('Menghentikan...'); }
+    // Ctrl/Cmd + Enter → send (extra)
     if((e.ctrlKey||e.metaKey) && e.key==='Enter'){ e.preventDefault(); sendMessage(); }
   });
 
@@ -1127,6 +1105,7 @@
       if(sideEl) sideEl.textContent='👥 '+Number(num).toLocaleString('id-ID')+' pengunjung';
     }catch(e){ if(loginEl) loginEl.textContent='👥 Total pengunjung: -'; }
   }
+
 
   // ========== ALL EXTRA FEATURES ==========
   const toolsBtn = $('toolsBtn'), toolsBg = $('toolsBg'), closeToolsBtn = $('closeToolsBtn');
@@ -1240,6 +1219,7 @@
     const exp = prompt('Kalkulator — ketik hitungan (contoh: 12*8+5):');
     if(!exp) return;
     try{
+      // aman: hanya angka dan operator dasar
       if(!/^[\d\s\+\-\*\/\.\(\)%]+$/.test(exp)) throw new Error('karakter tidak valid');
       const r = Function('"use strict";return ('+exp+')')();
       showToast('Hasil: '+r);
@@ -1299,7 +1279,7 @@
     const q = prompt('Bandingkan 2 model — ketik pertanyaanmu:');
     if(!q||!q.trim()) return;
     if(isGenerating) return;
-    isGenerating=true; if(sendBtnRef) sendBtnRef.disabled=true;
+    isGenerating=true; sendBtn.disabled=true;
     const wel=$('welcome'); if(wel) wel.remove();
     addMsgDOM(q,'user',null,null,true);
     const conv=getCurrentConv();
@@ -1321,7 +1301,7 @@
       if(conv){ conv.messages.push({role:'assistant',content:'[Compare] '+results.map(r=>r.m+': '+String(r.text).slice(0,300)).join(' | ')}); saveConversations(); }
       bumpStats(); beep(700,0.08);
     }catch(e){ removeTyping(); addMsgDOM('Gagal membandingkan model','ai'); }
-    finally{ isGenerating=false; if(sendBtnRef) sendBtnRef.disabled=false; }
+    finally{ isGenerating=false; sendBtn.disabled=false; }
   };
 
   // Pomodoro
@@ -1366,7 +1346,7 @@
   document.querySelectorAll('.wp-btn').forEach(b=>b.onclick=()=>applyWp(b.dataset.wp));
   applyWp(localStorage.getItem('gilxz_wp')||'default');
 
-  // Reactions on AI messages
+  // Reactions on AI messages - enhance addMsgDOM path via event delegation
   chatContainer.addEventListener('click', e=>{
     const btn = e.target.closest('[data-react]');
     if(!btn) return;
@@ -1374,8 +1354,13 @@
     beep(900,0.04);
   });
 
-  // Hook bumpStats + beep
-  sendBtnRef.addEventListener('click', ()=>{ setTimeout(()=>{ bumpStats(); beep(620,0.05); }, 100); }, true);
+  // Hook bumpStats + beep into successful sends - patch via monkey on original flow
+  const _origSend = sendMessage;
+  // We already call bumpStats in fact; for normal chat add after assistant reply is hard without editing sendMessage.
+  // Lightweight: count on user send via input wrapper
+  sendBtn.addEventListener('click', ()=>{ setTimeout(()=>{ bumpStats(); beep(620,0.05); }, 100); }, true);
+
+
 
   // ===== MENU TITIK TIGA (⋮) =====
   (function(){
