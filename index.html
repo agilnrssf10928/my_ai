@@ -309,10 +309,10 @@
           </select>
           <button class="icon-btn" id="toolsBtn" title="Tools & Fitur">🧰</button>
           <button class="icon-btn" id="videoMenuBtn" title="Menu Video">☰</button>
-          <button class="icon-btn" id="imgGenBtn" title="Generate gambar">🎨</button>
+          <button class="icon-btn" id="imgGenBtn" title="Generate gambar"></button>
           <button class="icon-btn" id="exportBtn" title="Export chat">📄</button>
           <button class="icon-btn" id="settingsBtn" title="System Prompt">⚙️</button>
-          <button class="icon-btn" id="themeBtn" title="Ganti tema">🌙</button>
+          <button class="icon-btn" id="themeBtn" title="Ganti tema"></button>
           <button class="icon-btn" id="refreshBtn" title="Refresh">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
           </button>
@@ -960,9 +960,9 @@
     const next=cur==='dark'?'light':'dark';
     document.documentElement.setAttribute('data-theme',next);
     localStorage.setItem('gilxz_theme',next);
-    themeBtn.textContent=next==='dark'?'🌙':'☀️';
+    themeBtn.textContent=next==='dark'?'':'';
   };
-  themeBtn.textContent=savedTheme==='dark'?'🌙':'☀️';
+  themeBtn.textContent=savedTheme==='dark'?'':'';
 
   // SETTINGS / SYSTEM PROMPT
   settingsBtn.onclick=()=>{ systemPromptInput.value=systemPrompt; settingsModal.classList.add('show'); };
@@ -982,7 +982,7 @@
     if(!prompt) return;
     userInput.value=''; isGenerating=true; if(sendBtnRef) sendBtnRef.disabled=true;
     const wel=$('welcome'); if(wel) wel.remove();
-    addMsgDOM('🎨 Generate gambar: '+prompt,'user',null,null,true);
+    addMsgDOM(' Generate gambar: '+prompt,'user',null,null,true);
     const conv=getCurrentConv();
     if(conv){ conv.messages.push({role:'user',content:'[Generate gambar] '+prompt}); updateTitle(prompt); }
     addTyping();
