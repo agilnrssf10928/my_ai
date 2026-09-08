@@ -43,7 +43,7 @@
     .app.visible{display:flex}
     .sidebar{
       width:300px;max-width:90vw;display:flex;flex-direction:column;
-      position:fixed;top:0;right:0;bottom:0;z-index:9000;
+      position:fixed;top:0;right:0;bottom:0;z-index:100;
       background:linear-gradient(180deg, rgba(17,24,39,.97) 0%, rgba(11,15,25,.98) 100%);
       border-left:1px solid rgba(139,92,246,.15);
       backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
@@ -146,9 +146,9 @@
     .logout-btn:hover{background:rgba(239,68,68,.15);color:#fca5a5}
 
     .main{flex:1;display:flex;flex-direction:column;min-width:0;width:100%;position:relative}
-    .header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--bg);gap:8px;flex-shrink:0;position:relative;z-index:10}
+    .header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--bg);gap:8px;flex-shrink:0}
     .header-left{display:flex;align-items:center;gap:8px}
-    .menu-btn{display:flex;width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;align-items:center;justify-content:center;position:relative;z-index:10001}
+    .menu-btn{display:flex;width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;align-items:center;justify-content:center}
     .logo{display:flex;align-items:center;gap:7px;font-weight:700;font-size:1rem}
     .logo-icon{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#8b5cf6,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 14px var(--glow)}
     .logo span{background:linear-gradient(90deg,#c4b5fd,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -218,7 +218,7 @@
 
     .footer-note a{color:var(--primary-h);text-decoration:none;font-weight:600}
 
-    .toast{position:fixed;top:56px;left:50%;transform:translateX(-50%) translateY(-12px);background:var(--surface);border:1px solid var(--border);padding:8px 14px;border-radius:9px;font-size:.82rem;z-index:20000;opacity:0;transition:all .25s;pointer-events:none}
+    .toast{position:fixed;top:56px;left:50%;transform:translateX(-50%) translateY(-12px);background:var(--surface);border:1px solid var(--border);padding:8px 14px;border-radius:9px;font-size:.82rem;z-index:100;opacity:0;transition:all .25s;pointer-events:none}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     .toast.error{border-color:rgba(239,68,68,.4);color:#fca5a5}
 
@@ -295,14 +295,12 @@
       -webkit-backdrop-filter:blur(14px) !important;
       border:1px solid rgba(255,255,255,.1) !important;
     }
-    /* FIX FIX FIX: MORE-DROPDOWN FLOATINGOVERALL (melayang penuh, z-index paling atas) */
+    /* more-dropdown sengaja solid (tanpa transparan/blur) */
     .more-dropdown{
       background:#111827 !important;
       backdrop-filter:none !important;
       -webkit-backdrop-filter:none !important;
-      border:1px solid rgba(255,255,255,.15) !important;
-      box-shadow:0 12px 40px rgba(0,0,0,.8) !important;
-      z-index:10000 !important;
+      border:1px solid rgba(255,255,255,.12) !important;
     }
     [data-theme="light"] .tools-panel,
     [data-theme="light"] .video-panel,
@@ -377,7 +375,7 @@
     .send-btn{transition:transform .22s cubic-bezier(.16,1,.3,1), box-shadow .3s ease, opacity .2s}
     .send-btn:hover{transform:scale(1.06);box-shadow:0 4px 18px rgba(139,92,246,.45)}
     .more-dropdown{
-      transform-origin:top left;
+      transform-origin:top center;
       transition:opacity .2s ease, transform .25s cubic-bezier(.16,1,.3,1);
       display:none;
       opacity:0;transform:translate3d(0,-8px,0) scale(.98);
@@ -469,33 +467,29 @@
       .icon-btn:hover,.menu-btn:hover,.attach-btn:hover,.mic-btn:hover,.send-btn:hover{transform:none;box-shadow:none}
     }
 
-    /* FIX WRAPPER DROPDOWN OVERLAY (Z-INDEX SUPER TINGGI) */
-    .more-menu-wrap{position:relative;z-index:9999}
-    .more-dropdown{
-      position:absolute;top:calc(100% + 6px);left:0;right:auto;min-width:240px;z-index:10000;
-      background:#111827;border:1px solid rgba(255,255,255,.12);border-radius:14px;
-      box-shadow:0 12px 40px rgba(0,0,0,.85);padding:8px;max-height:min(70vh,520px);overflow-y:auto;
-    }
-    [data-theme="light"] .more-dropdown{
-      background:#ffffff;border-color:rgba(0,0,0,.1);
-    }
-    .more-dropdown-right{left:auto!important;right:0!important}
-    .more-dropdown button{
-      width:100%;text-align:left;padding:11px 14px;border:none;border-radius:10px;
-      background:transparent;color:var(--text);font-size:.86rem;cursor:pointer;
-      display:block;white-space:nowrap;
-    }
-    .more-dropdown button:hover{background:rgba(139,92,246,.18)}
-    .more-dropdown button.danger{color:#fca5a5}
-    .more-dropdown button.danger:hover{background:rgba(239,68,68,.15)}
-    .more-dropdown .sep{height:1px;background:var(--border);margin:5px 0}
-    .msg-actions button{font-size:.72rem!important}
 
-    /* Overlay solid gelap (tanpa blur) */
-    .more-backdrop{
-      display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9998;
-    }
-    .more-backdrop.show{display:block}
+   .more-menu-wrap{position:relative;z-index:120}
+.more-dropdown{
+  position:fixed; /* Ubah ke fixed agar tidak menimpa konten di bawahnya */
+  top:50px !important; /* Turunkan sedikit dari header */
+  left:auto !important;
+  right:12px !important; /* Tempel ke kanan */
+  min-width:240px;
+  z-index:300;
+  background:#111827;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;
+  box-shadow:0 12px 40px rgba(0,0,0,.55);
+  padding:8px;
+  max-height:min(70vh,520px);
+  overflow-y:auto;
+}
+/* Tambahkan latar belakang gelap (backdrop) agar teks chat tidak mengganggu */
+.more-backdrop{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:250;
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); /* Opsional: efek blur */
+}
+.more-backdrop.show{display:block}
 
 
     /* ===== EXTRA FEATURES ===== */
@@ -503,7 +497,7 @@
     .focus-mode .sidebar,.focus-mode .sidebar-overlay{display:none!important}
     .focus-mode .main{width:100%}
     .focus-mode .menu-btn{display:none}
-    .tools-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9500;align-items:stretch;justify-content:flex-end}
+    .tools-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:160;align-items:stretch;justify-content:flex-end}
     .tools-panel{width:100%;max-width:400px;background:var(--bg2);border-left:1px solid var(--border);height:100%;display:flex;flex-direction:column;animation:slideIn .25s ease}
     .tools-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}
     .tools-body{flex:1;overflow-y:auto;padding:14px}
@@ -534,7 +528,7 @@
     .learn-score{font-size:.85rem;color:#34d399;margin-top:6px}
 
     /* Settings modal */
-    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9600;align-items:center;justify-content:center;padding:16px}
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:16px}
     .modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;max-width:440px;width:100%;max-height:90vh;overflow-y:auto}
     .modal h2{font-size:1.1rem;margin-bottom:12px}
     .modal label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px;margin-top:10px}
@@ -545,11 +539,11 @@
     .btn-primary{background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;border:none}
     .btn-ghost{background:transparent;color:var(--text)}
 
-    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:8999}
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:95}
     .sidebar-overlay.open{display:block}
 
     /* VIDEO PANEL */
-    .video-panel-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9500;align-items:stretch;justify-content:flex-end}
+    .video-panel-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:150;align-items:stretch;justify-content:flex-end}
     .video-panel{width:100%;max-width:420px;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;height:100%;animation:slideIn .25s ease}
     @keyframes slideIn{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
     .video-panel-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}
@@ -578,7 +572,7 @@
       .suggestions{grid-template-columns:1fr}
       .welcome-icon{max-width:260px}
 
-      /* Menu dropdown solid & rapi di HP (melayang penuh, tidak menimpa / tertimpa) */
+      /* Menu dropdown solid & rapi di HP (tanpa transparan) */
       .more-dropdown{
         position:fixed !important;
         top:52px !important;
@@ -588,10 +582,10 @@
         min-width:0 !important;
         max-height:70vh !important;
         border-radius:16px !important;
-        z-index:10000 !important;
+        z-index:300 !important;
         background:#0f172a !important;
-        border:1px solid rgba(255,255,255,.15) !important;
-        box-shadow:0 20px 50px rgba(0,0,0,.9) !important;
+        border:1px solid rgba(255,255,255,.1) !important;
+        box-shadow:0 20px 50px rgba(0,0,0,.8) !important;
         backdrop-filter:none !important;
         -webkit-backdrop-filter:none !important;
         padding:10px 8px !important;
@@ -1201,6 +1195,7 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
     }
 
     // ===== AUTO IMAGE GENERATION INTENT =====
+    // Deteksi: "buat gambar ...", "buatin gambar ...", "generate gambar ...", "gambarin ...", dll
     if(!hasFile){
       const imgGenMatch = text.match(/^(?:buat(?:in)?|generate|bikin|gambarin|create|draw|gambarkan)\s+(?:gambar|image|foto)?\s*(.+)$/i)
         || text.match(/^(?:gambar|image|foto)\s+(.+)$/i);
@@ -1268,6 +1263,7 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
         '\n\nJika user mengirim gambar atau file, selalu analisis secara lengkap, berikan insight mendalam, dan di akhir berikan saran aksi konkret yang relevan.';
       const sys = [{role:'system', content: smartSys}];
       if(isImg && curImg){
+        // Vision: force comprehensive analysis + actionable suggestions
         const visionPrompt = curText.includes('Analisis gambar') ? curText :
           `${curText}\n\n(Instruksi tambahan: analisis gambar secara detail, ekstrak teks jika ada, dan akhiri dengan 3 saran aksi relevan.)`;
         response = await puter.ai.chat(visionPrompt, curImg, {model, stream:true});
@@ -1337,11 +1333,12 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
       return res.json();
     };
     const proxies = [
-      u => u,
+      u => u, // direct first
       u => 'https://corsproxy.io/?' + encodeURIComponent(u),
       u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u)
     ];
 
+    // Piped instances
     const piped = [
       'https://pipedapi.kavin.rocks',
       'https://pipedapi.adminforge.de',
@@ -1369,11 +1366,12 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
       }
     }
 
+    // Invidious
     if(out.length < 3){
       const inv = ['https://yewtu.be','https://inv.nadeko.net','https://invidious.nerdvpn.de','https://yt.artemislena.eu','https://invidious.flokinet.to'];
       for(const inst of inv){
         if(out.length >= 6) break;
-        for(const px of proxies.slice(1)){
+        for(const px of proxies.slice(1)){ // proxy only (CORS)
           try{
             const data = await tryFetchJson(px(inst+'/api/v1/search?q='+encodeURIComponent(query)+'&type=video'));
             if(!Array.isArray(data)) continue;
@@ -1391,6 +1389,7 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
 
   function renderVideoCardsHTML(query, videos){
     const ytSearch = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query);
+    // Fallback selalu ada: embed search + link (tanpa API key)
     const fallback = `
       <div style="margin-top:10px;border-radius:12px;overflow:hidden;border:1px solid var(--border);background:rgba(0,0,0,.15)">
         <div style="padding:8px 10px;font-size:.78rem;color:var(--muted)">Preview pencarian YouTube</div>
@@ -1421,14 +1420,16 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
 
   function regenerateLast(){
     const conv=getCurrentConv(); if(!conv||conv.messages.length<2) return;
+    // find last user message
     let lastUser=null;
     for(let i=conv.messages.length-1;i>=0;i--){ if(conv.messages[i].role==='user'){ lastUser=conv.messages[i]; break; } }
     if(!lastUser) return;
+    // remove trailing assistant messages after last user
     while(conv.messages.length && conv.messages[conv.messages.length-1].role==='assistant') conv.messages.pop();
     saveConversations(); renderChat();
     sendMessage(lastUser.content.replace(/ \[File:.*\]$/,''));
   }
-  function regenerate(idx){ regenerateLast(); }
+  function regenerate(idx){ /* simplified: use regenerateLast */ regenerateLast(); }
 
   function addDownloadButtons(bubble, fullText, originalFileName){
     const blocks=fullText.match(/```[\s\S]*?```/g); if(!blocks) return;
@@ -1504,7 +1505,7 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
   };
   settingsModal.onclick=e=>{ if(e.target===settingsModal) settingsModal.classList.remove('show'); };
 
-  // IMAGE GENERATION
+  // IMAGE GENERATION (reusable)
   async function generateImageFromPrompt(prompt, fromChat=false){
     if(!prompt || !prompt.trim()) return false;
     prompt = prompt.trim();
@@ -1569,7 +1570,8 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
     await generateImageFromPrompt(prompt, false);
   };
 
-  // REFRESH & VIDEO PANEL
+  // REFRESH
+  // ===== VIDEO PANEL (☰) =====
   function openVideoPanel(){ videoPanelBg.classList.add('show'); }
   function closeVidPanel(){ videoPanelBg.classList.remove('show'); }
   videoMenuBtn.onclick = openVideoPanel;
@@ -1601,12 +1603,13 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
   if(refreshBtnHeader) refreshBtnHeader.onclick=()=>location.reload();
   newChatBtn.onclick=createNewConversation;
   searchInput.oninput=()=>renderConvList(searchInput.value);
+  // menuBtn dihandle di menu dropdown kiri
   sidebarOverlay.onclick=closeSidebar;
   function closeSidebar(){ sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open'); }
 
   function showToast(msg,err){ toast.textContent=msg; toast.className='toast show'+(err?' error':''); setTimeout(()=>toast.classList.remove('show'),2800); }
 
-  // ===== DRAG & DROP FILE =====
+  // ===== 2. DRAG & DROP FILE =====
   const dropZone = document.querySelector('.main') || document.body;
   ['dragenter','dragover'].forEach(ev=>{
     dropZone.addEventListener(ev, e=>{ e.preventDefault(); e.stopPropagation(); dropZone.style.outline='2px dashed var(--primary)'; });
@@ -1617,12 +1620,13 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
   dropZone.addEventListener('drop', async e=>{
     const f = e.dataTransfer?.files?.[0];
     if(!f) return;
+    // simulate file input
     const dt = new DataTransfer(); dt.items.add(f); fileInput.files = dt.files;
     fileInput.dispatchEvent(new Event('change'));
     showToast('File di-drop: '+f.name);
   });
 
-  // ===== PASTE IMAGE (Ctrl+V) =====
+  // ===== 3. PASTE IMAGE (Ctrl+V) =====
   document.addEventListener('paste', async e=>{
     const items = e.clipboardData?.items; if(!items) return;
     for(const it of items){
@@ -1638,7 +1642,8 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
     }
   });
 
-  // ===== CARI DALAM CHAT =====
+  // ===== 5. CARI DALAM CHAT =====
+  // Tambah search box kecil di header jika belum ada
   (function(){
     const ha = document.querySelector('.header-actions');
     if(!ha || $('chatSearchBtn')) return;
@@ -1652,6 +1657,7 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
       const found = conv.messages.filter(m => (m.content||'').toLowerCase().includes(q.toLowerCase()));
       if(!found.length){ showToast('Tidak ditemukan', true); return; }
       showToast('Ditemukan '+found.length+' pesan');
+      // highlight: re-render and scroll to first match visually via mark
       renderChat();
       const bubbles = chatContainer.querySelectorAll('.bubble');
       let first=null;
@@ -1667,11 +1673,15 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
     };
   })();
 
-  // ===== KEYBOARD SHORTCUTS =====
+  // ===== 6. KEYBOARD SHORTCUTS =====
   document.addEventListener('keydown', e=>{
+    // Ctrl/Cmd + N → chat baru
     if((e.ctrlKey||e.metaKey) && e.key==='n'){ e.preventDefault(); createNewConversation(); showToast('Percakapan baru'); }
+    // Ctrl/Cmd + K → fokus input
     if((e.ctrlKey||e.metaKey) && e.key==='k'){ e.preventDefault(); userInput.focus(); }
+    // Esc → stop generating
     if(e.key==='Escape' && isGenerating){ stopRequested=true; showToast('Menghentikan...'); }
+    // Ctrl/Cmd + Enter → send (extra)
     if((e.ctrlKey||e.metaKey) && e.key==='Enter'){ e.preventDefault(); sendMessage(); }
   });
 
@@ -1681,7 +1691,7 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
     try{
       const hit=!sessionStorage.getItem('gilxz_visit_hit');
       if(hit) sessionStorage.setItem('gilxz_visit_hit','1');
-      const url='[https://countapi.mileshilliard.com/api/v1/'+(hit?'hit':'get')+'/'+KEY](https://countapi.mileshilliard.com/api/v1/'+(hit?'hit':'get')+'/'+KEY);
+      const url='https://countapi.mileshilliard.com/api/v1/'+(hit?'hit':'get')+'/'+KEY;
       const res=await fetch(url); const data=await res.json(); const num=data.value||data.count||'?';
       if(loginEl) loginEl.textContent='Total pengunjung: '+Number(num).toLocaleString('id-ID');
       if(sideEl) sideEl.textContent='Total pengunjung: '+Number(num).toLocaleString('id-ID');
@@ -1805,6 +1815,7 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
     const exp = prompt('Kalkulator — ketik hitungan (contoh: 12*8+5):');
     if(!exp) return;
     try{
+      // aman: hanya angka dan operator dasar
       if(!/^[\d\s\+\-\*\/\.\(\)%]+$/.test(exp)) throw new Error('karakter tidak valid');
       const r = Function('"use strict";return ('+exp+')')();
       showToast('Hasil: '+r);
@@ -1931,7 +1942,7 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
   document.querySelectorAll('.wp-btn').forEach(b=>b.onclick=()=>applyWp(b.dataset.wp));
   applyWp(localStorage.getItem('gilxz_wp')||'default');
 
-  // Reactions on AI messages
+  // Reactions on AI messages - enhance addMsgDOM path via event delegation
   chatContainer.addEventListener('click', e=>{
     const btn = e.target.closest('[data-react]');
     if(!btn) return;
@@ -1939,10 +1950,15 @@ Jawab dalam bahasa Indonesia yang natural dan membantu.`;
     beep(900,0.04);
   });
 
+  // Hook bumpStats + beep into successful sends - patch via monkey on original flow
+  const _origSend = sendMessage;
+  // We already call bumpStats in fact; for normal chat add after assistant reply is hard without editing sendMessage.
+  // Lightweight: count on user send via input wrapper
   sendBtn.addEventListener('click', ()=>{ setTimeout(()=>{ bumpStats(); beep(620,0.05); }, 100); }, true);
 
 
-  // ===== FIX MENU GARIS TIGA OVERLAY & POSITIONING =====
+
+  // ===== MENU TITIK TIGA (⋮) — SEMUA FITUR =====
   (function(){
     const moreBtn = $('menuBtn');
     const moreDropdown = $('moreDropdown');
