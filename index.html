@@ -72,7 +72,7 @@
     .logout-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center}
     .logout-btn:hover{background:rgba(239,68,68,.15);color:#fca5a5}
 
-    .main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative;background:radial-gradient(circle at 75% 15%,rgba(85,196,187,.06),transparent 30%)}
+    .main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative;z-index:0;background:radial-gradient(circle at 75% 15%,rgba(85,196,187,.06),transparent 30%)}
     .app.sidebar-collapsed .sidebar{width:0;transform:translateX(-100%);border-right:0;overflow:hidden}
     .app.sidebar-collapsed .menu-btn{display:flex}
     .header{position:relative;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(18px);gap:8px;flex-shrink:0;animation:fadeDown .45s ease both}
@@ -251,11 +251,11 @@
 
     @media(max-width:768px){
       html,body{width:100%;max-width:100%;overflow:hidden}
-      .sidebar{position:fixed;left:0;top:48px;bottom:0;width:100vw;z-index:1000;transform:translateX(-105%);box-shadow:18px 0 44px rgba(0,0,0,.38)}
-      .sidebar.open{transform:translateX(0)}
-      .sidebar-collapsed .sidebar{width:100vw;transform:translateX(-105%);border-right:1px solid var(--border)}
+      .sidebar{position:fixed;left:0;right:0;top:48px;bottom:0;width:auto;z-index:10000;transform:translateX(-105%);visibility:hidden;pointer-events:none;box-shadow:18px 0 44px rgba(0,0,0,.38)}
+      .sidebar.open{transform:translateX(0);visibility:visible;pointer-events:auto}
+      .sidebar-collapsed .sidebar{width:auto;transform:translateX(-105%);border-right:1px solid var(--border)}
       .sidebar-close-btn{right:8px;top:8px;width:30px;height:30px;background:var(--bg2);border-color:var(--primary);color:var(--primary-h);box-shadow:4px 4px 14px rgba(0,0,0,.25)}
-      .sidebar-overlay{top:48px;z-index:999;background:rgba(3,10,14,.78);backdrop-filter:blur(3px)}
+      .sidebar-overlay{top:48px;z-index:9999;background:rgba(3,10,14,.78);backdrop-filter:blur(3px)}
       .sidebar-overlay.open{display:block}
       .menu-btn{display:flex!important}
       .header{padding:7px 9px;min-height:48px;overflow:hidden}
