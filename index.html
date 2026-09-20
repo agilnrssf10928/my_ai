@@ -147,13 +147,28 @@
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     .toast.error{border-color:rgba(239,68,68,.4);color:#fca5a5}
 
-    .more-menu-wrap{position:relative;z-index:300}
-   .more-dropdown{
-  display:none;position:fixed;top:50px;left:10px;min-width:200px;z-index:99999;
-  background:var(--surface);border:1px solid var(--border);border-radius:12px;
-  box-shadow:0 12px 32px rgba(0,0,0,.45);padding:6px;overflow:hidden;
-}
+       .more-menu-wrap{position:relative;z-index:10000}
+    .more-dropdown{
+      display:none;position:absolute;top:110%;left:0;min-width:200px;z-index:999999;
+      background:var(--surface);border:1px solid var(--border);border-radius:12px;
+      box-shadow:0 12px 32px rgba(0,0,0,.45);padding:6px;overflow:hidden;
+    }
     .more-dropdown.show{display:block}
+
+    /* KHUSUS UNTUK HP (Mobile) */
+    @media(max-width:768px){
+      .more-dropdown{
+        position:fixed;
+        top:52px;          /* tepat di bawah header (48px) + 4px */
+        left:8px;
+        right:8px;
+        min-width:auto;
+        width:auto;
+        z-index:999999;    /* paling atas, di atas sidebar, video, tools */
+        max-height:calc(100vh - 60px);
+        overflow-y:auto;
+      }
+    }
     .header-actions #imgGenBtn,
     .header-actions #exportBtn,
     .header-actions #settingsBtn{display:none}
@@ -354,48 +369,49 @@
     </aside>
 
     <div class="main">
-      <header class="header">
-        <div class="header-left">
-          <button class="menu-btn" id="menuBtn" title="Sidebar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
-          <div class="more-menu-wrap">
-            <button class="icon-btn" id="moreBtn" title="Menu riwayat">⋮</button>
-            <div class="more-dropdown" id="moreDropdown">
-              <button type="button" id="moreNewChat">Percakapan Baru</button>
-              <button type="button" id="moreHistory">Lihat Riwayat</button>
-              <button type="button" id="moreSearch">Cari Riwayat</button>
-              <div class="sep"></div>
-              <button type="button" id="moreTools">Tools & Fitur</button>
-              <button type="button" id="moreImage">Generate Gambar</button>
-              <button type="button" id="moreExport">Export Chat</button>
-              <button type="button" id="moreSettings">Setelan</button>
-              <button type="button" id="moreTheme">Ganti Tema</button>
-              <div class="sep"></div>
-              <button type="button" id="moreClearAll" class="danger">Hapus Semua Riwayat</button>
-            </div>
-          </div>
-          <div class="logo"><div class="logo-icon">∞</div><span>GIL_XZ AI</span><span class="streak-badge" id="streakBadge" title="Streak harian">Streak 0</span></div>
-        </div>
-        <div class="header-actions">
-          <select class="model-select" id="modelSelect">
-            <option value="gpt-5.4-nano">GPT-5.4 Nano</option>
-            <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-            <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B</option>
-            <option value="z-ai/glm-4.7-flash">GLM-4.7 Flash</option>
-            <option value="deepseek-chat">DeepSeek</option>
-            <option value="claude-3-5-haiku-latest">Claude Haiku</option>
-          </select>
-          <button class="icon-btn label-btn" id="toolsBtn" title="Tools & Fitur">Tools</button>
-          <button class="icon-btn" id="videoMenuBtn" title="Menu Video">☰</button>
-          <button class="icon-btn label-btn" id="imgGenBtn" title="Generate gambar">Gambar</button>
-          <button class="icon-btn label-btn" id="exportBtn" title="Export chat">Export</button>
-          <button class="icon-btn label-btn" id="settingsBtn" title="System Prompt">Setelan</button>
-          <button class="icon-btn label-btn" id="themeBtn" title="Ganti tema">Tema</button>
-          <button class="icon-btn" id="refreshBtn" title="Refresh">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-          </button>
-        </div>
-      </header>
+    <header class="header">
+  <div class="header-left">
+    <button class="menu-btn" id="menuBtn" title="Sidebar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></button>
+    <div class="more-menu-wrap">
+      <button class="icon-btn" id="moreBtn" title="Menu riwayat">⋮</button>
+    </div>
+    <div class="logo"><div class="logo-icon">∞</div><span>GIL_XZ AI</span><span class="streak-badge" id="streakBadge" title="Streak harian">Streak 0</span></div>
+  </div>
+  <div class="header-actions">
+    <select class="model-select" id="modelSelect">
+      <option value="gpt-5.4-nano">GPT-5.4 Nano</option>
+      <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+      <option value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B</option>
+      <option value="z-ai/glm-4.7-flash">GLM-4.7 Flash</option>
+      <option value="deepseek-chat">DeepSeek</option>
+      <option value="claude-3-5-haiku-latest">Claude Haiku</option>
+    </select>
+    <button class="icon-btn label-btn" id="toolsBtn" title="Tools & Fitur">Tools</button>
+    <button class="icon-btn" id="videoMenuBtn" title="Menu Video">☰</button>
+    <button class="icon-btn label-btn" id="imgGenBtn" title="Generate gambar">Gambar</button>
+    <button class="icon-btn label-btn" id="exportBtn" title="Export chat">Export</button>
+    <button class="icon-btn label-btn" id="settingsBtn" title="System Prompt">Setelan</button>
+    <button class="icon-btn label-btn" id="themeBtn" title="Ganti tema">Tema</button>
+    <button class="icon-btn" id="refreshBtn" title="Refresh">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+    </button>
+  </div>
+</header>
 
+<!-- ===== DROPDOWN MENU TITIK TIGA — DIPINDAH KE LUAR HEADER ===== -->
+<div class="more-dropdown" id="moreDropdown">
+  <button type="button" id="moreNewChat">Percakapan Baru</button>
+  <button type="button" id="moreHistory">Lihat Riwayat</button>
+  <button type="button" id="moreSearch">Cari Riwayat</button>
+  <div class="sep"></div>
+  <button type="button" id="moreTools">Tools & Fitur</button>
+  <button type="button" id="moreImage">Generate Gambar</button>
+  <button type="button" id="moreExport">Export Chat</button>
+  <button type="button" id="moreSettings">Setelan</button>
+  <button type="button" id="moreTheme">Ganti Tema</button>
+  <div class="sep"></div>
+  <button type="button" id="moreClearAll" class="danger">Hapus Semua Riwayat</button>
+</div>
       <!-- VIDEO PANEL -->
       <div class="video-panel-bg" id="videoPanelBg">
         <div class="video-panel" id="videoPanel">
@@ -1453,22 +1469,25 @@
     const moreDropdown = $('moreDropdown');
     if(!moreBtn || !moreDropdown) return;
 
-    moreBtn.onclick = (e) => {
-      e.stopPropagation();
+         // Buka/tutup menu
+    moreBtn.addEventListener('click', function(e){
       e.preventDefault();
+      e.stopPropagation();
       moreDropdown.classList.toggle('show');
-    };
-
-    // Tutup dropdown hanya jika klik di luar menu
-    document.addEventListener('click', (e) => {
-      if (!moreDropdown.contains(e.target) && e.target !== moreBtn) {
-        moreDropdown.classList.remove('show');
-      }
     });
 
-    // Pastikan klik di dalam menu tidak menutup menu
-    moreDropdown.addEventListener('click', e => {
+    // Cegah klik di dalam dropdown ikut menutup
+    moreDropdown.addEventListener('click', function(e){
       e.stopPropagation();
+    });
+
+    // Klik di luar = tutup
+    document.addEventListener('click', function(e){
+      if(!moreDropdown.classList.contains('show')) return;
+      // kalau klik di dalam dropdown atau di tombol, jangan tutup
+      if(moreDropdown.contains(e.target)) return;
+      if(moreBtn.contains(e.target)) return;
+      moreDropdown.classList.remove('show');
     });
 
     const moreNewChat = $('moreNewChat');
