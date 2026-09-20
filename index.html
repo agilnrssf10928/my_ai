@@ -5,35 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>GIL_XZ AI — Chat Unlimited</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://js.puter.com/v2/"></script>
   <style>
     :root, [data-theme="dark"] {
-      --bg: #0b0f19; --bg2: #111827; --surface: #1a2234;
-      --border: rgba(255,255,255,0.08); --text: #f1f5f9; --muted: #94a3b8;
-      --primary: #8b5cf6; --primary-h: #a78bfa; --glow: rgba(139,92,246,0.35);
-      --user: linear-gradient(135deg,#7c3aed,#4f46e5);
-      --ai: rgba(30,41,59,0.92); --danger: #ef4444;
+      --bg: #0d1217; --bg2: #121a20; --surface: #182229;
+      --border: rgba(205,232,231,0.11); --text: #edf6f4; --muted: #91a7aa;
+      --primary: #55c4bb; --primary-h: #8be0d7; --glow: rgba(85,196,187,0.2);
+      --user: linear-gradient(135deg,#167d7a,#245b73);
+      --ai: rgba(27,42,48,0.94); --danger: #ef7777;
     }
     [data-theme="light"] {
-      --bg: #f8fafc; --bg2: #ffffff; --surface: #ffffff;
-      --border: rgba(0,0,0,0.1); --text: #0f172a; --muted: #64748b;
-      --primary: #7c3aed; --primary-h: #6d28d9; --glow: rgba(124,58,237,0.2);
-      --user: linear-gradient(135deg,#7c3aed,#4f46e5);
+      --bg: #eef4f3; --bg2: #f8fbfa; --surface: #ffffff;
+      --border: rgba(19,55,58,0.13); --text: #173236; --muted: #647d80;
+      --primary: #168b83; --primary-h: #116c68; --glow: rgba(22,139,131,0.16);
+      --user: linear-gradient(135deg,#167d7a,#245b73);
       --ai: #f1f5f9; --danger: #dc2626;
     }
     *{margin:0;padding:0;box-sizing:border-box}
-    html,body{height:100%;overflow:hidden;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+    html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
     body{display:flex;flex-direction:column}
 
     /* LOGIN */
-    .login-overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+    .login-overlay{position:fixed;inset:0;background:radial-gradient(circle at 80% 10%,rgba(85,196,187,.13),transparent 35%),var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .45s ease both}
     .login-overlay.hidden{display:none}
-    .login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;max-width:400px;width:100%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+    .login-card{background:color-mix(in srgb,var(--surface) 92%,transparent);border:1px solid var(--border);border-radius:24px;padding:32px;max-width:400px;width:100%;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.24);animation:riseIn .65s cubic-bezier(.2,.8,.2,1) both}
     .login-card img{width:100%;max-width:300px;border-radius:12px;margin-bottom:16px;border:1px solid rgba(139,92,246,.3)}
-    .login-card h1{font-size:1.45rem;margin-bottom:6px;background:linear-gradient(90deg,#c4b5fd,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .login-card h1{font-size:1.45rem;margin-bottom:6px;color:var(--primary-h)}
     .login-card p{color:var(--muted);font-size:.88rem;line-height:1.5;margin-bottom:20px}
-    .login-btn{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;font-size:.95rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+    .login-btn{width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,#168b83,#245b73);color:#fff;font-size:.95rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .2s,box-shadow .2s}
+    .login-btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(22,139,131,.24)}
     .login-btn:disabled{opacity:.6;cursor:not-allowed}
     .login-note{margin-top:12px;font-size:.72rem;color:var(--muted)}
     .visitor-count{margin-top:12px;padding:7px 12px;border-radius:10px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.25);font-size:.8rem;color:#c4b5fd;font-weight:500}
@@ -41,7 +42,7 @@
     /* APP */
     .app{display:none;height:100%;width:100%}
     .app.visible{display:flex}
-    .sidebar{width:280px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:transform .3s}
+    .sidebar{width:280px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:transform .3s;animation:slideInLeft .45s ease both}
     .sidebar-header{padding:12px;border-bottom:1px solid var(--border)}
     .new-chat-btn{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:11px;background:transparent;color:var(--text);font-size:.88rem;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px}
     .new-chat-btn:hover{background:rgba(139,92,246,.1);border-color:var(--primary);color:var(--primary-h)}
@@ -67,20 +68,21 @@
     .logout-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center}
     .logout-btn:hover{background:rgba(239,68,68,.15);color:#fca5a5}
 
-    .main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
-    .header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--bg);gap:8px;flex-shrink:0}
+    .main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative;background:radial-gradient(circle at 75% 15%,rgba(85,196,187,.06),transparent 30%)}
+    .header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(18px);gap:8px;flex-shrink:0;animation:fadeDown .45s ease both}
     .header-left{display:flex;align-items:center;gap:8px}
     .menu-btn{display:none;width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;align-items:center;justify-content:center}
     .logo{display:flex;align-items:center;gap:7px;font-weight:700;font-size:1rem}
-    .logo-icon{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#8b5cf6,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 14px var(--glow)}
-    .logo span{background:linear-gradient(90deg,#c4b5fd,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .logo-icon{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#168b83,#245b73);display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 20px var(--glow)}
+    .logo span{color:var(--primary-h)}
     .header-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
     .model-select{appearance:none;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:6px 26px 6px 8px;border-radius:8px;font-size:.75rem;cursor:pointer;outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center}
     .icon-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;flex-shrink:0}
+    .icon-btn.label-btn{width:auto;min-width:42px;padding:0 9px;font-size:.72rem;font-weight:600}
     .icon-btn:hover{background:rgba(139,92,246,.12);color:var(--primary-h);border-color:rgba(139,92,246,.35)}
 
-    .chat-container{flex:1;overflow-y:auto;padding:14px 14px 140px;display:flex;flex-direction:column;gap:16px}
-    .welcome{margin:auto;text-align:center;max-width:460px;padding:12px}
+    .chat-container{flex:1;overflow-y:auto;padding:24px 18px 140px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth}
+    .welcome{margin:auto;text-align:center;max-width:460px;padding:12px;animation:riseIn .65s cubic-bezier(.2,.8,.2,1) both}
     .welcome-icon{width:100%;max-width:360px;margin:0 auto 14px;border-radius:12px;overflow:hidden;box-shadow:0 0 36px var(--glow);border:1px solid rgba(139,92,246,.3)}
     .welcome-icon img{width:100%;display:block}
     .welcome h1{font-size:1.35rem;margin-bottom:4px}
@@ -89,7 +91,7 @@
     .suggestion{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:10px 12px;text-align:left;cursor:pointer;font-size:.8rem;color:var(--muted)}
     .suggestion:hover{border-color:var(--primary);color:var(--text)}
 
-    .message{display:flex;gap:9px;max-width:760px;width:100%;margin:0 auto}
+    .message{display:flex;gap:9px;max-width:760px;width:100%;margin:0 auto;animation:messageIn .35s cubic-bezier(.2,.8,.2,1) both}
     .message.user{flex-direction:row-reverse}
     .avatar{width:30px;height:30px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
     .message.user .avatar{background:var(--user);font-size:9px;color:#fff}
@@ -111,7 +113,7 @@
     .typing span:nth-child(2){animation-delay:-.16s}
     @keyframes bounce{0%,80%,100%{transform:scale(.55);opacity:.4}40%{transform:scale(1);opacity:1}}
 
-    .input-area{position:absolute;bottom:0;left:0;right:0;padding:10px 12px 14px;background:linear-gradient(to top,var(--bg) 70%,transparent);z-index:40}
+    .input-area{position:absolute;bottom:0;left:0;right:0;padding:10px 16px 16px;background:linear-gradient(to top,var(--bg) 72%,transparent);z-index:40}
     .file-preview{max-width:760px;margin:0 auto 8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:9px 11px}
     .preview-content{display:flex;align-items:center;gap:9px;position:relative}
     #previewImg{max-width:90px;max-height:70px;border-radius:7px;object-fit:cover}
@@ -119,17 +121,18 @@
     .preview-file-info span:last-child{font-size:.7rem;color:var(--muted)}
     .remove-file-btn{position:absolute;top:-4px;right:-4px;width:20px;height:20px;border-radius:50%;border:none;background:var(--danger);color:#fff;font-size:13px;cursor:pointer}
     .preview-hint{margin-top:6px;font-size:.72rem;color:var(--muted)}
-    .input-wrapper{max-width:760px;margin:0 auto;display:flex;align-items:flex-end;gap:5px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:6px;box-shadow:0 4px 20px rgba(0,0,0,.15)}
-    .input-wrapper:focus-within{border-color:rgba(139,92,246,.5)}
+    .input-wrapper{max-width:760px;margin:0 auto;display:flex;align-items:flex-end;gap:5px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.16);transition:border-color .2s,box-shadow .2s,transform .2s}
+    .input-wrapper:focus-within{border-color:var(--primary);box-shadow:0 12px 34px var(--glow);transform:translateY(-1px)}
     .attach-btn,.mic-btn,.stop-btn{width:34px;height:34px;border-radius:10px;border:none;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
     .attach-btn:hover,.mic-btn:hover{color:var(--primary-h);background:rgba(139,92,246,.1)}
     .mic-btn.listening{color:#ef4444;animation:pulse 1s infinite}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-    .stop-btn{background:rgba(239,68,68,.15);color:#fca5a5;display:none}
+    .stop-btn{background:rgba(239,68,68,.15);color:#fca5a5;display:none;font-size:.7rem;font-weight:600}
     .stop-btn.show{display:flex}
     #userInput{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:.9rem;font-family:inherit;resize:none;max-height:120px;min-height:20px;line-height:1.4;padding:6px 0}
     #userInput::placeholder{color:var(--muted)}
-    .send-btn{width:36px;height:36px;border-radius:11px;border:none;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+    .send-btn{width:36px;height:36px;border-radius:11px;border:none;background:linear-gradient(135deg,#168b83,#245b73);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:transform .2s,filter .2s}
+    .send-btn:hover{transform:scale(1.05);filter:brightness(1.1)}
     .send-btn:disabled{opacity:.5;cursor:not-allowed}
     .footer-note{text-align:center;font-size:.7rem;color:var(--muted);margin-top:6px}
     .footer-note a{color:var(--primary-h);text-decoration:none;font-weight:600}
@@ -162,7 +165,7 @@
     .focus-mode .menu-btn{display:none}
     .tools-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:160;align-items:stretch;justify-content:flex-end}
     .tools-bg.show{display:flex}
-    .tools-panel{width:100%;max-width:400px;background:var(--bg2);border-left:1px solid var(--border);height:100%;display:flex;flex-direction:column;animation:slideIn .25s ease}
+    .tools-panel{width:100%;max-width:400px;background:var(--bg2);border-left:1px solid var(--border);height:100%;display:flex;flex-direction:column;animation:slideIn .35s cubic-bezier(.2,.8,.2,1)}
     .tools-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}
     .tools-body{flex:1;overflow-y:auto;padding:14px}
     .tools-section{margin-bottom:18px}
@@ -211,6 +214,12 @@
     .video-panel-bg.show{display:flex}
     .video-panel{width:100%;max-width:420px;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;height:100%;animation:slideIn .25s ease}
     @keyframes slideIn{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+    @keyframes slideInLeft{from{transform:translateX(-18px);opacity:0}to{transform:translateX(0);opacity:1}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes fadeDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes riseIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+    @keyframes messageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
     .video-panel-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}
     .video-panel-header h2{font-size:1.05rem}
     .video-search-row{display:flex;gap:8px;padding:12px 14px;border-bottom:1px solid var(--border)}
@@ -252,7 +261,7 @@
         Login dengan Email / Google
       </button>
       <p class="login-note">Aman · Gratis · Riwayat tersimpan di akunmu</p>
-      <div class="visitor-count" id="visitorCountLogin">👥 Total pengunjung: ...</div>
+      <div class="visitor-count" id="visitorCountLogin">Total pengunjung: ...</div>
     </div>
   </div>
 
@@ -274,7 +283,7 @@
         <div class="user-info">
           <div class="name" id="userName">User</div>
           <div class="email" id="userEmail"></div>
-          <div class="visitor-count-side" id="visitorCountSide">👥 ... pengunjung</div>
+          <div class="visitor-count-side" id="visitorCountSide">... pengunjung</div>
         </div>
         <button class="logout-btn" id="logoutBtn" title="Keluar">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
@@ -289,14 +298,14 @@
           <div class="more-menu-wrap">
             <button class="icon-btn" id="moreBtn" title="Menu riwayat">⋮</button>
             <div class="more-dropdown" id="moreDropdown">
-              <button type="button" id="moreNewChat">➕ Percakapan Baru</button>
-              <button type="button" id="moreHistory">📋 Lihat Riwayat</button>
-              <button type="button" id="moreSearch">🔍 Cari Riwayat</button>
+              <button type="button" id="moreNewChat">Percakapan Baru</button>
+              <button type="button" id="moreHistory">Lihat Riwayat</button>
+              <button type="button" id="moreSearch">Cari Riwayat</button>
               <div class="sep"></div>
-              <button type="button" id="moreClearAll" class="danger">🗑️ Hapus Semua Riwayat</button>
+              <button type="button" id="moreClearAll" class="danger">Hapus Semua Riwayat</button>
             </div>
           </div>
-          <div class="logo"><div class="logo-icon">∞</div><span>GIL_XZ AI</span><span class="streak-badge" id="streakBadge" title="Streak harian">🔥 0</span></div>
+          <div class="logo"><div class="logo-icon">∞</div><span>GIL_XZ AI</span><span class="streak-badge" id="streakBadge" title="Streak harian">Streak 0</span></div>
         </div>
         <div class="header-actions">
           <select class="model-select" id="modelSelect">
@@ -307,12 +316,12 @@
             <option value="deepseek-chat">DeepSeek</option>
             <option value="claude-3-5-haiku-latest">Claude Haiku</option>
           </select>
-          <button class="icon-btn" id="toolsBtn" title="Tools & Fitur">🧰</button>
+          <button class="icon-btn label-btn" id="toolsBtn" title="Tools & Fitur">Tools</button>
           <button class="icon-btn" id="videoMenuBtn" title="Menu Video">☰</button>
-          <button class="icon-btn" id="imgGenBtn" title="Generate gambar">🎨</button>
-          <button class="icon-btn" id="exportBtn" title="Export chat">📄</button>
-          <button class="icon-btn" id="settingsBtn" title="System Prompt">⚙️</button>
-          <button class="icon-btn" id="themeBtn" title="Ganti tema">🌙</button>
+          <button class="icon-btn label-btn" id="imgGenBtn" title="Generate gambar">Gambar</button>
+          <button class="icon-btn label-btn" id="exportBtn" title="Export chat">Export</button>
+          <button class="icon-btn label-btn" id="settingsBtn" title="System Prompt">Setelan</button>
+          <button class="icon-btn label-btn" id="themeBtn" title="Ganti tema">Tema</button>
           <button class="icon-btn" id="refreshBtn" title="Refresh">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
           </button>
@@ -323,7 +332,7 @@
       <div class="video-panel-bg" id="videoPanelBg">
         <div class="video-panel" id="videoPanel">
           <div class="video-panel-header">
-            <h2>🎬 Video</h2>
+            <h2>Video</h2>
             <button class="icon-btn" id="closeVideoPanel" title="Tutup">✕</button>
           </div>
           <div class="video-search-row">
@@ -354,7 +363,7 @@
       <div class="tools-bg" id="toolsBg">
         <div class="tools-panel">
           <div class="tools-header">
-            <h2>🧰 Tools & Fitur</h2>
+            <h2>Tools & Fitur</h2>
             <button class="icon-btn" id="closeToolsBtn">✕</button>
           </div>
           <div class="tools-body">
@@ -363,7 +372,7 @@
               <div class="stats-grid">
                 <div class="stat-card"><div class="num" id="statMsgs">0</div><div class="lbl">Pesan</div></div>
                 <div class="stat-card"><div class="num" id="statChats">0</div><div class="lbl">Chat</div></div>
-                <div class="stat-card"><div class="num" id="statStreak">0</div><div class="lbl">Streak 🔥</div></div>
+                <div class="stat-card"><div class="num" id="statStreak">0</div><div class="lbl">Streak</div></div>
                 <div class="stat-card"><div class="num" id="statLevel">1</div><div class="lbl">Level XP</div></div>
               </div>
             </div>
@@ -374,15 +383,15 @@
             <div class="tools-section">
               <h3>Mode & Tools</h3>
               <div class="tool-grid">
-                <button class="tool-btn" id="btnLearn">📚 Mode Belajar</button>
-                <button class="tool-btn" id="btnCompare">⚔️ Bandingkan 2 Model</button>
-                <button class="tool-btn" id="btnFact">💡 Fakta Random</button>
-                <button class="tool-btn" id="btnFocus">🎯 Mode Fokus</button>
-                <button class="tool-btn" id="btnCalc">🧮 Kalkulator</button>
-                <button class="tool-btn" id="btnPass">🔑 Password Random</button>
-                <button class="tool-btn" id="btnName">🎲 Acak Nama</button>
-                <button class="tool-btn" id="btnSound">🔔 Suara UI</button>
-                <button class="tool-btn" id="btnClearAll" style="grid-column:1/-1;border-color:rgba(239,68,68,.4);color:#fca5a5">🗑️ Hapus Semua Chat & Riwayat</button>
+                <button class="tool-btn" id="btnLearn">Mode Belajar</button>
+                <button class="tool-btn" id="btnCompare">Bandingkan 2 Model</button>
+                <button class="tool-btn" id="btnFact">Fakta Random</button>
+                <button class="tool-btn" id="btnFocus">Mode Fokus</button>
+                <button class="tool-btn" id="btnCalc">Kalkulator</button>
+                <button class="tool-btn" id="btnPass">Password Random</button>
+                <button class="tool-btn" id="btnName">Acak Nama</button>
+                <button class="tool-btn" id="btnSound">Suara UI</button>
+                <button class="tool-btn" id="btnClearAll" style="grid-column:1/-1;border-color:rgba(239,68,68,.4);color:#fca5a5">Hapus Semua Chat & Riwayat</button>
               </div>
             </div>
             <div class="tools-section">
@@ -429,10 +438,10 @@
           <button type="button" class="attach-btn" id="attachBtn" title="Upload">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
           </button>
-          <button type="button" class="mic-btn" id="micBtn" title="Input suara">🎤</button>
+          <button type="button" class="mic-btn" id="micBtn" title="Input suara">Voice</button>
           <input type="file" id="fileInput" accept="image/*,.txt,.md,.csv,.json,.js,.html,.css,.py,.ts" hidden>
           <textarea id="userInput" rows="1" placeholder="Ketik pesanmu..."></textarea>
-          <button type="button" class="stop-btn" id="stopBtn" title="Stop">⏹</button>
+          <button type="button" class="stop-btn" id="stopBtn" title="Stop">Stop</button>
           <button class="send-btn" id="sendBtn" title="Kirim">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
           </button>
@@ -445,7 +454,7 @@
   <!-- Settings Modal -->
   <div class="modal-bg" id="settingsModal">
     <div class="modal">
-      <h2>⚙️ System Prompt</h2>
+      <h2>System Prompt</h2>
       <p style="font-size:.8rem;color:var(--muted);margin-bottom:8px">Atur kepribadian AI. Contoh: "Kamu adalah tutor coding yang sabar" atau "Jawab singkat dan formal".</p>
       <label>System Prompt</label>
       <textarea id="systemPromptInput" placeholder="Kamu adalah asisten AI yang membantu, ramah, dan jelas..."></textarea>
@@ -566,12 +575,12 @@
     const list=q?conversations.filter(c=>c.title.toLowerCase().includes(q)||c.messages.some(m=>(m.content||'').toLowerCase().includes(q))):conversations;
     convList.innerHTML=list.map(c=>`
       <div class="conv-item ${c.id===currentConvId?'active':''}" data-id="${c.id}">
-        ${c.pinned?'<span class="pin">📌</span>':''}
+        ${c.pinned?'<span class="pin">Pin</span>':''}
         <div class="title" title="Klik 2x untuk rename">${esc(c.title)}</div>
         <div class="time">${fmtTime(c.updatedAt)}</div>
         <div class="acts">
-          <button data-ren="${c.id}" title="Rename">✏️</button>
-          <button data-pin="${c.id}" title="Pin">${c.pinned?'📌':'📍'}</button>
+          <button data-ren="${c.id}" title="Rename">Edit</button>
+          <button data-pin="${c.id}" title="Pin">${c.pinned?'Pinned':'Pin'}</button>
           <button data-del="${c.id}" title="Hapus">×</button>
         </div>
       </div>`).join('');
@@ -602,7 +611,7 @@
         <div class="suggestions">
           <div class="suggestion" data-p="Jelaskan AI dengan bahasa sederhana">Jelaskan AI sederhana</div>
           <div class="suggestion" data-p="Bikin ide nama brand modern">Ide nama brand</div>
-          <div class="suggestion" data-p="Cari video upin ipin">🎬 Cari video Upin Ipin</div>
+          <div class="suggestion" data-p="Cari video upin ipin">Cari video Upin Ipin</div>
           <div class="suggestion" data-p="Rencana belajar coding 30 hari">Belajar coding 30 hari</div>
         </div></div>`;
       document.querySelectorAll('.suggestion').forEach(el=>el.onclick=()=>{userInput.value=el.dataset.p;sendMessage();});
@@ -622,11 +631,11 @@
       const t=document.createElement('div'); t.innerHTML=formatText(text); bub.appendChild(t);
       if(msgIdx!==undefined){
         const acts=document.createElement('div'); acts.className='msg-actions';
-        const speakBtn=document.createElement('button'); speakBtn.textContent='🔊 Baca';
+        const speakBtn=document.createElement('button'); speakBtn.textContent='Baca';
         speakBtn.onclick=()=>speakText(text);
-        const regenBtn=document.createElement('button'); regenBtn.textContent='🔄 Regenerate';
+        const regenBtn=document.createElement('button'); regenBtn.textContent='Regenerate';
         regenBtn.onclick=()=>regenerateLast();
-        const delBtn=document.createElement('button'); delBtn.textContent='🗑️ Hapus';
+        const delBtn=document.createElement('button'); delBtn.textContent='Hapus';
         delBtn.onclick=()=>deleteMessage(msgIdx);
         acts.appendChild(speakBtn); acts.appendChild(regenBtn); acts.appendChild(delBtn);
         bub.appendChild(acts);
@@ -635,9 +644,9 @@
       if(text){ const t=document.createElement('div'); t.className='msg-text'; t.textContent=text; bub.appendChild(t); }
       if(msgIdx!==undefined){
         const acts=document.createElement('div'); acts.className='msg-actions';
-        const editBtn=document.createElement('button'); editBtn.textContent='✏️ Edit';
+        const editBtn=document.createElement('button'); editBtn.textContent='Edit';
         editBtn.onclick=()=>editMessage(msgIdx);
-        const delBtn=document.createElement('button'); delBtn.textContent='🗑️ Hapus';
+        const delBtn=document.createElement('button'); delBtn.textContent='Hapus';
         delBtn.onclick=()=>deleteMessage(msgIdx);
         acts.appendChild(editBtn); acts.appendChild(delBtn);
         bub.appendChild(acts);
@@ -733,7 +742,7 @@
         const bub = addMsgDOM('','ai',null,null,true);
         bub.innerHTML = renderVideoCardsHTML(query, videos);
         const acts=document.createElement('div'); acts.className='msg-actions';
-        const rb=document.createElement('button'); rb.textContent='🔄 Regenerate'; rb.onclick=()=>regenerateLast();
+        const rb=document.createElement('button'); rb.textContent='Regenerate'; rb.onclick=()=>regenerateLast();
         acts.appendChild(rb); bub.appendChild(acts);
         if(conv){ conv.messages.push({role:'assistant',content:'[Video search] '+query}); conv.updatedAt=Date.now(); saveConversations(); }
       } catch(err){
@@ -771,11 +780,11 @@
       if(!full.trim()) full = stopRequested ? '(Dihentikan)' : 'Maaf, tidak ada jawaban.';
       if(bub.querySelector('div')) bub.querySelector('div').innerHTML=formatText(full); else bub.innerHTML=formatText(full);
       const acts=document.createElement('div'); acts.className='msg-actions';
-      const sb=document.createElement('button'); sb.textContent='🔊 Baca'; sb.onclick=()=>speakText(full);
-      const rb=document.createElement('button'); rb.textContent='🔄 Regenerate'; rb.onclick=()=>regenerateLast();
+      const sb=document.createElement('button'); sb.textContent='Baca'; sb.onclick=()=>speakText(full);
+      const rb=document.createElement('button'); rb.textContent='Regenerate'; rb.onclick=()=>regenerateLast();
       acts.appendChild(sb); acts.appendChild(rb);
       const reacts=document.createElement('div'); reacts.className='msg-reacts';
-      ['👍','😂','🔥','💡'].forEach(e=>{ const b=document.createElement('button'); b.textContent=e; b.dataset.react=e; reacts.appendChild(b); });
+      ['Suka','Lucu','Seru','Insight'].forEach(e=>{ const b=document.createElement('button'); b.textContent=e; b.dataset.react=e; reacts.appendChild(b); });
       acts.appendChild(reacts);
       bub.appendChild(acts);
       addDownloadButtons(bub, full, curName);
@@ -846,7 +855,7 @@
         <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(query)}" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;color:var(--primary-h)">Buka di YouTube →</a>
       </div>`;
     }
-    return `<div style="margin-bottom:6px;font-size:.85rem">🎬 Hasil: <b>${esc(query)}</b></div>` +
+    return `<div style="margin-bottom:6px;font-size:.85rem">Hasil: <b>${esc(query)}</b></div>` +
       videos.slice(0,4).map((v,i)=>`
         <div style="margin:10px 0;padding:8px;border:1px solid var(--border);border-radius:12px;background:rgba(0,0,0,.12)">
           <div style="font-size:.82rem;font-weight:600;margin-bottom:4px">${i+1}. ${esc(v.title)}</div>
@@ -880,10 +889,10 @@
       let filename=originalFileName||('hasil-'+(idx+1)+'.txt');
       const lm=block.match(/^```(\w+)/);
       if(lm){ const map={javascript:'js',js:'js',html:'html',css:'css',python:'py',py:'py',json:'json',ts:'ts'}; const ext=map[lm[1].toLowerCase()]; if(ext) filename=originalFileName?originalFileName.replace(/\.[^.]+$/,'')+'-fixed.'+ext:'hasil.'+ext; }
-      const copyBtn=document.createElement('button'); copyBtn.textContent='📋 Copy';
+      const copyBtn=document.createElement('button'); copyBtn.textContent='Copy';
       copyBtn.style.cssText='padding:6px 11px;border:1px solid rgba(139,92,246,.4);border-radius:7px;background:rgba(139,92,246,.12);color:#c4b5fd;font-size:.75rem;font-weight:600;cursor:pointer';
-      copyBtn.onclick=async()=>{ try{ await navigator.clipboard.writeText(code); copyBtn.textContent='✅ Copied'; showToast('Disalin'); setTimeout(()=>copyBtn.textContent='📋 Copy',1800);}catch(e){showToast('Gagal copy',true);} };
-      const dlBtn=document.createElement('button'); dlBtn.textContent='⬇️ '+filename;
+      copyBtn.onclick=async()=>{ try{ await navigator.clipboard.writeText(code); copyBtn.textContent='Copied'; showToast('Disalin'); setTimeout(()=>copyBtn.textContent='Copy',1800);}catch(e){showToast('Gagal copy',true);} };
+      const dlBtn=document.createElement('button'); dlBtn.textContent='Download '+filename;
       dlBtn.style.cssText='padding:6px 11px;border:none;border-radius:7px;background:linear-gradient(135deg,#8b5cf6,#6366f1);color:#fff;font-size:.75rem;font-weight:600;cursor:pointer';
       dlBtn.onclick=()=>{ const blob=new Blob([code],{type:'text/plain;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click(); URL.revokeObjectURL(a.href); showToast('File: '+filename); };
       wrap.appendChild(copyBtn); wrap.appendChild(dlBtn);
@@ -929,9 +938,9 @@
     const next=cur==='dark'?'light':'dark';
     document.documentElement.setAttribute('data-theme',next);
     localStorage.setItem('gilxz_theme',next);
-    themeBtn.textContent=next==='dark'?'🌙':'☀️';
+    themeBtn.textContent=next==='dark'?'Dark':'Light';
   };
-  themeBtn.textContent=savedTheme==='dark'?'🌙':'☀️';
+  themeBtn.textContent=savedTheme==='dark'?'Dark':'Light';
 
   // SETTINGS / SYSTEM PROMPT
   settingsBtn.onclick=()=>{ systemPromptInput.value=systemPrompt; settingsModal.classList.add('show'); };
@@ -951,7 +960,7 @@
     if(!prompt) return;
     userInput.value=''; isGenerating=true; sendBtn.disabled=true;
     const wel=$('welcome'); if(wel) wel.remove();
-    addMsgDOM('🎨 Generate gambar: '+prompt,'user',null,null,true);
+    addMsgDOM('Generate gambar: '+prompt,'user',null,null,true);
     const conv=getCurrentConv();
     if(conv){ conv.messages.push({role:'user',content:'[Generate gambar] '+prompt}); updateTitle(prompt); }
     addTyping();
@@ -1056,7 +1065,7 @@
     const ha = document.querySelector('.header-actions');
     if(!ha || $('chatSearchBtn')) return;
     const btn = document.createElement('button');
-    btn.className='icon-btn'; btn.id='chatSearchBtn'; btn.title='Cari dalam chat'; btn.textContent='🔍';
+    btn.className='icon-btn label-btn'; btn.id='chatSearchBtn'; btn.title='Cari dalam chat'; btn.textContent='Cari';
     ha.insertBefore(btn, ha.firstChild);
     btn.onclick = ()=>{
       const q = prompt('Cari kata dalam chat ini:');
@@ -1101,9 +1110,9 @@
       if(hit) sessionStorage.setItem('gilxz_visit_hit','1');
       const url='https://countapi.mileshilliard.com/api/v1/'+(hit?'hit':'get')+'/'+KEY;
       const res=await fetch(url); const data=await res.json(); const num=data.value||data.count||'?';
-      if(loginEl) loginEl.textContent='👥 Total pengunjung: '+Number(num).toLocaleString('id-ID');
-      if(sideEl) sideEl.textContent='👥 '+Number(num).toLocaleString('id-ID')+' pengunjung';
-    }catch(e){ if(loginEl) loginEl.textContent='👥 Total pengunjung: -'; }
+      if(loginEl) loginEl.textContent='Total pengunjung: '+Number(num).toLocaleString('id-ID');
+      if(sideEl) sideEl.textContent=Number(num).toLocaleString('id-ID')+' pengunjung';
+    }catch(e){ if(loginEl) loginEl.textContent='Total pengunjung: -'; }
   }
 
 
@@ -1123,7 +1132,7 @@
     if($('statChats')) $('statChats').textContent = conversations.length;
     if($('statStreak')) $('statStreak').textContent = s.streak;
     if($('statLevel')) $('statLevel').textContent = level;
-    if(streakBadge) streakBadge.textContent = '🔥 '+s.streak;
+    if(streakBadge) streakBadge.textContent = 'Streak '+s.streak;
   }
   function bumpStats(){
     const s = loadStats();
@@ -1258,9 +1267,9 @@
     closeTools();
     const wel=$('welcome'); if(wel) wel.remove();
     addMsgDOM('Kasih fakta menarik','user',null,null,true);
-    addMsgDOM('💡 **Fakta random:** '+f,'ai',null,null,true);
+    addMsgDOM('**Fakta random:** '+f,'ai',null,null,true);
     const conv=getCurrentConv();
-    if(conv){ conv.messages.push({role:'user',content:'Kasih fakta menarik'}); conv.messages.push({role:'assistant',content:'💡 Fakta random: '+f}); conv.updatedAt=Date.now(); saveConversations(); }
+    if(conv){ conv.messages.push({role:'user',content:'Kasih fakta menarik'}); conv.messages.push({role:'assistant',content:'Fakta random: '+f}); conv.updatedAt=Date.now(); saveConversations(); }
     bumpStats(); beep(500,0.05);
   };
 
@@ -1296,7 +1305,7 @@
       }));
       removeTyping();
       const bub = addMsgDOM('','ai',null,null,true);
-      bub.innerHTML = '<div style="margin-bottom:6px;font-size:.85rem">⚔️ Perbandingan model</div><div class="compare-box">'+
+      bub.innerHTML = '<div style="margin-bottom:6px;font-size:.85rem">Perbandingan model</div><div class="compare-box">'+
         results.map(r=>`<div class="compare-col"><h4>${esc(r.m)}</h4>${formatText(String(r.text).slice(0,2000))}</div>`).join('')+'</div>';
       if(conv){ conv.messages.push({role:'assistant',content:'[Compare] '+results.map(r=>r.m+': '+String(r.text).slice(0,300)).join(' | ')}); saveConversations(); }
       bumpStats(); beep(700,0.08);
