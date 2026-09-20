@@ -74,7 +74,7 @@
     .main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative;background:radial-gradient(circle at 75% 15%,rgba(85,196,187,.06),transparent 30%)}
     .app.sidebar-collapsed .sidebar{width:0;transform:translateX(-100%);border-right:0;overflow:hidden}
     .app.sidebar-collapsed .menu-btn{display:flex}
-    .header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(18px);gap:8px;flex-shrink:0;animation:fadeDown .45s ease both}
+    .header{position:relative;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(18px);gap:8px;flex-shrink:0;animation:fadeDown .45s ease both}
     .header-left{display:flex;align-items:center;gap:8px}
     .menu-btn{display:none;width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;align-items:center;justify-content:center}
     .logo{display:flex;align-items:center;gap:7px;font-weight:700;font-size:1rem}
@@ -146,13 +146,16 @@
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
     .toast.error{border-color:rgba(239,68,68,.4);color:#fca5a5}
 
-    .more-menu-wrap{position:relative}
+    .more-menu-wrap{position:relative;z-index:300}
     .more-dropdown{
       display:none;position:absolute;top:110%;left:0;min-width:200px;z-index:80;
       background:var(--surface);border:1px solid var(--border);border-radius:12px;
-      box-shadow:0 8px 28px rgba(0,0,0,.35);padding:6px;overflow:hidden;
+      box-shadow:0 12px 32px rgba(0,0,0,.45);padding:6px;overflow:hidden;
     }
     .more-dropdown.show{display:block}
+    .header-actions #imgGenBtn,
+    .header-actions #exportBtn,
+    .header-actions #settingsBtn{display:none}
     .more-dropdown button{
       width:100%;text-align:left;padding:10px 12px;border:none;border-radius:8px;
       background:transparent;color:var(--text);font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:8px;
