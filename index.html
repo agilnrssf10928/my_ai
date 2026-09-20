@@ -251,11 +251,11 @@
 
     @media(max-width:768px){
       html,body{width:100%;max-width:100%;overflow:hidden}
-      .sidebar{position:fixed;left:0;top:48px;bottom:0;width:min(320px,calc(100vw - 18px));z-index:210;transform:translateX(-105%);box-shadow:18px 0 44px rgba(0,0,0,.28)}
+      .sidebar{position:fixed;left:0;top:48px;bottom:0;width:100vw;z-index:1000;transform:translateX(-105%);box-shadow:18px 0 44px rgba(0,0,0,.38)}
       .sidebar.open{transform:translateX(0)}
-      .sidebar-collapsed .sidebar{width:min(320px,calc(100vw - 18px));transform:translateX(-105%);border-right:1px solid var(--border)}
-      .sidebar-close-btn{right:-34px;top:10px;width:30px;height:30px;background:var(--bg2);border-color:var(--primary);color:var(--primary-h);box-shadow:4px 4px 14px rgba(0,0,0,.25)}
-      .sidebar-overlay{top:48px;background:rgba(3,10,14,.68);backdrop-filter:blur(3px)}
+      .sidebar-collapsed .sidebar{width:100vw;transform:translateX(-105%);border-right:1px solid var(--border)}
+      .sidebar-close-btn{right:8px;top:8px;width:30px;height:30px;background:var(--bg2);border-color:var(--primary);color:var(--primary-h);box-shadow:4px 4px 14px rgba(0,0,0,.25)}
+      .sidebar-overlay{top:48px;z-index:999;background:rgba(3,10,14,.78);backdrop-filter:blur(3px)}
       .sidebar-overlay.open{display:block}
       .menu-btn{display:flex!important}
       .header{padding:7px 9px;min-height:48px;overflow:hidden}
@@ -588,7 +588,7 @@
     conversations=[]; currentConvId=null; app.classList.remove('visible'); loginOverlay.classList.remove('hidden');
   };
   async function showApp(){
-    loginOverlay.classList.add('hidden'); app.classList.add('visible');
+    loginOverlay.classList.add('hidden'); app.classList.add('visible','sidebar-collapsed');
     closeSidebar();
     try{ const u=await puter.auth.getUser(); if(u){ userName.textContent=u.username||u.name||'User'; userEmail.textContent=u.email||''; } }catch(e){}
     await loadConversations();
