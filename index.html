@@ -44,6 +44,9 @@
     .app.visible{display:flex}
     .sidebar{width:280px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:transform .3s;animation:slideInLeft .45s ease both}
     .sidebar-header{padding:12px;border-bottom:1px solid var(--border)}
+    .sidebar-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;color:var(--text);font-size:.78rem;font-weight:600;letter-spacing:.02em}
+    .sidebar-close-btn{padding:5px 8px;border:1px solid var(--border);border-radius:7px;background:transparent;color:var(--muted);font:inherit;font-size:.68rem;cursor:pointer}
+    .sidebar-close-btn:hover{border-color:var(--primary);background:var(--glow);color:var(--primary-h)}
     .new-chat-btn{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:11px;background:transparent;color:var(--text);font-size:.88rem;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px}
     .new-chat-btn:hover{background:var(--glow);border-color:var(--primary);color:var(--primary-h)}
     .search-box{margin-top:8px;position:relative}
@@ -69,6 +72,8 @@
     .logout-btn:hover{background:rgba(239,68,68,.15);color:#fca5a5}
 
     .main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative;background:radial-gradient(circle at 75% 15%,rgba(85,196,187,.06),transparent 30%)}
+    .app.sidebar-collapsed .sidebar{width:0;transform:translateX(-100%);border-right:0;overflow:hidden}
+    .app.sidebar-collapsed .menu-btn{display:flex}
     .header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(18px);gap:8px;flex-shrink:0;animation:fadeDown .45s ease both}
     .header-left{display:flex;align-items:center;gap:8px}
     .menu-btn{display:none;width:34px;height:34px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;align-items:center;justify-content:center}
@@ -242,8 +247,12 @@
 
     @media(max-width:768px){
       html,body{width:100%;max-width:100%;overflow:hidden}
-      .sidebar,.sidebar-overlay{display:none!important}
-      .menu-btn{display:none!important}
+      .sidebar{position:fixed;left:0;top:0;bottom:0;width:min(320px,calc(100vw - 18px));z-index:100;transform:translateX(-105%);box-shadow:18px 0 44px rgba(0,0,0,.28)}
+      .sidebar.open{transform:translateX(0)}
+      .sidebar-collapsed .sidebar{width:min(320px,calc(100vw - 18px));transform:translateX(-105%);border-right:1px solid var(--border)}
+      .sidebar-overlay{background:rgba(3,10,14,.68);backdrop-filter:blur(3px)}
+      .sidebar-overlay.open{display:block}
+      .menu-btn{display:flex!important}
       .header{padding:8px 10px;min-height:52px;overflow:hidden}
       .header-left{min-width:0;flex-shrink:0;gap:6px}
       .logo{gap:5px;font-size:.86rem;white-space:nowrap}
@@ -254,6 +263,11 @@
       .model-select{width:108px;min-width:108px;padding-left:7px;font-size:.68rem}
       .header-actions .icon-btn{min-width:34px}
       .header-actions .label-btn{font-size:.65rem;padding:0 7px;min-width:38px}
+      .header-actions #toolsBtn,
+      .header-actions #imgGenBtn,
+      .header-actions #exportBtn,
+      .header-actions #settingsBtn,
+      .header-actions #themeBtn{display:none}
       .chat-container{padding:18px 10px 132px;gap:13px}
       .welcome{width:100%;padding:8px 4px}
       .welcome-icon{max-width:260px}
@@ -308,6 +322,10 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
+        <div class="sidebar-title-row">
+          <span>Riwayat Chat</span>
+          <button type="button" class="sidebar-close-btn" id="closeSidebarBtn" title="Tutup sidebar">Tutup</button>
+        </div>
         <button class="new-chat-btn" id="newChatBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
           Percakapan Baru
@@ -340,6 +358,12 @@
               <button type="button" id="moreNewChat">Percakapan Baru</button>
               <button type="button" id="moreHistory">Lihat Riwayat</button>
               <button type="button" id="moreSearch">Cari Riwayat</button>
+              <div class="sep"></div>
+              <button type="button" id="moreTools">Tools & Fitur</button>
+              <button type="button" id="moreImage">Generate Gambar</button>
+              <button type="button" id="moreExport">Export Chat</button>
+              <button type="button" id="moreSettings">Setelan</button>
+              <button type="button" id="moreTheme">Ganti Tema</button>
               <div class="sep"></div>
               <button type="button" id="moreClearAll" class="danger">Hapus Semua Riwayat</button>
             </div>
@@ -527,7 +551,7 @@
 
   const $ = id => document.getElementById(id);
   const loginOverlay=$('loginOverlay'), loginBtn=$('loginBtn'), app=$('app');
-  const sidebar=$('sidebar'), sidebarOverlay=$('sidebarOverlay'), menuBtn=$('menuBtn');
+  const sidebar=$('sidebar'), sidebarOverlay=$('sidebarOverlay'), menuBtn=$('menuBtn'), closeSidebarBtn=$('closeSidebarBtn');
   const newChatBtn=$('newChatBtn'), searchInput=$('searchInput'), convList=$('convList');
   const userName=$('userName'), userEmail=$('userEmail'), logoutBtn=$('logoutBtn');
   const chatContainer=$('chatContainer'), userInput=$('userInput'), sendBtn=$('sendBtn');
@@ -1059,9 +1083,16 @@
   refreshBtn.onclick=()=>location.reload();
   newChatBtn.onclick=createNewConversation;
   searchInput.oninput=()=>renderConvList(searchInput.value);
-  menuBtn.onclick=()=>{ sidebar.classList.add('open'); sidebarOverlay.classList.add('open'); };
+  menuBtn.onclick=openSidebar;
+  if(closeSidebarBtn) closeSidebarBtn.onclick=collapseSidebar;
   sidebarOverlay.onclick=closeSidebar;
+  function openSidebar(){
+    app.classList.remove('sidebar-collapsed');
+    sidebar.classList.add('open');
+    sidebarOverlay.classList.add('open');
+  }
   function closeSidebar(){ sidebar.classList.remove('open'); sidebarOverlay.classList.remove('open'); }
+  function collapseSidebar(){ closeSidebar(); app.classList.add('sidebar-collapsed'); }
 
   function showToast(msg,err){ toast.textContent=msg; toast.className='toast show'+(err?' error':''); setTimeout(()=>toast.classList.remove('show'),2800); }
 
@@ -1426,6 +1457,11 @@
     const moreNewChat = $('moreNewChat');
     const moreHistory = $('moreHistory');
     const moreSearch = $('moreSearch');
+    const moreTools = $('moreTools');
+    const moreImage = $('moreImage');
+    const moreExport = $('moreExport');
+    const moreSettings = $('moreSettings');
+    const moreTheme = $('moreTheme');
     const moreClearAll = $('moreClearAll');
 
     if(moreNewChat) moreNewChat.onclick = () => {
@@ -1435,16 +1471,23 @@
     };
     if(moreHistory) moreHistory.onclick = () => {
       moreDropdown.classList.remove('show');
-      sidebar.classList.add('open');
-      sidebarOverlay.classList.add('open');
+      openSidebar();
     };
     if(moreSearch) moreSearch.onclick = () => {
       moreDropdown.classList.remove('show');
-      sidebar.classList.add('open');
-      sidebarOverlay.classList.add('open');
+      openSidebar();
       setTimeout(() => { searchInput.focus(); searchInput.select(); }, 200);
       showToast('Ketik di kolom cari riwayat');
     };
+    function triggerMenuAction(button){
+      moreDropdown.classList.remove('show');
+      if(button) button.click();
+    }
+    if(moreTools) moreTools.onclick = () => triggerMenuAction(toolsBtn);
+    if(moreImage) moreImage.onclick = () => triggerMenuAction(imgGenBtn);
+    if(moreExport) moreExport.onclick = () => triggerMenuAction(exportBtn);
+    if(moreSettings) moreSettings.onclick = () => triggerMenuAction(settingsBtn);
+    if(moreTheme) moreTheme.onclick = () => triggerMenuAction(themeBtn);
     if(moreClearAll) moreClearAll.onclick = async () => {
       moreDropdown.classList.remove('show');
       if(!confirm('Yakin hapus SEMUA percakapan dan riwayat?')) return;
