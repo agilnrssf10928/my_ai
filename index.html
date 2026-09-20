@@ -794,17 +794,28 @@
   // SEND
   userInput.oninput=()=>{ userInput.style.height='auto'; userInput.style.height=Math.min(userInput.scrollHeight,120)+'px'; };
   userInput.onkeydown=e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); } };
-  sendBtn.onclick=sendMessage;
+    sendBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    sendMessage();
+  });
   stopBtn.onclick=()=>{ stopRequested=true; showToast('Menghentikan...'); };
 
-  async function sendMessage(overrideText){
+    async function sendMessage(overrideText){
     let text=(overrideText!==undefined?overrideText:userInput.value).trim();
     const hasFile=!!selectedFile;
-    if((!text&&!hasFile)||isGenerating) return;
+    if(!text && !hasFile){
+      showToast('Tulis pesan dulu atau upload file', true);
+      return;
+    }
+    if(isGenerating){
+      showToast('Tunggu sebentar, masih memproses...', true);
+      return;
+    }
     if(hasFile&&!text){
       text=selectedDataUrl?'Analisis dan jelaskan gambar ini secara detail.':(selectedFileText?'Analisis file ini. Jika ada error, perbaiki dan tampilkan kode lengkap yang sudah diperbaiki.':'Analisis file ini.');
     }
     isGenerating=true; stopRequested=false; sendBtn.disabled=true; stopBtn.classList.add('show');
+    bumpStats(); beep(620,0.05);
     const curText=text, curImg=selectedDataUrl, curFileText=selectedFileText, curName=selectedFile?.name||null, isImg=!!selectedDataUrl;
     if(overrideText===undefined){ userInput.value=''; userInput.style.height='auto'; }
     clearFile();
@@ -1455,26 +1466,58 @@
     beep(900,0.04);
   });
 
-  // Hook bumpStats + beep into successful sends - patch via monkey on original flow
-  const _origSend = sendMessage;
-  // We already call bumpStats in fact; for normal chat add after assistant reply is hard without editing sendMessage.
-  // Lightweight: count on user send via input wrapper
-  sendBtn.addEventListener('click', ()=>{ setTimeout(()=>{ bumpStats(); beep(620,0.05); }, 100); }, true);
+   //CUKUP SATU SAJA 
 
 
-
-  // ===== MENU TITIK TIGA (⋮) =====
+   // ===== MENU TITIK TIGA (⋮) =====
   (function(){
     const moreBtn = $('moreBtn');
     const moreDropdown = $('moreDropdown');
     if(!moreBtn || !moreDropdown) return;
 
-         // Buka/tutup menu
+    // Fungsi untuk memposisikan dropdown
+        function positionDropdown(){
+      if(window.innerWidth > 768){
+        const r = moreBtn.getBoundingClientRect();
+        // Kalau tombol tidak terlihat (0), fallback ke pojok kiri bawah header
+        if(r.width === 0 || r.height === 0){
+          moreDropdown.style.top = '56px';
+          moreDropdown.style.left = '12px';
+        } else {
+          moreDropdown.style.top = (r.bottom + 6) + 'px';
+          moreDropdown.style.left = r.left + 'px';
+        }
+        moreDropdown.style.right = 'auto';
+      } else {
+        // HP: biarkan CSS yang atur
+        moreDropdown.style.top = '';
+        moreDropdown.style.left = '';
+        moreDropdown.style.right = '';
+      }
+    }
+
+    // Buka/tutup menu
     moreBtn.addEventListener('click', function(e){
       e.preventDefault();
       e.stopPropagation();
-      moreDropdown.classList.toggle('show');
+      const isShowing = moreDropdown.classList.contains('show');
+      if(isShowing){
+        moreDropdown.classList.remove('show');
+      } else {
+        positionDropdown();
+        moreDropdown.classList.add('show');
+      }
     });
+
+    // Reposisi saat window di-resize (desktop)
+    window.addEventListener('resize', function(){
+      if(moreDropdown.classList.contains('show')) positionDropdown();
+    });
+
+    // Reposisi saat scroll (desktop, karena posisi tombol bisa berubah)
+    window.addEventListener('scroll', function(){
+      if(moreDropdown.classList.contains('show') && window.innerWidth > 768) positionDropdown();
+    }, true);
 
     // Cegah klik di dalam dropdown ikut menutup
     moreDropdown.addEventListener('click', function(e){
@@ -1484,12 +1527,11 @@
     // Klik di luar = tutup
     document.addEventListener('click', function(e){
       if(!moreDropdown.classList.contains('show')) return;
-      // kalau klik di dalam dropdown atau di tombol, jangan tutup
       if(moreDropdown.contains(e.target)) return;
       if(moreBtn.contains(e.target)) return;
       moreDropdown.classList.remove('show');
     });
-
+    
     const moreNewChat = $('moreNewChat');
     const moreHistory = $('moreHistory');
     const moreSearch = $('moreSearch');
