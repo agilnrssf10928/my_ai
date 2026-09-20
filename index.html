@@ -43,22 +43,23 @@
     .app{display:none;height:100%;width:100%}
     .app.visible{display:flex}
     .sidebar{width:280px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:transform .3s;animation:slideInLeft .45s ease both}
-    .sidebar-header{padding:12px;border-bottom:1px solid var(--border)}
-    .sidebar-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;color:var(--text);font-size:.78rem;font-weight:600;letter-spacing:.02em}
-    .sidebar-close-btn{padding:5px 8px;border:1px solid var(--border);border-radius:7px;background:transparent;color:var(--muted);font:inherit;font-size:.68rem;cursor:pointer}
+    .sidebar-header{position:relative;padding:12px;border-bottom:1px solid var(--border)}
+    .sidebar-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-right:36px;color:var(--text);font-size:.72rem;font-weight:600;letter-spacing:.02em}
+    .sidebar-close-btn{position:absolute;top:8px;right:8px;width:28px;height:28px;padding:0;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--muted);font:inherit;font-size:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .sidebar-close-btn::before{content:'×';font-size:19px;line-height:1}
     .sidebar-close-btn:hover{border-color:var(--primary);background:var(--glow);color:var(--primary-h)}
-    .new-chat-btn{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:11px;background:transparent;color:var(--text);font-size:.88rem;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px}
+    .new-chat-btn{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:10px;background:transparent;color:var(--text);font-size:.78rem;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px}
     .new-chat-btn:hover{background:var(--glow);border-color:var(--primary);color:var(--primary-h)}
     .search-box{margin-top:8px;position:relative}
-    .search-box input{width:100%;padding:8px 10px 8px 32px;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text);font-size:.82rem;outline:none}
+    .search-box input{width:100%;padding:8px 10px 8px 32px;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text);font-size:.74rem;outline:none}
     .search-box svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
     .conv-list{flex:1;overflow-y:auto;padding:6px}
-    .conv-item{padding:9px 10px;border-radius:9px;cursor:pointer;margin-bottom:2px;display:flex;align-items:center;gap:8px;position:relative}
+    .conv-item{padding:8px 10px;border-radius:9px;cursor:pointer;margin-bottom:2px;display:flex;align-items:center;gap:8px;position:relative}
     .conv-item:hover{background:rgba(128,128,128,.08)}
     .conv-item.active{background:var(--glow)}
     .conv-item .pin{font-size:.7rem;color:var(--primary)}
-    .conv-item .title{flex:1;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .conv-item .time{font-size:.68rem;color:var(--muted)}
+    .conv-item .title{flex:1;font-size:.74rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .conv-item .time{font-size:.62rem;color:var(--muted)}
     .conv-item .acts{display:none;gap:2px}
     .conv-item:hover .acts{display:flex}
     .conv-item:hover .time{display:none}
@@ -66,7 +67,7 @@
     .conv-item .acts button:hover{background:var(--glow);color:var(--primary-h)}
     .sidebar-footer{padding:10px 12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px}
     .user-info{flex:1;min-width:0}
-    .user-info .name{font-size:.82rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .user-info .name{font-size:.74rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .user-info .email,.visitor-count-side{font-size:.68rem;color:var(--muted)}
     .logout-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center}
     .logout-btn:hover{background:rgba(239,68,68,.15);color:#fca5a5}
@@ -90,10 +91,10 @@
     .welcome{margin:auto;text-align:center;max-width:460px;padding:12px;animation:riseIn .65s cubic-bezier(.2,.8,.2,1) both}
     .welcome-icon{width:100%;max-width:360px;margin:0 auto 14px;border-radius:12px;overflow:hidden;box-shadow:0 0 36px var(--glow);border:1px solid rgba(85,196,187,.3)}
     .welcome-icon img{width:100%;display:block}
-    .welcome h1{font-size:1.35rem;margin-bottom:4px}
-    .welcome p{color:var(--muted);font-size:.86rem;margin-bottom:16px}
+    .welcome h1{font-size:1.22rem;margin-bottom:4px}
+    .welcome p{color:var(--muted);font-size:.8rem;margin-bottom:14px}
     .suggestions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-    .suggestion{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:10px 12px;text-align:left;cursor:pointer;font-size:.8rem;color:var(--muted)}
+    .suggestion{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 11px;text-align:left;cursor:pointer;font-size:.74rem;color:var(--muted)}
     .suggestion:hover{border-color:var(--primary);color:var(--text)}
 
     .message{display:flex;gap:9px;max-width:760px;width:100%;margin:0 auto;animation:messageIn .35s cubic-bezier(.2,.8,.2,1) both}
@@ -101,7 +102,7 @@
     .avatar{width:30px;height:30px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
     .message.user .avatar{background:var(--user);font-size:9px;color:#fff}
     .message.ai .avatar{background:linear-gradient(135deg,#167d7a,#245b73);color:#fff}
-    .bubble{padding:11px 14px;border-radius:14px;line-height:1.5;font-size:.9rem;max-width:85%;word-wrap:break-word;position:relative}
+    .bubble{padding:10px 13px;border-radius:14px;line-height:1.5;font-size:.84rem;max-width:85%;word-wrap:break-word;position:relative}
     .message.user .bubble{background:var(--user);color:#fff;border-bottom-right-radius:4px}
     .message.ai .bubble{background:var(--ai);border:1px solid var(--border);border-bottom-left-radius:4px}
     .bubble pre{background:rgba(0,0,0,.3);padding:9px;border-radius:7px;overflow-x:auto;margin:7px 0;font-family:'JetBrains Mono',monospace;font-size:.78rem}
@@ -158,7 +159,7 @@
     .header-actions #settingsBtn{display:none}
     .more-dropdown button{
       width:100%;text-align:left;padding:10px 12px;border:none;border-radius:8px;
-      background:transparent;color:var(--text);font-size:.85rem;cursor:pointer;display:flex;align-items:center;gap:8px;
+      background:transparent;color:var(--text);font-size:.78rem;cursor:pointer;display:flex;align-items:center;gap:8px;
     }
     .more-dropdown button:hover{background:var(--glow)}
     .more-dropdown button.danger{color:#fca5a5}
@@ -256,16 +257,16 @@
       .sidebar-overlay{background:rgba(3,10,14,.68);backdrop-filter:blur(3px)}
       .sidebar-overlay.open{display:block}
       .menu-btn{display:flex!important}
-      .header{padding:8px 10px;min-height:52px;overflow:hidden}
+      .header{padding:7px 9px;min-height:48px;overflow:hidden}
       .header-left{min-width:0;flex-shrink:0;gap:6px}
-      .logo{gap:5px;font-size:.86rem;white-space:nowrap}
-      .logo-icon{width:28px;height:28px}
+      .logo{gap:5px;font-size:.78rem;white-space:nowrap}
+      .logo-icon{width:26px;height:26px}
       .streak-badge{display:none}
       .header-actions{min-width:0;max-width:calc(100vw - 155px);flex:1;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding-bottom:1px}
       .header-actions::-webkit-scrollbar{display:none}
-      .model-select{width:108px;min-width:108px;padding-left:7px;font-size:.68rem}
+      .model-select{width:104px;min-width:104px;padding-left:7px;font-size:.62rem}
       .header-actions .icon-btn{min-width:34px}
-      .header-actions .label-btn{font-size:.65rem;padding:0 7px;min-width:38px}
+      .header-actions .label-btn{font-size:.6rem;padding:0 6px;min-width:36px}
       .header-actions #toolsBtn,
       .header-actions #imgGenBtn,
       .header-actions #exportBtn,
@@ -274,19 +275,19 @@
       .chat-container{padding:18px 10px 132px;gap:13px}
       .welcome{width:100%;padding:8px 4px}
       .welcome-icon{max-width:260px}
-      .welcome h1{font-size:1.2rem}
-      .welcome p{font-size:.8rem}
+      .welcome h1{font-size:1.08rem}
+      .welcome p{font-size:.72rem}
       .suggestions{grid-template-columns:1fr;gap:6px}
-      .suggestion{padding:11px 12px}
+      .suggestion{padding:10px 11px;font-size:.72rem}
       .message{gap:7px;max-width:100%}
       .avatar{width:28px;height:28px}
-      .bubble{max-width:calc(100% - 35px);font-size:.86rem;padding:10px 12px}
+      .bubble{max-width:calc(100% - 35px);font-size:.8rem;padding:9px 11px}
       .input-area{padding:8px 9px 11px}
       .input-wrapper{border-radius:14px;padding:5px;gap:3px}
       .attach-btn,.mic-btn,.stop-btn{width:31px;height:32px;font-size:.62rem}
       .mic-btn{font-size:0}
       .mic-btn::after{content:'Voice';font-size:.62rem}
-      #userInput{font-size:.86rem;padding:6px 2px}
+      #userInput{font-size:.78rem;padding:6px 2px}
       .send-btn{width:34px;height:34px}
       .footer-note{margin-top:5px}
       .tools-panel,.video-panel{max-width:100%;width:100%;border-left:0}
